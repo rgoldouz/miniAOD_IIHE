@@ -8,11 +8,14 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleMCTruth::IIHEModuleMCTruth(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+IIHEModuleMCTruth::IIHEModuleMCTruth(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
   pt_threshold_            = iConfig.getUntrackedParameter<double>("MCTruth_ptThreshold"            , 10.0) ;
   m_threshold_             = iConfig.getUntrackedParameter<double>("MCTruth_mThreshold"             , 20.0) ;
   DeltaROverlapThreshold_  = iConfig.getUntrackedParameter<double>("MCTruth_DeltaROverlapThreshold" , 1e-3) ;
   puInfoSrc_               = iConfig.getUntrackedParameter<edm::InputTag>("PileUpSummaryInfo") ;
+  generatorLabel_ = iC.consumes<GenEventInfoProduct> (iConfig.getParameter<InputTag>("generatorLabel"));
+  puCollection_ = iC.consumes<vector<PileupSummaryInfo> > (puInfoSrc_);
+  genParticlesCollection_ = iC.consumes<vector<reco::GenParticle> > (iConfig.getParameter<InputTag>("genParticleSrc"));
 }
 IIHEModuleMCTruth::~IIHEModuleMCTruth(){}
 
@@ -63,7 +66,7 @@ void IIHEModuleMCTruth::beginJob(){
 // ------------ method called to for each event  ------------
 void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   edm::Handle<GenEventInfoProduct> pdfvariables ;
-  iEvent.getByLabel("generator", pdfvariables) ;
+  iEvent.getByToken(generatorLabel_, pdfvariables);
   float weight = pdfvariables->weight() ;
   store("mc_pdfvariables_weight", weight) ;
   store("mc_w"                  , weight) ;
@@ -71,7 +74,7 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
   // Fill pile-up related informations
   // --------------------------------
   edm::Handle<std::vector< PileupSummaryInfo > >  puInfo ;
-  iEvent.getByLabel(puInfoSrc_, puInfo) ;
+  iEvent.getByToken(puCollection_, puInfo) ;
   int trueNumInteractions = -1 ;
   int PU_NumInteractions  = -1 ;
   if(puInfo.isValid()){
@@ -86,7 +89,7 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
   }
   
   Handle<GenParticleCollection> pGenParticles ;
-  iEvent.getByLabel("genParticles", pGenParticles) ;
+  iEvent.getByToken(genParticlesCollection_, pGenParticles) ;
   GenParticleCollection genParticles(pGenParticles->begin(),pGenParticles->end()) ;
   
   // These variables are used to match up mothers to daughters at the end.

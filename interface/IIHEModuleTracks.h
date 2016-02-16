@@ -6,7 +6,8 @@
 // class decleration
 class IIHEModuleTracks : public IIHEModule {
 public:
-  explicit IIHEModuleTracks(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleTracks(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleTracks(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleTracks();
   
   void   pubBeginJob(){   beginJob() ; } ;

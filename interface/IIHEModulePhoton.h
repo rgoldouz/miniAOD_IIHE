@@ -6,7 +6,8 @@
 // class decleration
 class IIHEModulePhoton : public IIHEModule {
 public:
-  explicit IIHEModulePhoton(const edm::ParameterSet& iConfig);
+  explicit IIHEModulePhoton(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModulePhoton(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModulePhoton();
   
   void   pubBeginJob(){   beginJob() ; } ;

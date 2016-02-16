@@ -8,7 +8,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleZBoson::IIHEModuleZBoson(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+IIHEModuleZBoson::IIHEModuleZBoson(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
   DeltaRCut_        = iConfig.getUntrackedParameter<double>("ZBosonDeltaRCut"          ,  0.3) ;
   ETThreshold_      = iConfig.getUntrackedParameter<double>("ZBosonEtThreshold"        , 10.0) ;
   mZAccept_         = iConfig.getUntrackedParameter<double>("ZBosonZMassAcceptLower"   , 60.0) ;

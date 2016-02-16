@@ -102,7 +102,8 @@ private:
 
 class IIHEModuleMuon : public IIHEModule {
 public:
-  explicit IIHEModuleMuon(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleMuon(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleMuon(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleMuon() ;
   
   void   pubBeginJob(){   beginJob() ; } ;

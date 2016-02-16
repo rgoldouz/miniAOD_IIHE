@@ -12,7 +12,8 @@ private:
   int   nElectronsThreshold_ ;
   int   nLeptonsThreshold_   ;
 public:
-  explicit IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleLeptonsAccept();
   
   void   pubBeginJob(){   beginJob() ; } ;

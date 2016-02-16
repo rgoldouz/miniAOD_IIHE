@@ -16,7 +16,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModulePreshower::IIHEModulePreshower(const edm::ParameterSet& iConfig): IIHEModule(iConfig),
+IIHEModulePreshower::IIHEModulePreshower(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig),
 geometryPreshower_(0),
 topologyPreshower_(0)
 {}

@@ -12,7 +12,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModulePhoton::IIHEModulePhoton(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
+IIHEModulePhoton::IIHEModulePhoton(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){}
 IIHEModulePhoton::~IIHEModulePhoton(){}
 
 // ------------ method called once each job just before starting event loop  ------------

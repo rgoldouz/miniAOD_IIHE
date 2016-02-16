@@ -6,7 +6,8 @@
 // class decleration
 class IIHEModuleExample : public IIHEModule {
 public:
-  explicit IIHEModuleExample(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleExample(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleExample(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleExample();
   
   void   pubBeginJob(){   beginJob() ; } ;

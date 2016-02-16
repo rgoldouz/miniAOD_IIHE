@@ -48,7 +48,6 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   metaTree_->Branch("globalTag", &globalTag_) ;
   
 //CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
-  beamSpotLabel_      = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
 //CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START CMSSW_5_3_11
   beamSpotLabel_      = iConfig.getParameter<edm::InputTag>("beamSpot") ;
@@ -59,9 +58,12 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
   photonCollectionLabel_       = iConfig.getParameter<edm::InputTag>("photonCollection"        ) ;
   electronCollectionLabel_     = iConfig.getParameter<edm::InputTag>("electronCollection"      ) ;
   muonCollectionLabel_         = iConfig.getParameter<edm::InputTag>("muonCollection"          ) ;
-  
-  reducedBarrelRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedBarrelRecHitCollection") ;
-  reducedEndcapRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedEndcapRecHitCollection") ;
+  beamSpotToken_      = consumes<reco::BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ; 
+
+
+ 
+  reducedBarrelRecHitCollection_ = iConfig.getParameter<edm::InputTag>("ebReducedRecHitCollection") ;
+  reducedEndcapRecHitCollection_ = iConfig.getParameter<edm::InputTag>("eeReducedRecHitCollection") ;
 
 //CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   reducedBarrelRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedBarrelRecHitCollection_) ;
@@ -74,6 +76,7 @@ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   electronCollectionToken_ =  consumes<View<pat::Electron> > (electronCollectionLabel_);
   muonCollectionToken_ =  consumes<View<pat::Muon> > (muonCollectionLabel_);
   photonCollectionToken_ =  consumes<View<pat::Photon> > (photonCollectionLabel_); 
+  superClusterCollectionToken_ =  consumes<reco::SuperClusterCollection> (superClusterCollectionLabel_);
  
   firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
   beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
@@ -93,22 +96,22 @@ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"         , true ) ;
   includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule", true ) ;
   
-  if(includeLeptonsAcceptModule_  ) childModules_.push_back(new IIHEModuleLeptonsAccept(iConfig)  ) ;   
-  if(includeTriggerModule_        ) childModules_.push_back(new IIHEModuleTrigger(iConfig)        ) ;
-  if(includeEventModule_          ) childModules_.push_back(new IIHEModuleEvent(iConfig)          ) ;
+  if(includeLeptonsAcceptModule_  ) childModules_.push_back(new IIHEModuleLeptonsAccept(iConfig ,consumesCollector())  ) ;   
+  if(includeTriggerModule_        ) childModules_.push_back(new IIHEModuleTrigger(iConfig,consumesCollector())        ) ;
+  if(includeEventModule_          ) childModules_.push_back(new IIHEModuleEvent(iConfig   ,consumesCollector()       )) ;
   if(includeMCTruthModule_        ){
-    MCTruthModule_ = new IIHEModuleMCTruth(iConfig) ;
+    MCTruthModule_ = new IIHEModuleMCTruth(iConfig ,consumesCollector()) ;
     childModules_.push_back(MCTruthModule_) ;
   }
-  if(includeVertexModule_         ) childModules_.push_back(new IIHEModuleVertex(iConfig)         ) ;
-  if(includeSuperClusterModule_   ) childModules_.push_back(new IIHEModuleSuperCluster(iConfig)   ) ;
-  if(includePhotonModule_         ) childModules_.push_back(new IIHEModulePhoton(iConfig)         ) ;
-  if(includeElectronModule_       ) childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig) ) ;
-  if(includeMuonModule_           ) childModules_.push_back(new IIHEModuleMuon(iConfig)           ) ;
-  if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig)            ) ;
-  if(includeHEEPModule_           ) childModules_.push_back(new IIHEModuleHEEP(iConfig)           ) ;
-  if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig)         ) ;  
-  if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig)) ;  
+  if(includeVertexModule_         ) childModules_.push_back(new IIHEModuleVertex(iConfig ,consumesCollector())         ) ;
+  if(includeSuperClusterModule_   ) childModules_.push_back(new IIHEModuleSuperCluster(iConfig ,consumesCollector())   ) ;
+  if(includePhotonModule_         ) childModules_.push_back(new IIHEModulePhoton(iConfig ,consumesCollector())         ) ;
+  if(includeElectronModule_       ) childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig ,consumesCollector()) ) ;
+  if(includeMuonModule_           ) childModules_.push_back(new IIHEModuleMuon(iConfig ,consumesCollector())           ) ;
+  if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig ,consumesCollector())            ) ;
+  if(includeHEEPModule_           ) childModules_.push_back(new IIHEModuleHEEP(iConfig ,consumesCollector())           ) ;
+  if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig ,consumesCollector())         ) ;  
+  if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig ,consumesCollector())) ;  
 }
 
 IIHEAnalysis::~IIHEAnalysis(){}
@@ -310,6 +313,7 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Get the default collections
   // These should be harmonised across submodules, where possible
 //  iEvent.getByLabel(superClusterCollectionLabel_, superClusterCollection_) ;
+  iEvent.getByToken(superClusterCollectionToken_, superClusterCollection_) ;
   iEvent.getByToken( photonCollectionToken_, photonCollection_) ;
   iEvent.getByToken( electronCollectionToken_ , electronCollection_) ;
   iEvent.getByToken( muonCollectionToken_, muonCollection_) ;
@@ -318,7 +322,7 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //iEvent.getByLabel(    electronCollectionLabel_,     electronCollectionMiniAOD_) ;
   
 //CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
-  iEvent.getByToken(beamSpotLabel_, beamspotHandle_) ;
+  iEvent.getByToken(beamSpotToken_, beamspotHandle_) ;
 std::cout<<"salam"<<std::endl;
 // CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START CMSSW_5_3_11

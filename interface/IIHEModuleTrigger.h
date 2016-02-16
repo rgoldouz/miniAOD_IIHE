@@ -9,7 +9,8 @@
 // class decleration
 class IIHEModuleTrigger : public IIHEModule {
 public:
-  explicit IIHEModuleTrigger(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleTrigger(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleTrigger(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleTrigger();
   
   void   pubBeginJob(){   beginJob() ; } ;

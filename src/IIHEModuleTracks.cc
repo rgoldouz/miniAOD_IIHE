@@ -11,7 +11,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleTracks::IIHEModuleTracks(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
+IIHEModuleTracks::IIHEModuleTracks(const edm::ParameterSet& iConfig , edm::ConsumesCollector && iC): IIHEModule(iConfig){}
 IIHEModuleTracks::~IIHEModuleTracks(){}
 
 // ------------ method called once each job just before starting event loop  ------------

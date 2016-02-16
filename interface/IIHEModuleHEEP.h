@@ -17,7 +17,12 @@ private:
   void addHEEPParameter(int, std::string, std::string, float) ;
   
   edm::InputTag rhoLabel_ ;
-  
+  edm::EDGetTokenT<double> rhoTokenAll_; 
+  edm::EDGetTokenT<EcalRecHitCollection>        ebReducedRecHitCollection_;
+  edm::EDGetTokenT<EcalRecHitCollection>        eeReducedRecHitCollection_;
+
+
+ 
   bool storeHEEP41_    ;
   bool storeHEEP50_50_ ;
   bool storeHEEP50_25_ ;
@@ -78,7 +83,8 @@ private:
   
   std::vector<std::string> triggersForMatching_ ;
 public:
-  explicit IIHEModuleHEEP(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleHEEP(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleHEEP();
   
   void   pubBeginJob(){   beginJob() ; } ;

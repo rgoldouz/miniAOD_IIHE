@@ -49,5 +49,7 @@
 <use   name="hepmc"/>
 <use   name="root"/>
 <use   name="DataFormats/Luminosity"/>
+<use   name="UserCode/IIHETree"/>
+
 <flags   EDM_PLUGIN="1"/>
 

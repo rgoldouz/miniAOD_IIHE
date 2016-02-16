@@ -21,7 +21,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleSuperCluster::IIHEModuleSuperCluster(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
+IIHEModuleSuperCluster::IIHEModuleSuperCluster(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){}
 IIHEModuleSuperCluster::~IIHEModuleSuperCluster(){}
 
 // ------------ method called once each job just before starting event loop  ------------

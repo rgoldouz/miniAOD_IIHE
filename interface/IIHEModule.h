@@ -37,6 +37,8 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 
+#include "FWCore/Framework/interface/ConsumesCollector.h"
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TLorentzVector.h"

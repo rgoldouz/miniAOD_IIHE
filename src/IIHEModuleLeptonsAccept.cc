@@ -8,7 +8,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleLeptonsAccept::IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+IIHEModuleLeptonsAccept::IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
   ptThreshold_         = iConfig.getUntrackedParameter<double>("LeptonsAccept_pTThreshold", 30.0 ) ;
   nElectronsThreshold_ = iConfig.getUntrackedParameter<double>("LeptonsAccept_nElectrons" ,    1 ) ;
   nLeptonsThreshold_   = iConfig.getUntrackedParameter<double>("LeptonsAccept_nLeptons"   ,    2 ) ;

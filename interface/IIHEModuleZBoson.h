@@ -44,7 +44,8 @@ private:
   bool saveZmmg_ ;
   
 public:
-  explicit IIHEModuleZBoson(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleZBoson(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleZBoson(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleZBoson();
   
   void   pubBeginJob(){   beginJob() ; } ;

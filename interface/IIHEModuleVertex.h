@@ -7,7 +7,8 @@
 class IIHEModuleVertex : public IIHEModule {
 private:
 public:
-  explicit IIHEModuleVertex(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleVertex(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleVertex(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleVertex();
   
   void   pubBeginJob(){   beginJob() ; } ;

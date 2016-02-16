@@ -35,6 +35,7 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 
 // ROOT includes
 #include "TFile.h"
@@ -61,18 +62,9 @@ friend class IIHEModuleMuon ;
 friend class IIHEModuleTracks ;
 
 
-private:
-//CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_7_6_3
-  edm::EDGetTokenT<reco::BeamSpot> beamSpotLabel_ ;
-// CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_7_6_3
-/*CHOOSE_RELEASE_START CMSSW_5_3_11
-  edm::InputTag beamSpotLabel_ ;
-CHOOSE_RELEASE_END CMSSW_5_3_11*/
-  
-  math::XYZPoint* beamspot_ ;
-  math::XYZPoint* firstPrimaryVertex_ ;
 public:
   explicit IIHEAnalysis(const edm::ParameterSet& iConfig);
+
   ~IIHEAnalysis();
   
   bool store(std::string, bool    );
@@ -214,6 +206,7 @@ private:
   edm::EDGetTokenT<edm::View<pat::Electron> > electronCollectionToken_;
   edm::EDGetTokenT<edm::View<pat::Muon> > muonCollectionToken_;
   edm::EDGetTokenT<edm::View<pat::Photon> > photonCollectionToken_; 
+  edm::EDGetTokenT<reco::SuperClusterCollection> superClusterCollectionToken_ ;
 
   edm::InputTag  superClusterCollectionLabel_ ;
   edm::InputTag        photonCollectionLabel_ ;
@@ -221,6 +214,9 @@ private:
   edm::InputTag          muonCollectionLabel_ ;
   edm::InputTag           primaryVertexLabel_ ;
   edm::Handle<reco::BeamSpot> beamspotHandle_ ;
+  edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_ ;
+  math::XYZPoint* beamspot_ ;
+  math::XYZPoint* firstPrimaryVertex_ ;
   
   // The event only gets saved if acceptEvent_ == true
   bool acceptEvent_ ;

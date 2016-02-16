@@ -16,7 +16,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
   hlTriggerResultsTag_ = iConfig.getParameter<edm::InputTag>("TriggerResults") ;
   nEvents_ = 0 ;
   nWasRun_ = 0 ;

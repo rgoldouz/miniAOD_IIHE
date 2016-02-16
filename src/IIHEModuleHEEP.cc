@@ -38,9 +38,12 @@ void IIHEModuleHEEP::addHEEPParameter(int type, std::string name, std::string ps
   parameters_.push_back(new HEEPParameter(type, name, pset_name, defaultValue)) ;
 }
 
-IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
   ETThreshold_ = iConfig.getUntrackedParameter<double>("electrons_ETThreshold", 0.0 ) ;
   rhoLabel_ = iConfig.getParameter<edm::InputTag>("eventRho") ;
+  rhoTokenAll_ =  iC.consumes<double> (rhoLabel_);
+  ebReducedRecHitCollection_ = iC.consumes<EcalRecHitCollection> (iConfig.getParameter<InputTag>("ebReducedRecHitCollection"));
+  eeReducedRecHitCollection_ = iC.consumes<EcalRecHitCollection> (iConfig.getParameter<InputTag>("eeReducedRecHitCollection"));
 
   // Decide whether to store the cutflow variables for each cutflow
   storeHEEP41_    = iConfig.getUntrackedParameter<bool>("storeHEEP41"    , true ) ;
@@ -631,14 +634,15 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   math::XYZPoint* firstPrimaryVertex = parent_->getFirstPrimaryVertex() ;
   
   edm::Handle<double> rhoHandle ;
-  iEvent.getByLabel(rhoLabel_, rhoHandle) ;
+  iEvent.getByToken(rhoTokenAll_, rhoHandle) ;
+//  iEvent.getByLabel(rhoLabel_, rhoHandle) ;
   double rho = *rhoHandle ;
   
   // Get the hit information
   Handle<EcalRecHitCollection> EBHits;
   Handle<EcalRecHitCollection> EEHits;
-  iEvent.getByLabel("reducedEcalRecHitsEB", EBHits) ;
-  iEvent.getByLabel("reducedEcalRecHitsEE", EEHits) ;
+  iEvent.getByToken(ebReducedRecHitCollection_, EBHits) ;
+  iEvent.getByToken(eeReducedRecHitCollection_, EEHits) ;
   
   if(storeHEEP41_){
     cut_41_dxyFirstPV_->setFirstPV(firstPrimaryVertex) ;

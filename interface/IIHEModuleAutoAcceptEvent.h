@@ -2,12 +2,17 @@
 #define UserCode_IIHETree_IIHEModuleAutoAcceptEvent_h
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
+#include "FWCore/Framework/interface/Event.h"
 
 // class decleration
 class IIHEModuleAutoAcceptEvent : public IIHEModule {
 public:
-  explicit IIHEModuleAutoAcceptEvent(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleAutoAcceptEvent(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  IIHEModuleAutoAcceptEvent(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleAutoAcceptEvent();
+
+
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;

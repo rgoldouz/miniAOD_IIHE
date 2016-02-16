@@ -184,7 +184,7 @@ void IIHEMuonTrackWrapper::store(IIHEAnalysis* analysis){
 //////////////////////////////////////////////////////////////////////////////////////////
 //                                  Main IIHEMuonModule                                 //
 //////////////////////////////////////////////////////////////////////////////////////////
-IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig):
+IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC):
   IIHEModule(iConfig),
   globalTrackWrapper_(new IIHEMuonTrackWrapper("mu_gt")),
   outerTrackWrapper_ (new IIHEMuonTrackWrapper("mu_ot")),

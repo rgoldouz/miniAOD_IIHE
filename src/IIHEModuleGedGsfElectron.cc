@@ -33,7 +33,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleGedGsfElectron::IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+IIHEModuleGedGsfElectron::IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
   ETThreshold_ = iConfig.getUntrackedParameter<double>("electrons_ETThreshold", 0.0 ) ;
 }
 IIHEModuleGedGsfElectron::~IIHEModuleGedGsfElectron(){}

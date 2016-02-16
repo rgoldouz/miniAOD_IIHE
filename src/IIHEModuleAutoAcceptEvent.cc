@@ -8,7 +8,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleAutoAcceptEvent::IIHEModuleAutoAcceptEvent(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
+IIHEModuleAutoAcceptEvent::IIHEModuleAutoAcceptEvent(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){}
 IIHEModuleAutoAcceptEvent::~IIHEModuleAutoAcceptEvent(){}
 
 // ------------ method called once each job just before starting event loop  ------------

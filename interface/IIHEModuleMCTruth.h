@@ -17,7 +17,8 @@
 // class decleration
 class IIHEModuleMCTruth : public IIHEModule {
 public:
-  explicit IIHEModuleMCTruth(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleMCTruth(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleMCTruth(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleMCTruth();
   
   void   pubBeginJob(){   beginJob() ; } ;
@@ -45,5 +46,8 @@ private:
   std::vector<MCTruthObject*> MCTruthRecord_ ;
   
   edm::InputTag puInfoSrc_ ;
+  edm::EDGetTokenT<GenEventInfoProduct> generatorLabel_;
+  edm::EDGetTokenT<vector<PileupSummaryInfo> > puCollection_;
+  edm::EDGetTokenT<vector<reco::GenParticle> > genParticlesCollection_;
 };
 #endif

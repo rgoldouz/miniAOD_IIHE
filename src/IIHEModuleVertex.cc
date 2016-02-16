@@ -11,7 +11,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleVertex::IIHEModuleVertex(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
+IIHEModuleVertex::IIHEModuleVertex(const edm::ParameterSet& iConfig , edm::ConsumesCollector && iC): IIHEModule(iConfig){}
 IIHEModuleVertex::~IIHEModuleVertex(){}
 
 // ------------ method called once each job just before starting event loop  ------------

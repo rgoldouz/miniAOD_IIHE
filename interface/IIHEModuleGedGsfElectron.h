@@ -6,7 +6,8 @@
 // class decleration
 class IIHEModuleGedGsfElectron : public IIHEModule {
 public:
-  explicit IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
+  explicit IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleGedGsfElectron() ;
   
   void   pubBeginJob(){   beginJob() ; } ;

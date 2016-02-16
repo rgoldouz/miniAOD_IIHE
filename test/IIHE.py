@@ -97,15 +97,20 @@ process.IIHEAnalysis.triggers = cms.untracked.string(triggers)
 
 process.IIHEAnalysis.globalTag = cms.string(globalTag)
 
-process.IIHEAnalysis.eventRho = cms.InputTag('kt6PFJetsForIsolation:rho')
-
 # Collections.
 process.IIHEAnalysis.photonCollection    = cms.InputTag('slimmedPhotons'        )
 process.IIHEAnalysis.electronCollection  = cms.InputTag('slimmedElectrons')
 process.IIHEAnalysis.muonCollection      = cms.InputTag('slimmedMuons'          )
-process.IIHEAnalysis.superClusterCollection = cms.InputTag('correctedHybridSuperClusters')
+process.IIHEAnalysis.METCollection      = cms.InputTag('slimmedMETs'          )
+process.IIHEAnalysis.superClusterCollection = cms.InputTag('reducedEgamma', 'reducedSuperClusters','PAT')
 process.IIHEAnalysis.reducedBarrelRecHitCollection = cms.InputTag('reducedEcalRecHitsEB')
 process.IIHEAnalysis.reducedEndcapRecHitCollection = cms.InputTag('reducedEcalRecHitsEE')
+process.IIHEAnalysis.eventRho = cms.InputTag('fixedGridRhoAll')
+process.IIHEAnalysis.ebReducedRecHitCollection = cms.InputTag("reducedEgamma", "reducedEBRecHits")
+process.IIHEAnalysis.eeReducedRecHitCollection = cms.InputTag("reducedEgamma", "reducedEERecHits")
+process.IIHEAnalysis.generatorLabel = cms.InputTag("generator")
+process.IIHEAnalysis.PileUpSummaryInfo = cms.untracked.InputTag('addPileupInfo')
+process.IIHEAnalysis.genParticleSrc = cms.InputTag("prunedGenParticles")
 
 if miniAOD:
     process.IIHEAnalysis.primaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices')
@@ -147,27 +152,28 @@ process.IIHEAnalysis.LeptonsAccept_nLeptons    = cms.untracked.double(2)
 process.IIHEAnalysis.LeptonsAccept_nElectrons  = cms.untracked.double(1)
 
 
-
 process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(False)
-process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(False)
-process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool(False)
+process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(True)
+process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool(True)
 process.IIHEAnalysis.includeVertexModule         = cms.untracked.bool(True) 
-process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(False)
+process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(True)
 process.IIHEAnalysis.includePhotonModule         = cms.untracked.bool(True)
 process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
-process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(False)
-process.IIHEAnalysis.includeHEEPModule           = cms.untracked.bool(False)
-process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(False)
-process.IIHEAnalysis.includeAutoAcceptEventModule= cms.untracked.bool(False)
-process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(False)
+process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
+process.IIHEAnalysis.includeHEEPModule           = cms.untracked.bool(True)
+process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(True)
+process.IIHEAnalysis.includeAutoAcceptEventModule= cms.untracked.bool(True)
+process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(True)
 
 
 #process.IIHEAnalysis.includeTriggerModule         = cms.untracked.bool(True )
 #process.IIHEAnalysis.includeMCTruthModule         = cms.untracked.bool(('MC' in job_type))
 #process.IIHEAnalysis.includeAutoAcceptEventModule = cms.untracked.bool(False)
 #process.IIHEAnalysis.PileUpSummaryInfo = cms.untracked.InputTag('addPileupInfo')
+#process.IIHEAnalysis.genParticleSrc = cms.InputTag("prunedGenParticles")
+
 
 process.IIHEAnalysis.debug = cms.bool(False)
 

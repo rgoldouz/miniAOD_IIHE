@@ -1,16 +1,25 @@
 #ifndef UserCode_IIHETree_IIHEModuleEvent_h
 #define UserCode_IIHETree_IIHEModuleEvent_h
-
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 #include "DataFormats/JetReco/interface/Jet.h"
+#include "TMath.h"
+#include "FWCore/Utilities/interface/EDGetToken.h"
 
 // class decleration
 class IIHEModuleEvent : public IIHEModule {
 private:
-  edm::InputTag rhoLabel_ ;
+
+   edm::EDGetTokenT<double> rhoTokenAll_;
+   edm::EDGetTokenT<double> rhoTokenFastjetAll_;
+   edm::EDGetTokenT<double> rhoTokenFastjetAllCalo_;
+   edm::EDGetTokenT<double> rhoTokenFastjetCentralCalo_;
+   edm::EDGetTokenT<double> rhoTokenFastjetCentralChargedPileUp_;
+   edm::EDGetTokenT<double> rhoTokenFastjetCentralNeutral_;
 
 public:
-  explicit IIHEModuleEvent(const edm::ParameterSet& iConfig);
+  explicit IIHEModuleEvent(const edm::ParameterSet& iConfig,  edm::ConsumesCollector && iC);
+  explicit IIHEModuleEvent(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleEvent();
   
   void   pubBeginJob(){   beginJob() ; } ;
