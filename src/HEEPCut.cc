@@ -783,7 +783,7 @@ void HEEPCutCollection::config(std::vector<HEEPParameter*> parameters){
       }
     }
   }
-  parent_mod_->addBranch(name_, kVectorInt) ;
+  parent_mod_->addBranch(name_, kVectorBool) ;
   parent_mod_->addBranch(branchName_n_, kInt) ;
 }
 

@@ -21,10 +21,10 @@ void IIHEModuleVertex::beginJob(){
   addBranch("pv_x") ;
   addBranch("pv_y") ;
   addBranch("pv_z") ;
-  addBranch("pv_isValid", kVectorInt) ;
+  addBranch("pv_isValid", kVectorBool) ;
   addBranch("pv_normalizedChi2", kVectorFloat) ;
+  addBranch("pv_ndof", kVectorFloat) ;
   setBranchType(kVectorInt) ;
-  addBranch("pv_ndof") ;
   addBranch("pv_nTracks") ;
   addBranch("pv_totTrackSize") ;
 }
@@ -47,7 +47,7 @@ void IIHEModuleVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     store("pv_z"             , pvIt->z()                ) ;  
     store("pv_isValid"       , pvIt->isValid()          ) ;
     store("pv_ndof"          , (int)pvIt->ndof()        ) ;
-    store("pv_nTracks"       , (int)(pvIt->nTracks())   ) ;
+    store("pv_nTracks"       , (short)(pvIt->nTracks())   ) ;
     store("pv_normalizedChi2", pvIt->normalizedChi2()   ) ;
     store("pv_totTrackSize"  , (int)(pvIt->tracksSize())) ;
   }

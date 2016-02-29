@@ -212,7 +212,7 @@ void IIHEModuleMuon::beginJob(){
   if(storeInnerTrackMuons_ )  innerTrackWrapper_->addBranches(analysis) ;
   
   // Muon type block
-  setBranchType(kVectorInt) ;
+  setBranchType(kVectorBool) ;
   addBranch("mu_isGlobalMuon"      ) ;
   addBranch("mu_isStandAloneMuon"  ) ;
   addBranch("mu_isTrackerMuon"     ) ;
