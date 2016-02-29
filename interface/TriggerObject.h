@@ -11,6 +11,12 @@
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
+#include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
+#include <algorithm>
+
 using namespace std ;
 using namespace reco;
 using namespace edm ;
@@ -30,7 +36,7 @@ public:
   ~TriggerFilter(){} ;
   int createBranches(IIHEAnalysis*) ;
   int setIndex(edm::Handle<trigger::TriggerEvent>, edm::InputTag) ;
-  int setValues(edm::Handle<trigger::TriggerEvent>, IIHEAnalysis*) ;
+  int setValues(const edm::Event&, edm::Handle<pat::TriggerObjectStandAloneCollection>,edm::Handle<edm::TriggerResults>, HLTConfigProvider, IIHEAnalysis*) ;
   bool store(IIHEAnalysis* analysis) ;
 };
 
@@ -117,7 +123,7 @@ public:
   bool  beginRun(HLTConfigProvider const&) ;
   
   int findIndex(HLTConfigProvider const&) ;
-  int status(const edm::Event&, edm::EventSetup const&, HLTConfigProvider const&, Handle<TriggerResults> const&, edm::Handle<trigger::TriggerEvent>, IIHEAnalysis*) ;
+  int status(const edm::Event&, edm::EventSetup const&, HLTConfigProvider const&, Handle<TriggerResults> const&, edm::Handle<pat::TriggerObjectStandAloneCollection>, edm::Handle<pat::PackedTriggerPrescales>, IIHEAnalysis*) ;
   void store(IIHEAnalysis*) ;
   
   bool addFilter(std::string) ;

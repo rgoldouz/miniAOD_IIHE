@@ -51,7 +51,7 @@ private:
 public:
   HEEPCutBase(int, std::string, IIHEModuleHEEP*) ;
   ~HEEPCutBase() ;
-  virtual bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  virtual bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
   bool addBranches() ;
   void store() ;
   void reset() ;
@@ -67,9 +67,9 @@ public:
   void beginEvent() ;
   void endEvent() ;
   
-  bool isBarrel(reco::GsfElectron*) ;
-  bool isEndcap(reco::GsfElectron*) ;
-  int detectorRegion(reco::GsfElectron*) ;
+  bool isBarrel(pat::Electron*) ;
+  bool isEndcap(pat::Electron*) ;
+  int detectorRegion(pat::Electron*) ;
   
   void setBarrelLimits(float barrelEtaUpper){ barrelEtaUpper_ = barrelEtaUpper ; }
   void setEndcapLimits(float endcapEtaLower, float endcapEtaUpper){
@@ -84,7 +84,7 @@ class HEEPCut_Et: HEEPCutBase{
 public:
   HEEPCut_Et(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float thresholdBarrel_ ;
   float thresholdEndcap_ ;
@@ -92,19 +92,19 @@ private:
 class HEEPCut_eta: HEEPCutBase{
 public:
   HEEPCut_eta(int, std::string, IIHEModuleHEEP*) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 } ;
 class HEEPCut_EcalDriven: HEEPCutBase{
 public:
   HEEPCut_EcalDriven(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 } ;
 class HEEPCut_dPhiIn: HEEPCutBase{
 public:
   HEEPCut_dPhiIn(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float thresholdBarrel_ ;
   float thresholdEndcap_ ;
@@ -113,7 +113,7 @@ class HEEPCut_SigmaIetaIeta: HEEPCutBase{
 public:
   HEEPCut_SigmaIetaIeta(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float threshold_ ;
 } ;
@@ -121,13 +121,13 @@ class HEEPCut_E1x5OverE5x5: HEEPCutBase{
 public:
   HEEPCut_E1x5OverE5x5(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 } ;
 class HEEPCut_E2x5OverE5x5: HEEPCutBase{
 public:
   HEEPCut_E2x5OverE5x5(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float thresholdE1x5_ ;
   float thresholdE2x5_ ;
@@ -146,14 +146,14 @@ private:
 public:
   HEEPCut_isolEMHadDepth1(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
   void setRho(float) ;
 } ;
 class HEEPCut_IsolPtTrks: HEEPCutBase{
 public:
   HEEPCut_IsolPtTrks(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float thresholdBarrel_ ;
   float thresholdEndcap_ ;
@@ -162,7 +162,7 @@ class HEEPCut_missingHits: HEEPCutBase{
 public:
   HEEPCut_missingHits(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float threshold_ ;
 } ;
@@ -174,7 +174,7 @@ private:
 public:
   HEEPCut_dxyFirstPV(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
   void setFirstPV(math::XYZPoint*) ;
 } ;
 
@@ -183,7 +183,7 @@ class HEEPCut_41_dEtaIn: HEEPCutBase{
 public:
   HEEPCut_41_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float thresholdBarrel_ ;
   float thresholdEndcap_ ;
@@ -192,7 +192,7 @@ class HEEPCut_41_HOverE: HEEPCutBase{
 public:
   HEEPCut_41_HOverE(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float thresholdBarrel_ ;
   float thresholdEndcap_ ;
@@ -203,7 +203,7 @@ class HEEPCut_50_50ns_dEtaIn: HEEPCutBase{
 public:
   HEEPCut_50_50ns_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float constantTermBarrel_ ;
   float linearTermBarrel_   ;
@@ -214,7 +214,7 @@ class HEEPCut_50_50ns_HOverE: HEEPCutBase{
 public:
   HEEPCut_50_50ns_HOverE(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float reciprocalTermBarrel_ ;
   float reciprocalTermEndcap_ ;
@@ -227,7 +227,7 @@ class HEEPCut_50_25ns_dEtaIn: HEEPCutBase{
 public:
   HEEPCut_50_25ns_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float constantTermBarrel_ ;
   float linearTermBarrel_   ;
@@ -240,7 +240,7 @@ class HEEPCut_50_25ns_HOverE: HEEPCutBase{
 public:
   HEEPCut_50_25ns_HOverE(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float reciprocalTermBarrel_ ;
   float reciprocalTermEndcap_ ;
@@ -252,7 +252,7 @@ class HEEPCut_50_dEtaIn: HEEPCutBase{
 public:
   HEEPCut_50_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float constantTermBarrel_ ;
   float linearTermBarrel_   ;
@@ -265,7 +265,7 @@ class HEEPCut_50_HOverE: HEEPCutBase{
 public:
   HEEPCut_50_HOverE(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float reciprocalTermBarrel_ ;
   float reciprocalTermEndcap_ ;
@@ -277,7 +277,7 @@ class HEEPCut_51_dEtaIn: HEEPCutBase{
 public:
   HEEPCut_51_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float thresholdBarrel_ ;
   float thresholdEndcap_ ;
@@ -286,7 +286,7 @@ class HEEPCut_51_HOverE: HEEPCutBase{
 public:
   HEEPCut_51_HOverE(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float reciprocalTermBarrel_ ;
   float reciprocalTermEndcap_ ;
@@ -298,7 +298,7 @@ class HEEPCut_60_dEtaIn: HEEPCutBase{
 public:
   HEEPCut_60_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float thresholdBarrel_ ;
   float thresholdEndcap_ ;
@@ -307,7 +307,7 @@ class HEEPCut_60_HOverE: HEEPCutBase{
 public:
   HEEPCut_60_HOverE(int, std::string, IIHEModuleHEEP*) ;
   void config(std::vector<HEEPParameter*> parameters_) ;
-  bool applyCut(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
+  bool applyCut(pat::Electron*, EcalClusterLazyTools, bool) ;
 private:
   float reciprocalTermBarrel_ ;
   float reciprocalTermEndcap_ ;
@@ -359,8 +359,8 @@ public:
   
   void addCut(HEEPCutBase*) ;
   void addCutCollection(HEEPCutCollection*) ;
-  bool applyCuts(reco::GsfElectron*, EcalClusterLazyTools, bool) ;
-  bool applyCuts(reco::GsfElectron*, EcalClusterLazyTools) ;
+  bool applyCuts(pat::Electron*, EcalClusterLazyTools, bool) ;
+  bool applyCuts(pat::Electron*, EcalClusterLazyTools) ;
   bool getStatus(){ return status_ ; }
   void makeCutflowHistogram() ;
   void config(std::vector<HEEPParameter*>) ;

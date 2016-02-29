@@ -16,26 +16,24 @@ int TriggerFilter::setIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm::I
   index_ = trigEvent->filterIndex(edm::InputTag(name_,"",trigEventTag.process())) ;
   return index_ ;
 }
-int TriggerFilter::setValues(edm::Handle<trigger::TriggerEvent> trigEvent, IIHEAnalysis* analysis){
+int TriggerFilter::setValues(const edm::Event& iEvent, edm::Handle<pat::TriggerObjectStandAloneCollection> trigEvent, edm::Handle<edm::TriggerResults> triggerBits, HLTConfigProvider hltConfig,IIHEAnalysis* analysis){
   etaValues_.clear() ;
   phiValues_.clear() ;
-  
-  if(index_<0) return 2 ;
-  if(index_<trigEvent->sizeFilters()){
-    const trigger::Keys& trigKeys = trigEvent->filterKeys(index_) ; 
-    const trigger::TriggerObjectCollection & trigObjColl(trigEvent->getObjects()) ;
-    
-    // Now loop over the trigger objects passing filter
-    for(trigger::Keys::const_iterator keyIt = trigKeys.begin(); keyIt!=trigKeys.end(); ++keyIt){ 
-      const trigger::TriggerObject& obj = trigObjColl[*keyIt] ;
-      analysis->store(etaBranchName_, obj.eta()) ;
-      analysis->store(phiBranchName_, obj.phi()) ;
-      etaValues_.push_back(obj.eta()) ;
-      phiValues_.push_back(obj.phi()) ;
+  const edm::TriggerNames &names = iEvent.triggerNames(*triggerBits);
+  for (pat::TriggerObjectStandAlone obj : *trigEvent) {
+    obj.unpackPathNames(names);
+    // loop over filters
+    for (size_t iF = 0; iF < obj.filterLabels().size(); ++iF) {
+      string label = obj.filterLabels()[iF]; 
+      if (name_==label){
+        analysis->store(etaBranchName_, obj.eta()) ;
+        analysis->store(phiBranchName_, obj.phi()) ;
+        etaValues_.push_back(obj.eta()) ;
+        phiValues_.push_back(obj.phi()) ;
+      }
     }
-    return 0 ;
   }
-  return 1 ;
+  return 0 ;
 }
 bool TriggerFilter::store(IIHEAnalysis* analysis){
   bool etaSuccess = analysis->store(etaBranchName_, etaValues_) ;
@@ -227,13 +225,13 @@ int HLTrigger::nSubstringInString(const std::string& str, const std::string& sub
   return count;
 }
 
-int HLTrigger::status(const edm::Event& iEvent, edm::EventSetup const& iSetup, HLTConfigProvider const& hltConfig, Handle<TriggerResults> const& triggerResults, edm::Handle<trigger::TriggerEvent> trigEvent, IIHEAnalysis* analysis){
+int HLTrigger::status(const edm::Event& iEvent, edm::EventSetup const& iSetup, HLTConfigProvider const& hltConfig, Handle<TriggerResults> const& triggerResults, edm::Handle<pat::TriggerObjectStandAloneCollection> trigEvent, edm::Handle<pat::PackedTriggerPrescales> prescale ,IIHEAnalysis* analysis){
   if(searchStatus_==searchedForAndFound && index_>=0){
     touched_  = true ;
     accept_   = triggerResults->accept(index_) ;
-    prescale_ = 1; //hltConfig.prescaleValue(iEvent, iSetup, name_) ;
+    prescale_ = prescale->getPrescaleForIndex(index_);
     for(unsigned i=0 ; i<filters_.size() ; ++i){
-      filters_.at(i)->setValues(trigEvent, analysis) ;
+      filters_.at(i)->setValues(iEvent,trigEvent,triggerResults,hltConfig, analysis) ;
     }
     return 0 ;
   }

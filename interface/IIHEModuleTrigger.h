@@ -36,7 +36,13 @@ private:
   edm::InputTag hlTriggerResultsTag_ ;
   std::vector<std::string> HLTNamesFromConfig_ ;
   std::vector<std::string> triggerNamesFromPSet_ ;
-  
+ 
+
+  edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
+  edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> triggerObjects_;
+  edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
+
+ 
   bool isSingleElectonTriggerName(std::string) ;
   bool isDoubleElectonTriggerName(std::string) ;
   bool isTripleElectonTriggerName(std::string) ;

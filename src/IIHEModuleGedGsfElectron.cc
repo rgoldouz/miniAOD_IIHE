@@ -69,7 +69,7 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_dr03HcalDepth2TowerSumEt") ;
   addBranch("gsf_charge", kVectorInt) ;
   addBranch("gsf_sigmaIetaIeta") ;
-  setBranchType(kVectorInt) ;
+  setBranchType(kVectorBool) ;
   addBranch("gsf_ecaldrivenSeed"   ) ;
   addBranch("gsf_trackerdrivenSeed") ;
   addBranch("gsf_isEB") ;

@@ -22,6 +22,10 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig, edm::Cons
   nWasRun_ = 0 ;
   nAccept_ = 0 ;
   nErrors_ = 0 ;
+
+  triggerBits_ = iC.consumes<edm::TriggerResults>(InputTag("TriggerResults","","HLT"));
+  triggerObjects_ = iC.consumes<pat::TriggerObjectStandAloneCollection>(InputTag("selectedPatTrigger"));
+  triggerPrescales_ = iC.consumes<pat::PackedTriggerPrescales>(InputTag("patTrigger"));
   
   std::string triggersIn = iConfig.getUntrackedParameter<std::string>("triggers" , "") ;
   triggerNamesFromPSet_ = splitString(triggersIn, ",") ;
@@ -75,19 +79,22 @@ int IIHEModuleTrigger::addBranches(){
 // ------------ method called to for each event  ------------
 void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   // Trigger information
-  edm::InputTag trigEventTag("hltTriggerSummaryAOD","","HLT") ;
-  edm::Handle<trigger::TriggerEvent> trigEvent ; 
-  iEvent.getByLabel(trigEventTag,trigEvent) ;
   
   // get hold of TriggerResults
   edm::Handle<TriggerResults> HLTR ;
-  iEvent.getByLabel(hlTriggerResultsTag_, HLTR) ;
-  
+  edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
+  edm::Handle<pat::PackedTriggerPrescales> triggerPrescales;
+
+  iEvent.getByToken(triggerBits_, HLTR) ;
+  iEvent.getByToken(triggerObjects_, triggerObjects);
+  iEvent.getByToken(triggerPrescales_, triggerPrescales);
+
+ 
   // Now fill the values
   IIHEAnalysis* analysis = parent_ ;
   for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
     HLTrigger* hlt = HLTriggers_.at(i) ;
-    hlt->status(iEvent, iSetup, hltConfig_, HLTR, trigEvent, analysis) ;
+    hlt->status(iEvent, iSetup, hltConfig_, HLTR, triggerObjects, triggerPrescales ,analysis) ;
     hlt->store(analysis) ;
   }
   nEvents_++ ;

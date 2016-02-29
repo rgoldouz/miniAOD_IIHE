@@ -67,7 +67,8 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
 
 //CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   reducedBarrelRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedBarrelRecHitCollection_) ;
-  reducedEndcapRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedEndcapRecHitCollection_) ; 
+  reducedEndcapRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedEndcapRecHitCollection_) ;
+  esReducedRecHitCollection_ = mayConsume<EcalRecHitCollection> (iConfig.getParameter<InputTag>("esReducedRecHitCollection"));  
 //CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START CMSSW_5_3_11
 CHOOSE_RELEASE_END CMSSW_5_3_11  */
@@ -323,7 +324,6 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
 //CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   iEvent.getByToken(beamSpotToken_, beamspotHandle_) ;
-std::cout<<"salam"<<std::endl;
 // CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START CMSSW_5_3_11
   iEvent.getByLabel(beamSpotLabel_, beamspotHandle_) ;
@@ -360,10 +360,10 @@ void IIHEAnalysis::beginEvent(){
 void IIHEAnalysis::endEvent(){
   for(unsigned int i=0 ; i<childModules_.size() ; ++i){ childModules_.at(i)->pubEndEvent() ; }
   for(unsigned int i=0 ; i<allVars_.size()      ; ++i){      allVars_.at(i)->endEvent()    ; }
-//  if(true==acceptEvent_ && false==rejectEvent_){
+  if(true==acceptEvent_ && false==rejectEvent_){
     dataTree_->Fill() ;
     nEventsStored_++ ;
-//  }
+  }
   nEvents_++ ;
 }
 

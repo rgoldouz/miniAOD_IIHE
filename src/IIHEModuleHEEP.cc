@@ -333,7 +333,7 @@ void IIHEModuleHEEP::beginJob(){
   addBranch("EBHits_iphi"    ) ;
   addBranch("EBHits_RecoFlag") ;
   
-  setBranchType(kVectorInt) ;
+  setBranchType(kVectorBool) ;
   addBranch("EBHits_kSaturated"           ) ;
   addBranch("EBHits_kLeadingEdgeRecovered") ;
   addBranch("EBHits_kNeighboursRecovered" ) ;
@@ -347,7 +347,7 @@ void IIHEModuleHEEP::beginJob(){
   addBranch("EEHits_iphi"    ) ;
   addBranch("EEHits_RecoFlag") ;
   
-  setBranchType(kVectorInt) ;
+  setBranchType(kVectorBool) ;
   addBranch("EEHits_kSaturated"           ) ;
   addBranch("EEHits_kLeadingEdgeRecovered") ;
   addBranch("EEHits_kNeighboursRecovered" ) ;
@@ -675,7 +675,7 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   CaloGeometry* geometry = (CaloGeometry*) pGeometry.product() ;
   const CaloSubdetectorGeometry* geometryES = geometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower) ;
   CaloSubdetectorTopology* topology_ES = (geometryES) ? new EcalPreshowerTopology(geometry) : 0 ;
-    
+//  EcalClusterLazyTools lazytool(iEvent, iSetup, parent_->getReducedBarrelRecHitCollectionToken(), parent_->getReducedEndcapRecHitCollectionToken(), parent_->getReducedESRecHitCollectionToken()) ;  
 /*CHOOSE_RELEASE_START DEFAULT
     EcalClusterLazyTools lazytool(iEvent, iSetup, parent_->getReducedBarrelRecHitCollectionToken(), parent_->getReducedEndcapRecHitCollectionToken(), parent_->getReducedESRecHitCollectionToken()) ;
 CHOOSE_RELEASE_END DEFAULT*/
@@ -690,7 +690,7 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
 //  for(reco::GsfElectronCollection::const_iterator gsfiter = electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
   pat::ElectronCollection electrons = parent_->getElectronCollection() ;
   for(vector<pat::Electron>::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
-    reco::GsfElectron* gsf = (reco::GsfElectron*) &*gsfiter ;
+    pat::Electron* gsf = (pat::Electron*) &*gsfiter ;
     
     float ET = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
     if(ET<ETThreshold_ && gsfiter->pt()<ETThreshold_) continue ;
@@ -735,9 +735,11 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     
     Handle<EcalRecHitCollection> ecal_EB ;
     Handle<EcalRecHitCollection> ecal_EE ;
-    iEvent.getByToken(parent_->getReducedBarrelRecHitCollectionToken(), ecal_EB) ;
-    iEvent.getByToken(parent_->getReducedEndcapRecHitCollectionToken(), ecal_EE) ;
-    
+//    iEvent.getByToken(parent_->getReducedBarrelRecHitCollectionToken(), ecal_EB) ;
+//    iEvent.getByToken(parent_->getReducedEndcapRecHitCollectionToken(), ecal_EE) ;
+    iEvent.getByToken(ebReducedRecHitCollection_, ecal_EB) ;
+    iEvent.getByToken(eeReducedRecHitCollection_, ecal_EE) ; 
+   
     const EcalRecHitCollection *EB_hits = ecal_EB.product() ;
     int nEBRecHits = 0 ;
     for(EcalRecHitCollection::const_iterator EBIt = EB_hits->begin() ; EBIt!=EB_hits->end() ; ++EBIt){
