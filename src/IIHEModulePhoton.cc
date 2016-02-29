@@ -21,8 +21,8 @@ void IIHEModulePhoton::beginJob(){
   
   setBranchType(kVectorFloat) ;
   addBranch("ph_px") ;
-  addBranch("ph_px") ;
-  addBranch("ph_px") ;
+  addBranch("ph_py") ;
+  addBranch("ph_pz") ;
   addBranch("ph_pt") ;
   addBranch("ph_eta") ;
   addBranch("ph_theta") ;
@@ -141,8 +141,8 @@ void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 //  for(pat::PhotonCollection::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){
   for(vector<pat::Photon>::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){
     store("ph_px"    , phiter->px()) ;
-    store("ph_px"    , phiter->py()) ;
-    store("ph_px"    , phiter->pz()) ;
+    store("ph_py"    , phiter->py()) ;
+    store("ph_pz"    , phiter->pz()) ;
     store("ph_pt"    , phiter->pt()) ;
     store("ph_eta"   , phiter->eta()) ;
     store("ph_theta" , phiter->theta()) ;

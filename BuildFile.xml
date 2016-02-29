@@ -24,6 +24,7 @@
 <use   name="DataFormats/EgammaReco"/>
 <use   name="DataFormats/EgammaCandidates"/>
 <use   name="DataFormats/HepMCCandidate"/>
+<use   name="DataFormats/Math"/>
 <use   name="SimDataFormats/GeneratorProducts"/>
 <use   name="SimG4Core/Generators"/>
 <use   name="Geometry/CommonDetUnit"/>

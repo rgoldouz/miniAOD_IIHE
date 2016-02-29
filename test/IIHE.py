@@ -64,7 +64,7 @@ process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
 
 process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound') )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200) )
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
@@ -122,6 +122,8 @@ process.IIHEAnalysis.esReducedRecHitCollection = cms.InputTag("reducedEgamma", "
 process.IIHEAnalysis.generatorLabel = cms.InputTag("generator")
 process.IIHEAnalysis.PileUpSummaryInfo = cms.untracked.InputTag('slimmedAddPileupInfo')
 process.IIHEAnalysis.genParticleSrc = cms.InputTag("prunedGenParticles")
+process.IIHEAnalysis.pfCands = cms.InputTag("packedPFCandidates")
+
 
 # Trigger matching stuff.  0.5 should be sufficient.
 process.IIHEAnalysis.muon_triggerDeltaRThreshold = cms.untracked.double(0.5)
@@ -175,7 +177,7 @@ process.IIHEAnalysis.includeMCTruthModule         = cms.untracked.bool(('mc' in 
 #change it to true if you want to save all events
 process.IIHEAnalysis.includeAutoAcceptEventModule= cms.untracked.bool(False)
 
-process.IIHEAnalysis.debug = cms.bool(False)
+process.IIHEAnalysis.debug = cms.bool(True)
 
 ##########################################################################################
 #                            Woohoo!  We're ready to start!                              #

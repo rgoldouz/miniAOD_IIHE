@@ -16,11 +16,11 @@ IIHEModuleTracks::~IIHEModuleTracks(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleTracks::beginJob(){
-  addBranch("trk_n", kUInt) ;
-  setBranchType(kVectorFloat) ;
-  addBranch("trk_pt") ;
-  addBranch("trk_eta") ;
-  addBranch("trk_phi") ;
+//  addBranch("trk_n", kUInt) ;
+//  setBranchType(kVectorFloat) ;
+//  addBranch("trk_pt") ;
+//  addBranch("trk_eta") ;
+//  addBranch("trk_phi") ;
 }
 
 // ------------ method called to for each event  ------------
