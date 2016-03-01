@@ -29,7 +29,7 @@ void IIHEModuleVertex::beginJob(){
   addBranch("pv_normalizedChi2", kVectorFloat) ;
   addBranch("pv_ndof", kVectorFloat) ;
 
-  setBranchType(kVectorUInt) ;
+  setBranchType(kVectorInt) ;
   addBranch("pf_pdgId") ;
   addBranch("pf_fromPV") ;
   setBranchType(kVectorFloat) ;
@@ -64,41 +64,44 @@ void IIHEModuleVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   edm::Handle<pat::ElectronCollection> electrons;
   iEvent.getByToken(electronToken_, electrons);
 
-  bool isgoodtosave = false;
   std::vector<math::XYZTLorentzVector> elp4s;
   for (const pat::Electron &el : *electrons) {
     elp4s.push_back(el.p4());
   }
 
+  bool isGoodToSave = false;
+  bool escape = false ;
   for(unsigned int i1=0 ; i1<elp4s.size() ; ++i1){
+    if (escape) break;
     for(unsigned int i2=i1+1 ; i2<elp4s.size() ; ++i2){
       math::XYZTLorentzVector Zeep4 = elp4s .at(i1) + elp4s .at(i2) ;
       float mZee = Zeep4.M() ;
-      if (mZee>500) isgoodtosave=true;
+      if (mZee>500) {
+        isGoodToSave = true;
+        escape = true;
+        break;
+      }
     }
   }
 
   
     
   //for more info please look at the https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#Packed_ParticleFlow_Candidates
-  edm::Handle<pat::PackedCandidateCollection> pfs;
-  iEvent.getByToken(pfToken_, pfs);
-
-  if (isgoodtosave){
+  if (isGoodToSave){
+    edm::Handle<pat::PackedCandidateCollection> pfs;
+    iEvent.getByToken(pfToken_, pfs);
     for (unsigned int i = 0, n = pfs->size(); i < n; ++i) {
       const pat::PackedCandidate &pf = (*pfs)[i];
-      if (pf.fromPV() >= 2) {
-         store("pf_pdgId"          ,pf.pdgId());
-         store("pf_fromPV"         ,pf.fromPV());
-         store("pf_px"             ,pf.px());
-         store("pf_py"             ,pf.py());
-         store("pf_pz"             ,pf.pz());
-         store("pf_mass"           ,pf.mass());
-         store("pf_dz"             ,pf.dz());
-      }
+      if (pf.fromPV() <= 2) continue;
+      store("pf_pdgId"          ,pf.pdgId());
+      store("pf_fromPV"         ,pf.fromPV());
+      store("pf_px"             ,pf.px());
+      store("pf_py"             ,pf.py());
+      store("pf_pz"             ,pf.pz());
+      store("pf_mass"           ,pf.mass());
+      store("pf_dz"             ,pf.dz());
     }
   }
-
 }
 
 void IIHEModuleVertex::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

@@ -3,7 +3,7 @@
 #root://eoscms//cms/store/mc/RunIIFall15MiniAODv2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/00000/F8D2CEAA-C5D1-E511-9895-001E675A6C2A.root
 
 # In order to run the code for DATA
-#[cmsRun IIHE.py DataProcessing='mc' dataset='RunIIFall15MiniAODv2' sample='TT_TuneCUETP8M1_13TeV-powheg-pythia8' address='MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/00000' file='F8D2CEAA-C5D1-E511-9895-001E675A6C2A.root'  ]
+#[cmsRun IIHE.py DataProcessing='data' dataset='Run2015D' sample='SingleElectron' address='MINIAOD/16Dec2015-v1/20000' file='001E76A5-D3A6-E511-BC32-008CFA05E874.root'  ]
 #root://eoscms//cms/store/data/Run2015D/DoubleEG/MINIAOD/16Dec2015-v2/00000/F6E918C9-87A6-E511-B3D3-0CC47A4D76B2.root
 
 import sys
@@ -29,7 +29,7 @@ options.register('file',
                  opts.VarParsing.varType.string,
                  'file to analyze')
 options.register('DataProcessing',
-                 "mc",
+                 "data",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Data processing types. Options are:mc,data')
@@ -64,7 +64,7 @@ process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
 
 process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound') )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
@@ -76,7 +76,7 @@ if options.DataProcessing == "mc":
   path = 'root://eoscms//eos/cms/store/'+ options.DataProcessing + '/' + options.dataset  + '/' + options.sample + '/' + options.address + '/' + options.file
 
 if options.DataProcessing == "data":
-  path = 'root://eoscms//cms/eos/store/'+ options.DataProcessing + '/' + options.sample + '/' + options.address + '/' + options.file
+  path = 'root://eoscms//eos/cms/store/'+ options.DataProcessing + '/' + options.dataset  + '/' + options.sample + '/' + options.address + '/' + options.file
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring())
@@ -112,7 +112,7 @@ process.IIHEAnalysis.photonCollection    = cms.InputTag('slimmedPhotons'        
 process.IIHEAnalysis.electronCollection  = cms.InputTag('slimmedElectrons')
 process.IIHEAnalysis.muonCollection      = cms.InputTag('slimmedMuons'          )
 process.IIHEAnalysis.METCollection      = cms.InputTag('slimmedMETs'          )
-process.IIHEAnalysis.superClusterCollection = cms.InputTag('reducedEgamma', 'reducedSuperClusters','PAT')
+process.IIHEAnalysis.superClusterCollection = cms.InputTag('reducedEgamma', 'reducedSuperClusters')
 process.IIHEAnalysis.reducedBarrelRecHitCollection = cms.InputTag('reducedEcalRecHitsEB')
 process.IIHEAnalysis.reducedEndcapRecHitCollection = cms.InputTag('reducedEcalRecHitsEE')
 process.IIHEAnalysis.eventRho = cms.InputTag('fixedGridRhoFastjetAll')
@@ -170,14 +170,14 @@ process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeHEEPModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(True)
-process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(True)
+process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(False)
 
 
 process.IIHEAnalysis.includeMCTruthModule         = cms.untracked.bool(('mc' in options.DataProcessing))
 #change it to true if you want to save all events
 process.IIHEAnalysis.includeAutoAcceptEventModule= cms.untracked.bool(False)
 
-process.IIHEAnalysis.debug = cms.bool(True)
+process.IIHEAnalysis.debug = cms.bool(False)
 
 ##########################################################################################
 #                            Woohoo!  We're ready to start!                              #
