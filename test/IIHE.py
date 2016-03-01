@@ -1,8 +1,8 @@
-# In order to run the code for MC
+# In order to run the code for MC on lxplus
 #[cmsRun IIHE.py DataProcessing='mc' dataset='RunIIFall15MiniAODv2' sample='TT_TuneCUETP8M1_13TeV-powheg-pythia8' address='MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/00000' file='F8D2CEAA-C5D1-E511-9895-001E675A6C2A.root'  ]
 #root://eoscms//cms/store/mc/RunIIFall15MiniAODv2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/00000/F8D2CEAA-C5D1-E511-9895-001E675A6C2A.root
 
-# In order to run the code for DATA
+# In order to run the code for DATA on lxplus
 #[cmsRun IIHE.py DataProcessing='data' dataset='Run2015D' sample='SingleElectron' address='MINIAOD/16Dec2015-v1/20000' file='001E76A5-D3A6-E511-BC32-008CFA05E874.root'  ]
 #root://eoscms//cms/store/data/Run2015D/DoubleEG/MINIAOD/16Dec2015-v2/00000/F6E918C9-87A6-E511-B3D3-0CC47A4D76B2.root
 
@@ -14,7 +14,7 @@ import os
 
 options = opts.VarParsing ('analysis')
 options.register('sample',
-                 'ZToEE_NNPDF30_13TeV-powheg_M_2300_3500', 
+                 '', 
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -24,7 +24,7 @@ options.register('address',
                  opts.VarParsing.varType.string,
                  'address of sample in eos like: MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/00000')
 options.register('file',
-                 'abcd.root',
+                 '',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'file to analyze')
@@ -34,7 +34,7 @@ options.register('DataProcessing',
                  opts.VarParsing.varType.string,
                  'Data processing types. Options are:mc,data')
 options.register('dataset',
-                 "SingleElectron",
+                 "",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'datasets to analyze: SingleElectron, DoubleEG')
@@ -86,9 +86,12 @@ process.source.fileNames.append( path )
 #'file:/pnfs/iihe/cms/store/user/rgoldouz/ZToEE_NNPDF30_13TeV-powheg_M_2300_3500/C84500E1-6BB8-E511-A9D6-002590E505FE.root'
 #])
 
-filename_out = "output_%s" % (options.sample + '_' + options.file)
-process.out = cms.OutputModule("PoolOutputModule", fileName = cms.untracked.string('file:/tmp/' + filename_out) )
-process.TFileService = cms.Service("TFileService", fileName = cms.string(        'file:/tmp/' +  filename_out) )
+if options.DataProcessing == "mc":
+  filename_out = "file:/tmp/output_%s" % (options.sample + '_' + options.file)
+if options.DataProcessing == "data":
+  filename_out = "output_"
+process.out = cms.OutputModule("PoolOutputModule", fileName = cms.untracked.string(filename_out) )
+process.TFileService = cms.Service("TFileService", fileName = cms.string(filename_out) )
 
 ##########################################################################################
 #                                   IIHETree options                                     #
