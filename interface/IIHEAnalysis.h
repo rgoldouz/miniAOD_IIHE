@@ -88,7 +88,7 @@ public:
   void listBranches() ;
   
   bool addValueToMetaTree(std::string, float) ;
-  
+  bool addFVValueToMetaTree(std::string, std::vector<float>) ; 
   // MC truth
   void addToMCTruthWhitelist(std::vector<int>) ;
   std::vector<int> getMCTruthWhitelist(){ return MCTruthWhitelist_ ; }
@@ -224,7 +224,8 @@ private:
   // This variable is used to reject an event early on.  This prevents the analyser
   // running over the rest of the modules if it's not going to save the event anyway.
   bool rejectEvent_ ;
-  
+ 
+  std::vector<float> nRuns_; 
   int nEvents_ ;
   int nEventsStored_ ;
   

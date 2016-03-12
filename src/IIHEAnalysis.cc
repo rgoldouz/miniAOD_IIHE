@@ -144,6 +144,15 @@ bool IIHEAnalysis::addValueToMetaTree(std::string parName, float value){
   return true ;
 }
 
+bool IIHEAnalysis::addFVValueToMetaTree(std::string parName, std::vector<float> value){
+  BranchWrapperFV* bw = new BranchWrapperFV(parName) ;
+  for (unsigned int i=0 ; i<value.size() ; ++i){
+    bw->push(value[i]);
+  }
+  bw->config(metaTree_) ;
+  return true ;
+}
+
 bool IIHEAnalysis::branchExists(std::string name){
   for(unsigned int i=0 ; i<allVars_.size() ; ++i){
     if(allVars_.at(i)->name()==name) return true ;
@@ -347,7 +356,8 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
 }
 
 void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
-  for(unsigned i=0 ; i<childModules_.size() ; ++i){
+  nRuns_.push_back(iRun.run());
+  for(unsigned int i=0 ; i<childModules_.size() ; ++i){
     childModules_.at(i)->pubBeginRun(iRun, iSetup) ;
   }
 }
@@ -386,6 +396,7 @@ void IIHEAnalysis::endJob(){
   
   addValueToMetaTree("nEventsRaw"   , nEvents_      ) ;
   addValueToMetaTree("nEventsStored", nEventsStored_) ;
+  addFVValueToMetaTree("nRuns", nRuns_) ;
   metaTree_->Fill() ;
   
   std::cout << "There were " << nEvents_ << " total events of which " << nEventsStored_ << " were stored to file." << std::endl ;

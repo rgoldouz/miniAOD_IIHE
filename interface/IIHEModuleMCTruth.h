@@ -49,5 +49,6 @@ private:
   edm::EDGetTokenT<GenEventInfoProduct> generatorLabel_;
   edm::EDGetTokenT<vector<PileupSummaryInfo> > puCollection_;
   edm::EDGetTokenT<vector<reco::GenParticle> > genParticlesCollection_;
+  float nEventsWeighted_ ;
 };
 #endif

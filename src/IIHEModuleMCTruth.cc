@@ -22,8 +22,15 @@ IIHEModuleMCTruth::~IIHEModuleMCTruth(){}
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleMCTruth::beginJob(){
   addBranch("mc_n", kUInt) ;
-  addBranch("mc_pdfvariables_weight", kFloat) ;
-  addBranch("mc_w", kFloat) ;
+  addBranch("mc_weight", kFloat) ;
+  addBranch("mc_w_sign", kFloat) ;
+  addBranch("mc_id_first", kInt) ;
+  addBranch("mc_id_second", kInt) ;
+  addBranch("mc_x_first", kFloat) ;
+  addBranch("mc_x_second", kFloat) ;
+  addBranch("mc_xPDF_first", kFloat) ;
+  addBranch("mc_xPDF_second", kFloat) ;
+  addBranch("mc_scalePDF", kFloat) ;
   setBranchType(kVectorInt) ;
   addBranch("mc_index") ;
   addBranch("mc_pdgId") ;
@@ -61,16 +68,28 @@ void IIHEModuleMCTruth::beginJob(){
   addValueToMetaTree("MCTruth_ptThreshold"           , pt_threshold_          ) ;
   addValueToMetaTree("MCTruth_mThreshold"            , m_threshold_           ) ;
   addValueToMetaTree("MCTruth_DeltaROverlapThreshold", DeltaROverlapThreshold_) ;
+
+  nEventsWeighted_ = 0.0 ;
 }
 
 // ------------ method called to for each event  ------------
 void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  edm::Handle<GenEventInfoProduct> pdfvariables ;
-  iEvent.getByToken(generatorLabel_, pdfvariables);
-  float weight = pdfvariables->weight() ;
-  store("mc_pdfvariables_weight", weight) ;
-  store("mc_w"                  , weight) ;
-  
+  edm::Handle<GenEventInfoProduct> genEventInfoHandle;
+  iEvent.getByToken(generatorLabel_, genEventInfoHandle);
+  float weight = genEventInfoHandle->weight() ;
+  float w_sign = (weight>=0) ? 1 : -1 ;
+  store("mc_weight"                  ,weight);
+  store("mc_w_sign"             , w_sign) ;
+  nEventsWeighted_ += w_sign ;
+
+  store("mc_id_first" , genEventInfoHandle->pdf()->id.first);    // PDG ID of incoming parton #1
+  store("mc_id_second" , genEventInfoHandle->pdf()->id.second);   // PDG ID of incoming parton #2
+  store("mc_x_first", genEventInfoHandle->pdf()->x.first);     // x value of parton #1
+  store("mc_x_second" , genEventInfoHandle->pdf()->x.second);    // x value of parton #2
+  store("mc_xPDF_first" , genEventInfoHandle->pdf()->xPDF.first);  // PDF weight for parton #1
+  store("mc_xPDF_second" , genEventInfoHandle->pdf()->xPDF.second); // PDF weight for parton #2
+  store("mc_scalePDF" , genEventInfoHandle->pdf()->scalePDF);    // scale of the hard interaction
+   
   // Fill pile-up related informations
   // --------------------------------
   edm::Handle<std::vector< PileupSummaryInfo > >  puInfo ;
@@ -251,6 +270,8 @@ void IIHEModuleMCTruth::endEvent(){}
 
 
 // ------------ method called once each job just after ending the event loop  ------------
-void IIHEModuleMCTruth::endJob(){}
+void IIHEModuleMCTruth::endJob(){
+  addValueToMetaTree("mc_nEventsWeighted", nEventsWeighted_) ;
+}
 
 DEFINE_FWK_MODULE(IIHEModuleMCTruth);

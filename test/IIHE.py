@@ -89,7 +89,7 @@ process.source.fileNames.append( path )
 if options.DataProcessing == "mc":
   filename_out = "file:/tmp/output_%s" % (options.sample + '_' + options.file)
 if options.DataProcessing == "data":
-  filename_out = "output_"
+  filename_out = "outfile.root"
 process.out = cms.OutputModule("PoolOutputModule", fileName = cms.untracked.string(filename_out) )
 process.TFileService = cms.Service("TFileService", fileName = cms.string(filename_out) )
 
@@ -97,6 +97,10 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string(filenam
 #                                   IIHETree options                                     #
 ##########################################################################################
 process.load("UserCode.IIHETree.IIHETree_cfi")
+# Set pt or mass thresholds for the truth module here
+# Setting thresholds reduces the size of the output files significantly
+process.IIHEAnalysis.MCTruth_ptThreshold = cms.untracked.double(10.0)
+process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
 
 pt_threshold = 15
 
