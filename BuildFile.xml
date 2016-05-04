@@ -12,6 +12,7 @@
 <use   name="clhep"/>
 <use   name="MagneticField/Engine"/>
 <use   name="DataFormats/DetId"/>
+<use   name="DataFormats/EcalDetId"/>
 <use   name="DataFormats/TrackCandidate"/>
 <use   name="DataFormats/TrackerRecHit2D"/>
 <use   name="DataFormats/TrackingRecHit"/>
@@ -44,6 +45,7 @@
 <use   name="RecoEcal/EgammaCoreTools"/>
 <use   name="RecoEgamma/EgammaIsolationAlgos"/>
 <use   name="RecoEgamma/EgammaElectronAlgos"/>
+<use   name="RecoEcal/EgammaCoreTools"/>
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="PhysicsTools/IsolationAlgos"/>
 <use   name="DataFormats/Common"/>

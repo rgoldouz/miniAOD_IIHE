@@ -11,20 +11,24 @@
 #include "DataFormats/TrackReco/interface/HitPattern.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
-
+#include "DataFormats/EgammaReco/interface/SuperCluster.h"
+#include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
+#include "DataFormats/EgammaReco/interface/BasicCluster.h"
+#include "DataFormats/EgammaReco/interface/BasicClusterFwd.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
 #include "Geometry/CaloTopology/interface/EcalPreshowerTopology.h"
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
 #include "Geometry/Records/interface/CaloTopologyRecord.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
-
+#include "RecoEcal/EgammaCoreTools/interface/EcalTools.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
 #include "FWCore/Common/interface/TriggerNames.h"
-
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include <iostream>
 #include <TMath.h>
 #include <vector>
@@ -34,6 +38,8 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleGedGsfElectron::IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
+  ebReducedRecHitCollection_ = iC.consumes<EcalRecHitCollection> (iConfig.getParameter<InputTag>("ebReducedRecHitCollection"));
+  eeReducedRecHitCollection_ = iC.consumes<EcalRecHitCollection> (iConfig.getParameter<InputTag>("eeReducedRecHitCollection"));
   ETThreshold_ = iConfig.getUntrackedParameter<double>("electrons_ETThreshold", 0.0 ) ;
 }
 IIHEModuleGedGsfElectron::~IIHEModuleGedGsfElectron(){}
@@ -102,9 +108,11 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_e2x5Max") ;
   addBranch("gsf_e5x5") ;
   addBranch("gsf_r9") ;
+  addBranch("gsf_deltaPhiSeedClusterTrackAtCalo") ;
+  addBranch("gsf_deltaEtaSeedClusterTrackAtCalo") ;
+  addBranch("gsf_deltaEtaSeedClusterTrackAtVtx") ;
   addBranch("gsf_hitsinfo", kVectorVectorInt) ;
-  
-//CHOOSE_RELEASE_START CMSSW_7_4_4 CMSSW_7_6_3
+
   setBranchType(kVectorFloat) ;
   addBranch("gsf_pixelMatch_dPhi1") ;
   addBranch("gsf_pixelMatch_dPhi2") ;
@@ -113,23 +121,87 @@ void IIHEModuleGedGsfElectron::beginJob(){
   setBranchType(kVectorInt) ;
   addBranch("gsf_pixelMatch_subDetector1") ;
   addBranch("gsf_pixelMatch_subDetector2") ;
-//CHOOSE_RELEASE_END CMSSW_7_4_4 CMSSW_7_6_3
-/*CHOOSE_RELEASE_START CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
-CHOOSE_RELEASE_END CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
   
   addBranch("gsf_mc_bestDR", kVectorFloat) ;
   addBranch("gsf_mc_index" , kVectorInt  ) ;
   addBranch("gsf_mc_ERatio", kVectorFloat) ;
+
+  setBranchType(kVectorFloat) ;
+  addBranch("gsf_sc_energy") ;
+  addBranch("gsf_sc_eta") ;
+  addBranch("gsf_sc_etacorr") ;
+  addBranch("gsf_sc_theta") ;
+  addBranch("gsf_sc_thetacorr") ;
+  addBranch("gsf_sc_et") ;
+  addBranch("gsf_sc_phi") ;
+  addBranch("gsf_sc_px") ;
+  addBranch("gsf_sc_py") ;
+  addBranch("gsf_sc_pz") ;
+  addBranch("gsf_sc_x") ;
+  addBranch("gsf_sc_y") ;
+  addBranch("gsf_sc_z") ;
+  addBranch("gsf_sc_phiWidth") ;
+  addBranch("gsf_sc_etaWidth") ;
+  addBranch("gsf_sc_seed_rawId", kVectorInt) ;
+  addBranch("gsf_sc_seed_ieta", kVectorInt) ;
+  addBranch("gsf_sc_seed_iphi", kVectorInt) ;
+
+  setBranchType(kVectorFloat) ;
+  addBranch("gsf_swissCross") ;
+  addBranch("gsf_sc_rawEnergy") ;
+  addBranch("gsf_sc_preshowerEnergy") ;
+  addBranch("gsf_sc_lazyTools_e2x5Right") ;
+  addBranch("gsf_sc_lazyTools_e2x5Left") ;
+  addBranch("gsf_sc_lazyTools_e2x5Top") ;
+  addBranch("gsf_sc_lazyTools_e2x5Bottom") ;
+  addBranch("gsf_sc_lazyTools_eMax") ;
+  addBranch("gsf_sc_lazyTools_e2nd") ;
+  addBranch("gsf_sc_lazyTools_eRight") ;
+  addBranch("gsf_sc_lazyTools_eLeft") ;
+  addBranch("gsf_sc_lazyTools_eTop") ;
+  addBranch("gsf_sc_lazyTools_eBottom") ;
+  addBranch("gsf_sc_lazyTools_e2x2") ;
+  addBranch("gsf_sc_lazyTools_e3x3") ;
+  addBranch("gsf_sc_lazyTools_e4x4") ;
+  addBranch("gsf_sc_lazyTools_e5x5") ;
+  addBranch("gsf_sc_lazyTools_e1x3") ;
+  addBranch("gsf_sc_lazyTools_e3x1") ;
+  addBranch("gsf_sc_lazyTools_e1x5") ;
+  addBranch("gsf_sc_lazyTools_e5x1") ;
+  addBranch("gsf_sc_lazyTools_eshitsixix") ;
+  addBranch("gsf_sc_lazyTools_eshitsiyiy") ;
+  addBranch("gsf_sc_lazyTools_eseffsixix") ;
+  addBranch("gsf_sc_lazyTools_eseffsiyiy") ;
+  addBranch("gsf_sc_lazyTools_eseffsirir") ;
+  addBranch("gsf_sc_lazyTools_BasicClusterSeedTime") ;
+
 }
 
 // ------------ method called to for each event  ------------
 void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   // Delegate default electron collection name to IIHEAnalysis class
   pat::ElectronCollection electrons = parent_->getElectronCollection() ;
+ 
+  Handle<EcalRecHitCollection> EBHits;
+  Handle<EcalRecHitCollection> EEHits;
+  iEvent.getByToken(ebReducedRecHitCollection_, EBHits) ;
+  iEvent.getByToken(eeReducedRecHitCollection_, EEHits) ;
+
+  const EcalRecHitCollection* theBarrelEcalRecHits = EBHits.product () ;
+  const EcalRecHitCollection* theEndcapEcalRecHits = EEHits.product () ;
+
+  edm::ESHandle<CaloGeometry> pGeometry ;
+  iSetup.get<CaloGeometryRecord>().get(pGeometry) ;
+  CaloGeometry* geometry = (CaloGeometry*) pGeometry.product() ;
+  const CaloSubdetectorGeometry* geometryES = geometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower) ;
+  CaloSubdetectorTopology* topology_ES = (geometryES) ? new EcalPreshowerTopology(geometry) : 0 ;
+
   
   math::XYZPoint* beamspot     = parent_->getBeamspot() ;
   math::XYZPoint* firstpvertex = parent_->getFirstPrimaryVertex() ;
-  
+  float pv_z = firstpvertex->z() ; 
+  EcalClusterLazyTools lazytool(iEvent, iSetup, parent_->getReducedBarrelRecHitCollectionToken(), parent_->getReducedEndcapRecHitCollectionToken(), parent_->getReducedESRecHitCollectionToken()) ;
+ 
   unsigned int gsf_n = 0 ;
   for(vector<pat::Electron>::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
     
@@ -204,7 +276,82 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     store("gsf_r9"                            , gsfiter->r9()                            ) ;
     store("gsf_e2x5Max"                       , gsfiter->e2x5Max()                       ) ;
     store("gsf_e5x5"                          , gsfiter->e5x5()                          ) ;
-    
+    store("gsf_deltaPhiSeedClusterTrackAtCalo", gsfiter->deltaPhiSeedClusterTrackAtCalo()) ;
+    store("gsf_deltaEtaSeedClusterTrackAtCalo", gsfiter->deltaEtaSeedClusterTrackAtCalo()) ;
+    store("gsf_deltaEtaSeedClusterTrackAtVtx" , gsfiter->deltaEtaSeedClusterTrackAtVtx() ) ;
+
+    float sc_energy = gsfiter->superCluster()->rawEnergy()+gsfiter->superCluster()->preshowerEnergy() ;
+    float sc_et     = sc_energy/cosh(gsfiter->superCluster()->eta()) ;
+    float etaCorr = etacorr( gsfiter->superCluster()->eta(), pv_z, gsfiter->superCluster()->position().z()) ;
+
+    store("gsf_sc_eta"        , gsfiter->superCluster()->eta()                    ) ;
+    store("gsf_sc_etacorr"    , etaCorr                                           ) ;
+    store("gsf_sc_theta"      , 2.*atan(exp(-1.*gsfiter->superCluster()->eta()))  ) ;
+    store("gsf_sc_thetacorr"  , 2.*atan(exp(-1.*etaCorr))                         ) ;
+    store("gsf_sc_phi"        , gsfiter->superCluster()->phi()                    ) ;
+    store("gsf_sc_energy"     , sc_energy                                         ) ;
+    store("gsf_sc_et"         , sc_et                                             ) ;
+    store("gsf_sc_px"         , sc_et*cos(gsfiter->superCluster()->phi())         ) ;
+    store("gsf_sc_py"         , sc_et*sin(gsfiter->superCluster()->phi())         ) ;
+    store("gsf_sc_pz"         , sc_energy*tanh(gsfiter->superCluster()->eta())    ) ;
+    store("gsf_sc_x"          , gsfiter->superCluster()->position().x()           ) ;
+    store("gsf_sc_y"          , gsfiter->superCluster()->position().y()           ) ;
+    store("gsf_sc_z"          , gsfiter->superCluster()->position().z()           ) ;
+    store("gsf_sc_phiWidth"   , gsfiter->superCluster()->phiWidth()               ) ;
+    store("gsf_sc_etaWidth"   , gsfiter->superCluster()->etaWidth()               ) ;
+
+    store("gsf_sc_seed_rawId" , gsfiter->superCluster()->seed()->seed().rawId()   );
+
+    const std::vector<std::pair<DetId,float> > & hits= gsfiter->superCluster()->hitsAndFractions();
+    if (gsfiter->isEB()){
+      EBDetId EBscID = EBDetId(gsfiter->superCluster()->seed()->seed().rawId());
+      store("gsf_sc_seed_ieta" , EBscID.ieta()   );
+      store("gsf_sc_seed_iphi" , EBscID.iphi()   );
+      std::pair<DetId, float> id = EcalClusterTools::getMaximum(hits, theBarrelEcalRecHits); 
+      store("gsf_swissCross"  , EcalTools::swissCross(id.first,*theBarrelEcalRecHits,0.));
+    }
+    else if (gsfiter->isEE()){
+      EEDetId EEscID = EEDetId(gsfiter->superCluster()->seed()->seed().rawId());
+      store("gsf_sc_seed_ieta" , EEscID.iy()   );
+      store("gsf_sc_seed_iphi" , EEscID.ix()   );
+      std::pair<DetId, float> id = EcalClusterTools::getMaximum(hits, theEndcapEcalRecHits); 
+      store("gsf_swissCross"  , EcalTools::swissCross(id.first,*theEndcapEcalRecHits,0.));
+    }
+
+    store("gsf_sc_rawEnergy"          , gsfiter->superCluster()->rawEnergy()      ) ;
+    store("gsf_sc_preshowerEnergy"          , gsfiter->superCluster()->preshowerEnergy()) ;
+
+    reco::SuperClusterRef    cl_ref = gsfiter->superCluster() ;
+    const reco::CaloClusterPtr seed = gsfiter->superCluster()->seed() ;
+
+    store("gsf_sc_lazyTools_e2x5Right"   , lazytool.e2x5Right (*seed)            );
+    store("gsf_sc_lazyTools_e2x5Left"    , lazytool.e2x5Left (*seed)             );
+    store("gsf_sc_lazyTools_e2x5Top"     , lazytool.e2x5Top (*seed)              );
+    store("gsf_sc_lazyTools_e2x5Bottom"  , lazytool.e2x5Bottom (*seed)           );
+    store("gsf_sc_lazyTools_eMax"        , lazytool.eMax (*seed)                 );
+    store("gsf_sc_lazyTools_e2nd"        , lazytool.e2nd (*seed)                 );
+    store("gsf_sc_lazyTools_eRight"      , lazytool.eRight (*seed)               );
+    store("gsf_sc_lazyTools_eLeft"       , lazytool.eLeft (*seed)                );
+    store("gsf_sc_lazyTools_eTop"        , lazytool.eTop (*seed)                 );
+    store("gsf_sc_lazyTools_eBottom"     , lazytool.eBottom (*seed)              );
+    store("gsf_sc_lazyTools_e2x2"        , lazytool.e2x2 (*seed)                 );
+    store("gsf_sc_lazyTools_e3x3"        , lazytool.e3x3 (*seed)                 );
+    store("gsf_sc_lazyTools_e4x4"        , lazytool.e4x4 (*seed)                 );
+    store("gsf_sc_lazyTools_e5x5"        , lazytool.e5x5 (*seed)                 );
+    store("gsf_sc_lazyTools_e1x5"        , lazytool.e1x5 (*seed)                 );
+    store("gsf_sc_lazyTools_e5x1"        , lazytool.e5x1 (*seed)                 );
+    store("gsf_sc_lazyTools_e1x3"        , lazytool.e1x3 (*seed)                 );
+    store("gsf_sc_lazyTools_e3x1"        , lazytool.e3x1 (*seed)                 );
+    store("gsf_sc_lazyTools_BasicClusterSeedTime"        , lazytool.BasicClusterSeedTime (*seed)  );
+    double x = gsfiter->superCluster()->x() ;
+    double y = gsfiter->superCluster()->y() ;
+    double z = gsfiter->superCluster()->z() ;
+    store("gsf_sc_lazyTools_eshitsixix", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_ES, 0, 1)) ;
+    store("gsf_sc_lazyTools_eshitsiyiy", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_ES, 0, 2)) ;
+    store("gsf_sc_lazyTools_eseffsixix", lazytool.eseffsixix(*cl_ref)) ;
+    store("gsf_sc_lazyTools_eseffsiyiy", lazytool.eseffsiyiy(*cl_ref)) ;
+    store("gsf_sc_lazyTools_eseffsirir", lazytool.eseffsirir(*cl_ref)) ;
+
     //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/TrackReco/interface/HitPattern.h?revision=1.32&view=markup
     reco::HitPattern kfHitPattern = gsfiter->gsfTrack()->hitPattern();
 

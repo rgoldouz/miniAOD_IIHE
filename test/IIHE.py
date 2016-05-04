@@ -38,6 +38,11 @@ options.register('dataset',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'datasets to analyze: SingleElectron, DoubleEG')
+options.register('grid',
+                 False,
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.bool,
+                 'If you run on grid or localy on eos')
 options.parseArguments()
 
 
@@ -87,9 +92,16 @@ process.source.fileNames.append( path )
 #])
 
 if options.DataProcessing == "mc":
-  filename_out = "file:/tmp/output_%s" % (options.sample + '_' + options.file)
+  if options.grid:
+    filename_out = "outfile.root"
+  else:
+    filename_out = "file:/tmp/output_%s" % (options.sample + '_' + options.file)
 if options.DataProcessing == "data":
-  filename_out = "outfile.root"
+  if options.grid:
+    filename_out = "outfile.root"
+  else:
+    filename_out = "file:/tmp/output_%s" % (options.sample + '_' + options.file)
+
 process.out = cms.OutputModule("PoolOutputModule", fileName = cms.untracked.string(filename_out) )
 process.TFileService = cms.Service("TFileService", fileName = cms.string(filename_out) )
 
@@ -170,13 +182,13 @@ process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)
 process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(True)
 process.IIHEAnalysis.includeVertexModule         = cms.untracked.bool(True) 
-process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(True)
 process.IIHEAnalysis.includePhotonModule         = cms.untracked.bool(True)
 process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeHEEPModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(True)
+process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(False)
 process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(False)
 
 

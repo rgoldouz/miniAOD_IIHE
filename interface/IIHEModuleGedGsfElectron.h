@@ -5,6 +5,10 @@
 
 // class decleration
 class IIHEModuleGedGsfElectron : public IIHEModule {
+private:
+  inline float etacorr(float eta, float pvz, float scz){ return asinh(sinh(eta)*(1.0-pvz/scz)) ; }
+  edm::EDGetTokenT<EcalRecHitCollection>        ebReducedRecHitCollection_;
+  edm::EDGetTokenT<EcalRecHitCollection>        eeReducedRecHitCollection_;
 public:
   explicit IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
   explicit IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
