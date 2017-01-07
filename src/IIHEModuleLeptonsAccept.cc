@@ -28,13 +28,13 @@ void IIHEModuleLeptonsAccept::analyze(const edm::Event& iEvent, const edm::Event
   int nEl = 0 ;
   int nMu = 0 ;
   
-//  for(reco::GsfElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
+//  for(pat::ElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
   for(vector<pat::Electron>::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
     float pt = gsfiter->pt() ;
     float HEEP_ET  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
     if(pt>ptThreshold_ || HEEP_ET>ptThreshold_) nEl++ ;
   }
-//  for(reco::MuonCollection::const_iterator muiter = muons.begin(); muiter!=muons.end() ; ++muiter){
+//  for(pat::MuonCollection::const_iterator muiter = muons.begin(); muiter!=muons.end() ; ++muiter){
   for(vector<pat::Muon>::const_iterator muiter = muons.begin() ; muiter != muons.end() ; ++muiter){
     float pt = muiter->pt() ;
     if(pt>ptThreshold_) nMu++ ;

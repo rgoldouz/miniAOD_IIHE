@@ -3,13 +3,15 @@
 TriggerFilter::TriggerFilter(std::string name, std::string triggerName){
     name_ = name ;
     triggerName_ = triggerName ;
-    etaBranchName_ = "trig_" + triggerName_ + "_" + name_ + "_eta" ;
-    phiBranchName_ = "trig_" + triggerName_ + "_" + name_ + "_phi" ;
+    etaBranchName_ = "trig_" + triggerName_.substr(0, triggerName_.find("_v")) + "_" + name_ + "_eta" ;
+    phiBranchName_ = "trig_" + triggerName_.substr(0, triggerName_.find("_v")) + "_" + name_ + "_phi" ;
+    etBranchName_ = "trig_" + triggerName_.substr(0, triggerName_.find("_v")) + "_" + name_ + "_et" ;
 }
 int TriggerFilter::createBranches(IIHEAnalysis* analysis){
   int result = 0 ;
   result += analysis->addBranch(etaBranchName_, kVectorFloat) ;
   result += analysis->addBranch(phiBranchName_, kVectorFloat) ;
+  result += analysis->addBranch(etBranchName_, kVectorFloat) ;
   return result ;
 }
 int TriggerFilter::setIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm::InputTag trigEventTag){
@@ -19,6 +21,7 @@ int TriggerFilter::setIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm::I
 int TriggerFilter::setValues(const edm::Event& iEvent, edm::Handle<pat::TriggerObjectStandAloneCollection> trigEvent, edm::Handle<edm::TriggerResults> triggerBits, HLTConfigProvider hltConfig,IIHEAnalysis* analysis){
   etaValues_.clear() ;
   phiValues_.clear() ;
+  etValues_.clear() ;
   const edm::TriggerNames &names = iEvent.triggerNames(*triggerBits);
   for (pat::TriggerObjectStandAlone obj : *trigEvent) {
     obj.unpackPathNames(names);
@@ -28,8 +31,10 @@ int TriggerFilter::setValues(const edm::Event& iEvent, edm::Handle<pat::TriggerO
       if (name_==label){
         analysis->store(etaBranchName_, obj.eta()) ;
         analysis->store(phiBranchName_, obj.phi()) ;
+        analysis->store(etBranchName_, obj.et()) ;
         etaValues_.push_back(obj.eta()) ;
         phiValues_.push_back(obj.phi()) ;
+        etValues_.push_back(obj.et()) ;
       }
     }
   }
@@ -38,7 +43,8 @@ int TriggerFilter::setValues(const edm::Event& iEvent, edm::Handle<pat::TriggerO
 bool TriggerFilter::store(IIHEAnalysis* analysis){
   bool etaSuccess = analysis->store(etaBranchName_, etaValues_) ;
   bool phiSuccess = analysis->store(phiBranchName_, phiValues_) ;
-  return (etaSuccess && phiSuccess) ;
+  bool etSuccess = analysis->store(etBranchName_, etValues_) ;
+  return (etaSuccess && phiSuccess && etSuccess) ;
 }
   
   
@@ -108,10 +114,11 @@ bool L1Trigger::matchObject(edm::Handle<trigger::TriggerEvent> trigEvent, float 
 HLTrigger::HLTrigger(std::string name, HLTConfigProvider hltConfig){
   name_ = name ;
   index_ = -1 ;
+  saveFilters_ = 0;
   searchStatus_ = notSearchedFor ;
   reset() ;
-  acceptBranchName_   = "trig_" + name + "_accept"   ;
-  prescaleBranchName_ = "trig_" + name + "_prescale" ;
+  acceptBranchName_   = "trig_" + name.substr(0, name.find("_v")) + "_accept"   ;
+  prescaleBranchName_ = "trig_" + name.substr(0, name.find("_v")) + "_prescale" ;
   nSC_     = nSuperclustersInTriggerName() ;
   nPh_     = nPhotonsInTriggerName() ;
   nEl_     = nElectronsInTriggerName() ;
@@ -176,8 +183,8 @@ int HLTrigger::nElectronsInTriggerName(){
 }
 
 int HLTrigger::nMuonsInTriggerName(){
-  int singleMuonCount = nSubstringInString(name_, "Mu"      ) ;
-  int doubleMuonCount = nSubstringInString(name_, "DoubleMu") + nSubstringInString(name_, "DiMu") + nSubstringInString(name_, "Dimuon") ;
+  int singleMuonCount = nSubstringInString(name_, "Mu"      ) + nSubstringInString(name_, "muon");
+  int doubleMuonCount = nSubstringInString(name_, "DoubleMu") + nSubstringInString(name_, "DiMu") + nSubstringInString(name_, "Dimuon")+ nSubstringInString(name_, "DoubleIsoMu") ;
   int tripleMuonCount = nSubstringInString(name_, "TripleMu") ;
   int totalMuonCount = 2*tripleMuonCount + 1*doubleMuonCount + singleMuonCount ;
   return totalMuonCount ;
@@ -230,8 +237,10 @@ int HLTrigger::status(const edm::Event& iEvent, edm::EventSetup const& iSetup, H
     touched_  = true ;
     accept_   = triggerResults->accept(index_) ;
     prescale_ = prescale->getPrescaleForIndex(index_);
-    for(unsigned i=0 ; i<filters_.size() ; ++i){
-      filters_.at(i)->setValues(iEvent,trigEvent,triggerResults,hltConfig, analysis) ;
+    if (saveFilters_){
+      for(unsigned i=0 ; i<filters_.size() ; ++i){
+        filters_.at(i)->setValues(iEvent,trigEvent,triggerResults,hltConfig, analysis) ;
+      }
     }
     return 0 ;
   }
@@ -246,11 +255,11 @@ int HLTrigger::createBranches(IIHEAnalysis* analysis){
   int result = 0 ;
   result += analysis->addBranch(  acceptBranchName_, kInt) ;
   result += analysis->addBranch(prescaleBranchName_, kInt) ;
-  
-  for(unsigned i=0 ; i<filters_.size() ; ++i){
-    result += filters_.at(i)->createBranches(analysis) ;
+  if (saveFilters_){ 
+    for(unsigned i=0 ; i<filters_.size() ; ++i){
+      result += filters_.at(i)->createBranches(analysis) ;
+    }
   }
-  
   return result ;
 }
 

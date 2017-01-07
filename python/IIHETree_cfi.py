@@ -11,6 +11,7 @@ pwd = os.getcwd()
 #os.chdir(pwd)
 git_hash = getpass.getuser()
 
+
 IIHEAnalysis = cms.EDAnalyzer("IIHEAnalysis",
     debug         = cms.bool(True),
     beamSpot      = cms.InputTag("offlineBeamSpot"),

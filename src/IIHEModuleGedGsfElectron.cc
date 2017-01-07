@@ -32,6 +32,7 @@
 #include <iostream>
 #include <TMath.h>
 #include <vector>
+#include <Math/VectorUtil.h>
 
 using namespace std ;
 using namespace reco;
@@ -40,6 +41,11 @@ using namespace edm ;
 IIHEModuleGedGsfElectron::IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
   ebReducedRecHitCollection_ = iC.consumes<EcalRecHitCollection> (iConfig.getParameter<InputTag>("ebReducedRecHitCollection"));
   eeReducedRecHitCollection_ = iC.consumes<EcalRecHitCollection> (iConfig.getParameter<InputTag>("eeReducedRecHitCollection"));
+//  generalTracksToken_ = iC.consumes<reco::TrackCollection> (iConfig.getParameter<InputTag>("generalTracksLabel"));
+  beamSpotToken_      = consumes<reco::BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
+  rhoTokenAll_ = iC.consumes<double> (iConfig.getParameter<edm::InputTag>("eventRho"));
+  eleTrkPtIso_ = iC.consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleTrkPtIsoLabel"));
+  electronCollectionToken_     = iC.consumes<edm::View<pat::Electron>> (iConfig.getParameter<edm::InputTag>("electronCollection")) ;
   ETThreshold_ = iConfig.getUntrackedParameter<double>("electrons_ETThreshold", 0.0 ) ;
 }
 IIHEModuleGedGsfElectron::~IIHEModuleGedGsfElectron(){}
@@ -52,9 +58,17 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_energy") ;
   addBranch("gsf_p") ;
   addBranch("gsf_pt") ;
+  addBranch("gsf_et") ;
   addBranch("gsf_scE1x5") ;
   addBranch("gsf_scE5x5") ;
   addBranch("gsf_scE2x5Max") ;
+
+  addBranch("gsf_full5x5_e5x5") ;
+  addBranch("gsf_full5x5_e1x5") ;
+  addBranch("gsf_full5x5_e2x5Max") ;
+  addBranch("gsf_full5x5_sigmaIetaIeta");
+  addBranch("gsf_full5x5_hcalOverEcal");
+
   addBranch("gsf_eta") ;
   addBranch("gsf_phi") ;
   addBranch("gsf_theta") ;
@@ -70,6 +84,7 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_hcalDepth1OverEcal") ;
   addBranch("gsf_hcalDepth2OverEcal") ;
   addBranch("gsf_dr03TkSumPt") ;
+  addBranch("gsf_dr03TkSumPtHEEP7") ;
   addBranch("gsf_dr03EcalRecHitSumEt") ;
   addBranch("gsf_dr03HcalDepth1TowerSumEt") ;
   addBranch("gsf_dr03HcalDepth2TowerSumEt") ;
@@ -128,6 +143,7 @@ void IIHEModuleGedGsfElectron::beginJob(){
 
   setBranchType(kVectorFloat) ;
   addBranch("gsf_sc_energy") ;
+  addBranch("gsf_sc_seed_eta") ;
   addBranch("gsf_sc_eta") ;
   addBranch("gsf_sc_etacorr") ;
   addBranch("gsf_sc_theta") ;
@@ -145,6 +161,10 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_sc_seed_rawId", kVectorInt) ;
   addBranch("gsf_sc_seed_ieta", kVectorInt) ;
   addBranch("gsf_sc_seed_iphi", kVectorInt) ;
+
+  setBranchType(kVectorBool) ;
+  addBranch("gsf_sc_seed_kHasSwitchToGain6") ;
+  addBranch("gsf_sc_seed_kHasSwitchToGain1") ;
 
   setBranchType(kVectorFloat) ;
   addBranch("gsf_swissCross") ;
@@ -175,6 +195,41 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_sc_lazyTools_eseffsirir") ;
   addBranch("gsf_sc_lazyTools_BasicClusterSeedTime") ;
 
+
+  setBranchType(kVectorBool) ;
+  addBranch("gsf_isHeepV60");
+
+
+  // Saturation information
+  addBranch("EHits_isSaturated", kBool) ;
+  setBranchType(kVectorInt) ;
+  addBranch("EBHits_rawId"   ) ;
+  addBranch("EBHits_iRechit" ) ;
+  addBranch("EBHits_energy", kVectorFloat) ;
+  addBranch("EBHits_ieta"    ) ;
+  addBranch("EBHits_iphi"    ) ;
+  addBranch("EBHits_RecoFlag") ;
+
+  setBranchType(kVectorBool) ;
+  addBranch("EBHits_kSaturated"           ) ;
+  addBranch("EBHits_kLeadingEdgeRecovered") ;
+  addBranch("EBHits_kNeighboursRecovered" ) ;
+  addBranch("EBHits_kWeird"               ) ;
+
+  setBranchType(kVectorInt) ;
+  addBranch("EEHits_rawId"   ) ;
+  addBranch("EEHits_iRechit" ) ;
+  addBranch("EEHits_energy", kVectorFloat) ;
+  addBranch("EEHits_ieta"    ) ;
+  addBranch("EEHits_iphi"    ) ;
+  addBranch("EEHits_RecoFlag") ;
+
+  setBranchType(kVectorBool) ;
+  addBranch("EEHits_kSaturated"           ) ;
+  addBranch("EEHits_kLeadingEdgeRecovered") ;
+  addBranch("EEHits_kNeighboursRecovered" ) ;
+  addBranch("EEHits_kWeird"               ) ;
+
 }
 
 // ------------ method called to for each event  ------------
@@ -190,6 +245,14 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
   const EcalRecHitCollection* theBarrelEcalRecHits = EBHits.product () ;
   const EcalRecHitCollection* theEndcapEcalRecHits = EEHits.product () ;
 
+  edm::Handle<edm::View<pat::Electron>>     electronCollection_ ;
+  iEvent.getByToken( electronCollectionToken_ , electronCollection_) ;
+  edm::Handle<edm::ValueMap<float>> eleTrkPtIsoHandle_;
+  iEvent.getByToken(eleTrkPtIso_,eleTrkPtIsoHandle_);
+
+  edm::Handle<reco::BeamSpot> beamspotHandle_ ;
+  iEvent.getByToken(beamSpotToken_, beamspotHandle_) ;
+
   edm::ESHandle<CaloGeometry> pGeometry ;
   iSetup.get<CaloGeometryRecord>().get(pGeometry) ;
   CaloGeometry* geometry = (CaloGeometry*) pGeometry.product() ;
@@ -201,14 +264,20 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
   math::XYZPoint* firstpvertex = parent_->getFirstPrimaryVertex() ;
   float pv_z = firstpvertex->z() ; 
   EcalClusterLazyTools lazytool(iEvent, iSetup, parent_->getReducedBarrelRecHitCollectionToken(), parent_->getReducedEndcapRecHitCollectionToken(), parent_->getReducedESRecHitCollectionToken()) ;
+
+  edm::Handle<double> rhoHandle ;
+  iEvent.getByToken(rhoTokenAll_, rhoHandle) ;
+  double rho = *rhoHandle ;
  
   unsigned int gsf_n = 0 ;
+  unsigned int gsfref = -1 ;
   for(vector<pat::Electron>::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
-    
-    float ET = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
+
+    gsfref++;
+    float ET = gsfiter->caloEnergy()*sin(2.*atan(exp(-1.*gsfiter->superCluster()->eta()))) ;
     if(ET<ETThreshold_ && gsfiter->pt()<ETThreshold_) continue ;
     gsf_n++ ;
-    
+//    pat::ElectronRef gsfref(electrons,gsf_n); 
     //Fill the gsf related variables
 
 //CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_6_3
@@ -223,6 +292,7 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     store("gsf_energy"                        , gsfiter->energy()                        ) ;
     store("gsf_p"                             , gsfiter->p()                             ) ;
     store("gsf_pt"                            , gsfiter->pt()                            ) ;
+    store("gsf_et"                            , gsfiter->et()                            ) ;
     store("gsf_classification"                , gsfiter->classification()                ) ;
     store("gsf_scE1x5"                        , gsfiter->scE1x5()                        ) ;
     store("gsf_scE5x5"                        , gsfiter->scE5x5()                        ) ;
@@ -242,6 +312,7 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     store("gsf_hcalDepth1OverEcal"            , gsfiter->hcalDepth1OverEcal()            ) ;
     store("gsf_hcalDepth2OverEcal"            , gsfiter->hcalDepth2OverEcal()            ) ;
     store("gsf_dr03TkSumPt"                   , gsfiter->dr03TkSumPt()                   ) ;
+    store("gsf_dr03TkSumPtHEEP7"              , (*eleTrkPtIsoHandle_).get(gsfref)        ) ;
     store("gsf_dr03EcalRecHitSumEt"           , gsfiter->dr03EcalRecHitSumEt()           ) ;
     store("gsf_dr03HcalDepth1TowerSumEt"      , gsfiter->dr03HcalDepth1TowerSumEt()      ) ;
     store("gsf_dr03HcalDepth2TowerSumEt"      , gsfiter->dr03HcalDepth2TowerSumEt()      ) ;
@@ -279,9 +350,16 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     store("gsf_deltaPhiSeedClusterTrackAtCalo", gsfiter->deltaPhiSeedClusterTrackAtCalo()) ;
     store("gsf_deltaEtaSeedClusterTrackAtCalo", gsfiter->deltaEtaSeedClusterTrackAtCalo()) ;
     store("gsf_deltaEtaSeedClusterTrackAtVtx" , gsfiter->deltaEtaSeedClusterTrackAtVtx() ) ;
+    store("gsf_full5x5_e5x5"                  ,gsfiter->full5x5_e5x5()) ;
+    store("gsf_full5x5_e1x5"                  ,gsfiter->full5x5_e1x5()) ;
+    store("gsf_full5x5_e2x5Max"               ,gsfiter->full5x5_e2x5Max()) ;
+    store("gsf_full5x5_sigmaIetaIeta"         ,gsfiter->full5x5_sigmaIetaIeta()) ;
 
-    float sc_energy = gsfiter->superCluster()->rawEnergy()+gsfiter->superCluster()->preshowerEnergy() ;
-    float sc_et     = sc_energy/cosh(gsfiter->superCluster()->eta()) ;
+    store("gsf_full5x5_hcalOverEcal"         ,gsfiter->full5x5_hcalOverEcal());
+
+//    float sc_energy = gsfiter->superCluster()->rawEnergy()+gsfiter->superCluster()->preshowerEnergy() ;
+    float sc_energy = gsfiter->superCluster()->energy();
+    float sc_et     = sc_energy*sin(2.*atan(exp(-1.*gsfiter->superCluster()->eta()))) ;
     float etaCorr = etacorr( gsfiter->superCluster()->eta(), pv_z, gsfiter->superCluster()->position().z()) ;
 
     store("gsf_sc_eta"        , gsfiter->superCluster()->eta()                    ) ;
@@ -299,8 +377,13 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     store("gsf_sc_z"          , gsfiter->superCluster()->position().z()           ) ;
     store("gsf_sc_phiWidth"   , gsfiter->superCluster()->phiWidth()               ) ;
     store("gsf_sc_etaWidth"   , gsfiter->superCluster()->etaWidth()               ) ;
-
+    store("gsf_sc_seed_eta"   ,gsfiter->superCluster()->seed()->eta()             ) ;
     store("gsf_sc_seed_rawId" , gsfiter->superCluster()->seed()->seed().rawId()   );
+    const EcalRecHitCollection *recHits = (gsfiter->isEB()) ? lazytool.getEcalEBRecHitCollection() : lazytool.getEcalEERecHitCollection();
+    EcalRecHitCollection::const_iterator seedRecHit = recHits->find(gsfiter->superCluster()->seed()->seed()) ;
+    store("gsf_sc_seed_kHasSwitchToGain6" , seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6) ) ;
+    store("gsf_sc_seed_kHasSwitchToGain1" , seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)  ) ;
+
 
     const std::vector<std::pair<DetId,float> > & hits= gsfiter->superCluster()->hitsAndFractions();
     if (gsfiter->isEB()){
@@ -352,40 +435,23 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     store("gsf_sc_lazyTools_eseffsiyiy", lazytool.eseffsiyiy(*cl_ref)) ;
     store("gsf_sc_lazyTools_eseffsirir", lazytool.eseffsirir(*cl_ref)) ;
 
-    //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/TrackReco/interface/HitPattern.h?revision=1.32&view=markup
     reco::HitPattern kfHitPattern = gsfiter->gsfTrack()->hitPattern();
-
-//CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_6_3
     int nbtrackhits = kfHitPattern.numberOfHits(reco::HitPattern::TRACK_HITS) ;
-//CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_6_3
-/*CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
-    int nbtrackhits = kfHitPattern.numberOfHits() ;
-CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
-
     std::vector<int> gsf_hitsinfo ;
     for(int hititer=0 ; hititer<25 ; hititer++){
       
-//CHOOSE_RELEASE_START CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_6_3
       int myhitbin = (hititer<nbtrackhits) ? kfHitPattern.getHitPattern(reco::HitPattern::TRACK_HITS, hititer) : 0 ;
-//CHOOSE_RELEASE_END CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_6_3
-/*CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
-      int myhitbin = (hititer<nbtrackhits) ? kfHitPattern.getHitPattern(hititer) : 0 ;
-CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
       
       gsf_hitsinfo.push_back(myhitbin) ;
     }
     store("gsf_hitsinfo", gsf_hitsinfo) ;
     
-//CHOOSE_RELEASE_START CMSSW_7_4_4 CMSSW_7_6_3
     store("gsf_pixelMatch_dPhi1"       , gsfiter->pixelMatchDPhi1()       ) ;
     store("gsf_pixelMatch_dPhi2"       , gsfiter->pixelMatchDPhi2()       ) ;
     store("gsf_pixelMatch_dRz1"        , gsfiter->pixelMatchDRz1()        ) ;
     store("gsf_pixelMatch_dRz2"        , gsfiter->pixelMatchDRz2()        ) ;
     store("gsf_pixelMatch_subDetector1", gsfiter->pixelMatchSubdetector1()) ;
     store("gsf_pixelMatch_subDetector2", gsfiter->pixelMatchSubdetector2()) ;
-//CHOOSE_RELEASE_END CMSSW_7_4_4 CMSSW_7_6_3
-/*CHOOSE_RELEASE_START CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
-CHOOSE_RELEASE_END CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
     
     // Now apply truth matching.
     int index = MCTruth_matchEtaPhi_getIndex(gsfiter->eta(), gsfiter->phi()) ;
@@ -400,8 +466,77 @@ CHOOSE_RELEASE_END CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23
       store("gsf_mc_index" ,    -1) ;
       store("gsf_mc_ERatio", 999.0) ;
     }
-  }
+    bool isHeep = false;
+    //Barrel
+    if ( ET > 35  && fabs(gsfiter->superCluster()->eta()) < 1.4442  &&
+      gsfiter->ecalDrivenSeed()                                            &&
+      fabs(gsfiter->deltaEtaSeedClusterTrackAtVtx()) < 0.004                    &&
+      fabs(gsfiter->deltaPhiSuperClusterTrackAtVtx()) < 0.06                     &&
+      gsfiter->hadronicOverEm() < 0.05 + 1/ sc_energy          &&
+      (gsfiter->full5x5_e1x5()/gsfiter->full5x5_e5x5() > 0.83 || gsfiter->full5x5_e2x5Max()/gsfiter->full5x5_e5x5() > 0.94) &&
+      gsf_nLostInnerHits < 2                                               &&
+      fabs(gsfiter->gsfTrack()->dxy(*firstpvertex)) < 0.02                       &&
+      gsfiter->dr03EcalRecHitSumEt() + gsfiter->dr03HcalDepth1TowerSumEt() < 2 + 0.03 * ET + 0.28 * rho   && 
+      (*eleTrkPtIsoHandle_).get(gsfref) < 5) isHeep = true;
+    //endcap
+    if ( ET > 35  && (fabs(gsfiter->superCluster()->eta()) > 1.566  || (abs(gsfiter->superCluster()->eta()) < 2.5) )&&
+      gsfiter->ecalDrivenSeed()                                            &&
+      fabs(gsfiter->deltaEtaSeedClusterTrackAtVtx()) < 0.006                    &&
+      fabs(gsfiter->deltaPhiSuperClusterTrackAtVtx()) < 0.06                     &&
+      gsfiter->hadronicOverEm() < 0.05 + 5/ sc_energy          &&
+      gsfiter->full5x5_sigmaIetaIeta() <0.03                                         &&
+      gsf_nLostInnerHits < 2                                               &&
+      fabs(gsfiter->gsfTrack()->dxy(*firstpvertex)) < 0.05                       &&
+      (( ET < 50 && gsfiter->dr03EcalRecHitSumEt() + gsfiter->dr03HcalDepth1TowerSumEt() < 2.5 + 0.28 * rho) || 
+      ( ET > 50 && gsfiter->dr03EcalRecHitSumEt() + gsfiter->dr03HcalDepth1TowerSumEt() < 2.5 + 0.03 * (ET-50) + 0.28 * rho)) &&
+      (*eleTrkPtIsoHandle_).get(gsfref)) isHeep = true;
+
+    store("gsf_isHeepV60", isHeep);
+ }
   store("gsf_n", gsf_n) ;
+
+
+  int nEBRecHits = 0 ;
+  bool isSaturated = false;
+  for(EcalRecHitCollection::const_iterator EBIt = theBarrelEcalRecHits->begin() ; EBIt!=theBarrelEcalRecHits->end() ; ++EBIt){
+    if((*EBIt).checkFlag(EcalRecHit::kSaturated)) isSaturated = true;
+    if( (*EBIt).energy() < 200.0 ) continue ;
+    nEBRecHits++ ;
+    EBDetId elementId = EBIt->id() ;
+    store("EBHits_rawId"   , elementId.rawId()) ;
+    store("EBHits_iRechit" , nEBRecHits) ;
+    store("EBHits_energy"  , (*EBIt).energy() ) ;
+    store("EBHits_ieta"    , elementId.ieta() ) ;
+    store("EBHits_iphi"    , elementId.iphi() ) ;
+    store("EBHits_RecoFlag", (*EBIt).recoFlag() ) ;
+
+    store("EBHits_kSaturated"           , (*EBIt).checkFlag(EcalRecHit::kSaturated           )) ;
+    store("EBHits_kLeadingEdgeRecovered", (*EBIt).checkFlag(EcalRecHit::kLeadingEdgeRecovered)) ;
+    store("EBHits_kNeighboursRecovered" , (*EBIt).checkFlag(EcalRecHit::kNeighboursRecovered )) ;
+    store("EBHits_kWeird"               , (*EBIt).checkFlag(EcalRecHit::kWeird               )) ;
+  }
+
+
+  int nEERecHits = 0 ;
+  for(EcalRecHitCollection::const_iterator EEIt = theEndcapEcalRecHits->begin() ; EEIt!=theEndcapEcalRecHits->end() ; ++EEIt){
+    if((*EEIt).checkFlag(EcalRecHit::kSaturated)) isSaturated = true;
+    if( (*EEIt).energy() < 200.0 ) continue ;
+    nEERecHits++ ;
+    EBDetId elementId = EEIt->id() ;
+    store("EEHits_rawId"   , elementId.rawId()) ;
+    store("EEHits_iRechit" , nEBRecHits) ;
+    store("EEHits_energy"  , (*EEIt).energy() ) ;
+    store("EEHits_ieta"    , elementId.ieta() ) ;
+    store("EEHits_iphi"    , elementId.iphi() ) ;
+    store("EEHits_RecoFlag", (*EEIt).recoFlag() ) ;
+
+    store("EEHits_kSaturated"           , (*EEIt).checkFlag(EcalRecHit::kSaturated           )) ;
+    store("EEHits_kLeadingEdgeRecovered", (*EEIt).checkFlag(EcalRecHit::kLeadingEdgeRecovered)) ;
+    store("EEHits_kNeighboursRecovered" , (*EEIt).checkFlag(EcalRecHit::kNeighboursRecovered )) ;
+    store("EEHits_kWeird"               , (*EEIt).checkFlag(EcalRecHit::kWeird               )) ;
+  }
+  store("EHits_isSaturated", isSaturated);
+
 }
 
 void IIHEModuleGedGsfElectron::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

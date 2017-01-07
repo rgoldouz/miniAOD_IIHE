@@ -6,8 +6,7 @@
 // class decleration
 class IIHEModulePreshower : public IIHEModule {
 public:
-  explicit IIHEModulePreshower(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
-  explicit IIHEModulePreshower(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
+  explicit IIHEModulePreshower(const edm::ParameterSet& iConfig);
   ~IIHEModulePreshower();
   
   void   pubBeginJob(){   beginJob() ; } ;

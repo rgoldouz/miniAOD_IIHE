@@ -333,7 +333,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   unsigned int mu_it_n = 0 ;
   int mu_n_saved = 0 ;
   
-//  for(reco::MuonCollection::const_iterator muIt = muons.begin(); muIt != muons.end(); ++muIt){
+//  for(pat::MuonCollection::const_iterator muIt = muons.begin(); muIt != muons.end(); ++muIt){
   for(vector<pat::Muon>::const_iterator muIt = muons.begin() ; muIt != muons.end() ; ++muIt){
     bool isGlobalMuon     = muIt->isGlobalMuon()     ;
     bool isStandAloneMuon = muIt->isStandAloneMuon() ;
@@ -437,8 +437,8 @@ CHOOSE_RELEASE_END DEFAULT*/
     bool makeTevOptimizedTrack = muIt->isGlobalMuon() ;
     if(makeTevOptimizedTrack){
 
-//      reco::Muon::MuonTrackTypePair tevOptimizedTrack = muon::tevOptimized(*muIt, 200, 17., 40., 0.25) ;
-//      reco::Muon::MuonTrackTypePair tevOptimizedTrack = muon::tevOptimized(muIt->globalTrack(),muIt->innerTrack(),muIt->tpfmsTrack(),muIt->pickyTrack(),muIt->dytTrack(), 200, 17., 40., 0.25) ;
+//      pat::Muon::MuonTrackTypePair tevOptimizedTrack = muon::tevOptimized(*muIt, 200, 17., 40., 0.25) ;
+//      pat::Muon::MuonTrackTypePair tevOptimizedTrack = muon::tevOptimized(muIt->globalTrack(),muIt->innerTrack(),muIt->tpfmsTrack(),muIt->pickyTrack(),muIt->dytTrack(), 200, 17., 40., 0.25) ;
 /*
       store("mu_tevOptimized_charge"       , tevOptimizedTrack.first->charge()                ) ;
       store("mu_tevOptimized_pt"           , tevOptimizedTrack.first->pt()                    ) ;

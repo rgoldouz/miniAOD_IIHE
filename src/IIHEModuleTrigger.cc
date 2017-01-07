@@ -40,7 +40,8 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig, edm::Cons
   includeSingleElectronSingleMuonTriggers_ = (triggersIn.find("singleElectronSingleMuon")!=std::string::npos) ;
   includeSingleElectronDoubleMuonTriggers_ = (triggersIn.find("singleElectronDoubleMuon")!=std::string::npos) ;
   includeDoubleElectronSingleMuonTriggers_ = (triggersIn.find("doubleElectronSingleMuon")!=std::string::npos) ;
-  
+  includeSinglePhotonTriggers_ = (triggersIn.find("singlePhoton" )!=std::string::npos) ;  
+
   std::cout << "Including single electron triggers: " << includeSingleElectronTriggers_ << std::endl ;
   std::cout << "Including double electron triggers: " << includeDoubleElectronTriggers_ << std::endl ;
   std::cout << "Including triple electron triggers: " << includeTripleElectronTriggers_ << std::endl ;
@@ -50,6 +51,7 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig, edm::Cons
   std::cout << "Including single electron single muon triggers: " << includeSingleElectronSingleMuonTriggers_ << std::endl ;
   std::cout << "Including single electron double muon triggers: " << includeSingleElectronDoubleMuonTriggers_ << std::endl ;
   std::cout << "Including double electron single muon triggers: " << includeDoubleElectronSingleMuonTriggers_ << std::endl ;
+  std::cout << "Including single photon triggers:     " << includeSinglePhotonTriggers_ << std::endl ; 
 }
 IIHEModuleTrigger::~IIHEModuleTrigger(){}
 
@@ -63,18 +65,26 @@ bool IIHEModuleTrigger::addHLTrigger(HLTrigger* hlt){
       return false ;
     }
   }
+  if(hlt->nSubstringInString(hlt->name(), "Ele27" ) || hlt->nSubstringInString(hlt->name(), "DoubleEle33" ) || hlt->nSubstringInString(hlt->name(), "Mu50" )) hlt->saveFilters();
   HLTriggers_.push_back(hlt) ;
   return true ;
 }
 
 int IIHEModuleTrigger::addBranches(){
+// Just loop over the HLTrigger objects and make branches for each one, including its
+// filters.  Return the number of branches we've added so that we can get an idea of
+//the trigger overhead.  (This is not used in the main analysis, but can be trivially
+// printed to screen.)
   int result = 0 ;
   IIHEAnalysis* analysis = parent_ ;
   for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
+    if (std::find(savedHLTriggers_.begin(), savedHLTriggers_.end(), HLTriggers_.at(i)->name().substr(0, HLTriggers_.at(i)->name().find("_v"))) != savedHLTriggers_.end()) continue;
+    savedHLTriggers_.push_back(HLTriggers_.at(i)->name().substr(0, HLTriggers_.at(i)->name().find("_v"))); 
     result += HLTriggers_.at(i)->createBranches(analysis) ;
   }
   return result ;
 }
+
 
 // ------------ method called to for each event  ------------
 void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
@@ -126,7 +136,7 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
         if(hlt->isOnlySingleElectronSingleMuon() && includeSingleElectronSingleMuonTriggers_) addThisTrigger = true ;
         if(hlt->isOnlySingleElectronDoubleMuon() && includeSingleElectronDoubleMuonTriggers_) addThisTrigger = true ;
         if(hlt->isOnlyDoubleElectronSingleMuon() && includeDoubleElectronSingleMuonTriggers_) addThisTrigger = true ;
-        
+        if(hlt->isSinglePhoton() && includeSinglePhotonTriggers_ ) addThisTrigger = true ;        
         // Only loop over trigger names if we have to
         if(addThisTrigger==false){
           for(unsigned int j=0 ; j<triggerNamesFromPSet_.size() ; ++j){

@@ -111,7 +111,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     php4s.push_back(TLorentzVector(px, py, pz, E)) ;
   }
   
-//  for(reco::GsfElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
+//  for(pat::ElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
   for(vector<pat::Electron>::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
     float px = gsfiter->px() ;
     float py = gsfiter->py() ;
@@ -131,7 +131,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   }
   
 
-//  for(reco::MuonCollection::const_iterator muiter = muons.begin(); muiter!=muons.end() ; ++muiter){
+//  for(pat::MuonCollection::const_iterator muiter = muons.begin(); muiter!=muons.end() ; ++muiter){
   for(vector<pat::Muon>::const_iterator muiter = muons.begin() ; muiter != muons.end() ; ++muiter){
     float px = muiter->px() ;
     float py = muiter->py() ;
@@ -370,3 +370,4 @@ void IIHEModuleZBoson::endJob(){
 }
 
 DEFINE_FWK_MODULE(IIHEModuleZBoson);
+

@@ -29,7 +29,9 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
+IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig):
+hltPrescaleProvider_(iConfig, consumesCollector(), *this)
+{
   currentVarType_ = -1 ;
   debug_     = iConfig.getParameter<bool  >("debug"    ) ;
   git_hash_  = iConfig.getParameter<string>("git_hash" ) ;
@@ -59,7 +61,7 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
   electronCollectionLabel_     = iConfig.getParameter<edm::InputTag>("electronCollection"      ) ;
   muonCollectionLabel_         = iConfig.getParameter<edm::InputTag>("muonCollection"          ) ;
   beamSpotToken_      = consumes<reco::BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ; 
-
+  trigEventTag_ = iConfig.getParameter<InputTag>("triggerEvent");
 
  
   reducedBarrelRecHitCollection_ = iConfig.getParameter<edm::InputTag>("ebReducedRecHitCollection") ;
@@ -78,6 +80,8 @@ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   muonCollectionToken_ =  consumes<View<pat::Muon> > (muonCollectionLabel_);
   photonCollectionToken_ =  consumes<View<pat::Photon> > (photonCollectionLabel_); 
   superClusterCollectionToken_ =  consumes<reco::SuperClusterCollection> (superClusterCollectionLabel_);
+  trigEvent_ = consumes<trigger::TriggerEvent>(trigEventTag_);
+
  
   firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
   beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
@@ -320,6 +324,10 @@ void IIHEAnalysis::addToMCTruthWhitelist(std::vector<int> pdgIds){
 
 void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   beginEvent() ;
+
+
+
+  preScaleIndex_ = hltPrescaleProvider_.prescaleSet(iEvent,iSetup);
   // Get the default collections
   // These should be harmonised across submodules, where possible
 //  iEvent.getByLabel(superClusterCollectionLabel_, superClusterCollection_) ;
@@ -356,11 +364,16 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
 }
 
 void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
+
+  bool changed = true ;
+  hltPrescaleProvider_.init(iRun, iSetup, trigEventTag_.process(), changed);
+
   nRuns_.push_back(iRun.run());
   for(unsigned int i=0 ; i<childModules_.size() ; ++i){
     childModules_.at(i)->pubBeginRun(iRun, iSetup) ;
   }
 }
+
 void IIHEAnalysis::beginEvent(){
   acceptEvent_ = false ;
   rejectEvent_ = false ;

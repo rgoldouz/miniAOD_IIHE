@@ -8,7 +8,7 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleExample::IIHEModuleExample(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){}
+IIHEModuleExample::IIHEModuleExample(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
 IIHEModuleExample::~IIHEModuleExample(){}
 
 // ------------ method called once each job just before starting event loop  ------------

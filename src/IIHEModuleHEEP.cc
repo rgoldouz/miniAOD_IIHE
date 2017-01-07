@@ -9,7 +9,6 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/EgammaReco/interface/PreshowerCluster.h"
-#include "DataFormats/TrackReco/interface/HitPattern.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
@@ -652,7 +651,7 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   bool isSaturated = false;
   for(EcalRecHitCollection::const_iterator EBIt = EB_hits->begin() ; EBIt!=EB_hits->end() ; ++EBIt){
     if((*EBIt).checkFlag(EcalRecHit::kSaturated)) isSaturated = true;
-    if( (*EBIt).energy() < 100.0 ) continue ;
+    if( (*EBIt).energy() < 200.0 ) continue ;
     nEBRecHits++ ;
     EBDetId elementId = EBIt->id() ; 
     store("EBHits_rawId"   , elementId.rawId()) ;
@@ -672,7 +671,7 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   int nEERecHits = 0 ;
   for(EcalRecHitCollection::const_iterator EEIt = EE_hits->begin() ; EEIt!=EE_hits->end() ; ++EEIt){
     if((*EEIt).checkFlag(EcalRecHit::kSaturated)) isSaturated = true;
-    if( (*EEIt).energy() < 100.0 ) continue ;
+    if( (*EEIt).energy() < 200.0 ) continue ;
     nEERecHits++ ;
     EBDetId elementId = EEIt->id() ; 
     store("EEHits_rawId"   , elementId.rawId()) ;

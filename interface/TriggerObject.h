@@ -28,8 +28,10 @@ class TriggerFilter{
   std::string triggerName_ ;
   std::vector<float> etaValues_ ;
   std::vector<float> phiValues_ ;
+  std::vector<float> etValues_ ;
   std::string etaBranchName_ ;
   std::string phiBranchName_ ;
+  std::string etBranchName_ ;
   int index_ ;
 public:
   TriggerFilter(std::string, std::string);
@@ -77,9 +79,11 @@ private:
   int  prescale_ ;
   int  index_ ;
   int  searchStatus_ ;
-  
+  bool saveFilters_; 
+ 
   std::vector<float> etaValues_ ;
   std::vector<float> phiValues_ ;
+  std::vector<float> etValues_ ;
   
   int nSC_     ;
   int nPh_     ;
@@ -100,10 +104,10 @@ private:
   std::string prescaleBranchName_ ;
   std::string etaBranchName_      ;
   std::string phiBranchName_      ;
-  
+  std::string etBranchName_      ; 
+ 
   enum searchStatuses{ notSearchedFor , searchedForAndFound , searchedForAndNotFound } ;
   
-  int nSubstringInString(const std::string&, const std::string&) ;
   int nMuonsInTriggerName() ;
   int nSuperclustersInTriggerName() ;
   int nPhotonsInTriggerName() ;
@@ -121,7 +125,8 @@ public:
   void reset() ;
   int createBranches(IIHEAnalysis*) ;
   bool  beginRun(HLTConfigProvider const&) ;
-  
+  int nSubstringInString(const std::string&, const std::string&) ; 
+ 
   int findIndex(HLTConfigProvider const&) ;
   int status(const edm::Event&, edm::EventSetup const&, HLTConfigProvider const&, Handle<TriggerResults> const&, edm::Handle<pat::TriggerObjectStandAloneCollection>, edm::Handle<pat::PackedTriggerPrescales>, IIHEAnalysis*) ;
   void store(IIHEAnalysis*) ;
@@ -137,6 +142,7 @@ public:
   bool isSingleMuon(){ return nMu_==1 ; }
   bool isDoubleMuon(){ return nMu_==2 ; }
   bool isTripleMuon(){ return nMu_==3 ; }
+  bool isSinglePhoton(){ return nPh_==1 ; }
   bool isSingleElectronSingleMuon(){ return (nEl_==1 && nMu_==1) ; }
   bool isSingleElectronDoubleMuon(){ return (nEl_==1 && nMu_==2) ; }
   bool isDoubleElectronSingleMuon(){ return (nEl_==2 && nMu_==1) ; }
@@ -149,7 +155,7 @@ public:
   bool isOnlySingleElectronSingleMuon(){ return (nTypes_==1*pow(10,(int)kElectron)+1*pow(10,(int)kMuon)) ; }
   bool isOnlySingleElectronDoubleMuon(){ return (nTypes_==1*pow(10,(int)kElectron)+2*pow(10,(int)kMuon)) ; }
   bool isOnlyDoubleElectronSingleMuon(){ return (nTypes_==2*pow(10,(int)kElectron)+1*pow(10,(int)kMuon)) ; }
-  
+  void saveFilters(){saveFilters_=1 ;} 
   std::vector<TriggerFilter*> filters_ ;
 };
 

@@ -2,13 +2,10 @@
 #define UserCode_IIHETree_IIHEModuleVertex_h
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
-#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
-#include "DataFormats/PatCandidates/interface/Electron.h"
+
 // class decleration
 class IIHEModuleVertex : public IIHEModule {
 private:
-  edm::EDGetTokenT<pat::PackedCandidateCollection> pfToken_;
-  edm::EDGetTokenT<pat::ElectronCollection> electronToken_;
 public:
   explicit IIHEModuleVertex(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
   explicit IIHEModuleVertex(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
