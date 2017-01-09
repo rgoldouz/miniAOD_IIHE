@@ -46,6 +46,8 @@ options.parseArguments()
 ##########################################################################################
 if options.DataProcessing == "mc":
   globalTag = '80X_mcRun2_asymptotic_2016_v3'
+if options.DataProcessing == "mc2016":
+  globalTag = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
 if options.DataProcessing == "mcreHLT":
   globalTag = '80X_mcRun2_asymptotic_v14'
 if options.DataProcessing == "data":
@@ -90,7 +92,7 @@ if options.DataProcessing == "data":
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring())
 
-process.source.fileNames.append( 'file:MINIAOD.root' )
+process.source.fileNames.append( 'file:MC_MINIAOD.root' )
 #process.source.fileNames.append( 'file:rerecodata.root' )
 #process.source.fileNames.append( 'file:data.root' )
 #process.source.fileNames.append( 'file:ZToEE_NNPDF30_13TeV-powheg_M_2300_3500.root' )
