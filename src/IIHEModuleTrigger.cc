@@ -115,6 +115,7 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
   
   if(hltConfig_.init(iRun, iSetup, hlTriggerResultsTag_.process(), changed)){
     if(changed){
+      clearHLTrigger();
       if(false) hltConfig_.dump("Modules") ;
       
       // Get the updated list of trigger names

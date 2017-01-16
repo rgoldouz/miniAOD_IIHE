@@ -183,7 +183,7 @@ int HLTrigger::nElectronsInTriggerName(){
 }
 
 int HLTrigger::nMuonsInTriggerName(){
-  int singleMuonCount = nSubstringInString(name_, "Mu"      ) + nSubstringInString(name_, "muon");
+  int singleMuonCount = nSubstringInString(name_, "Mu"      ) + nSubstringInString(name_, "muon") - nSubstringInString(name_, "Multi");
   int doubleMuonCount = nSubstringInString(name_, "DoubleMu") + nSubstringInString(name_, "DiMu") + nSubstringInString(name_, "Dimuon")+ nSubstringInString(name_, "DoubleIsoMu") ;
   int tripleMuonCount = nSubstringInString(name_, "TripleMu") ;
   int totalMuonCount = 2*tripleMuonCount + 1*doubleMuonCount + singleMuonCount ;

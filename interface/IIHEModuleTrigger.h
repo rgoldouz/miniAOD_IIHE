@@ -37,6 +37,7 @@ private:
   std::vector<std::string> HLTNamesFromConfig_ ;
   std::vector<std::string> triggerNamesFromPSet_ ;
   std::vector<std::string> savedHLTriggers_ ; 
+  void clearHLTrigger(){HLTriggers_.clear();} ;
 
   edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> triggerObjects_;

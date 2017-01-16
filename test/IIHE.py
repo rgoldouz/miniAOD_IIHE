@@ -132,7 +132,7 @@ if options.DataProcessing == "mcreHLT":
   process.IIHEAnalysis.triggerEvent = cms.InputTag('hltTriggerSummaryAOD','','HLT2')
 
 
-triggers = 'singleElectron;doubleElectron;singleMuon;singlePhoton'
+triggers = 'singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon'
 process.IIHEAnalysis.triggers = cms.untracked.string(triggers)
 
 #process.IIHEAnalysis.triggers = cms.untracked.string('doubleElectron')
