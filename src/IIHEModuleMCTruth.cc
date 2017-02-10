@@ -140,10 +140,11 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
   MCTruthObject* MCTruth ;
 //  const Candidate* parent ;
   const Candidate* child ;
-
   //we should save all outgoing particle from hard interaction
   for(GenParticleCollection::const_iterator mc_iter = genParticles.begin() ; mc_iter!=genParticles.end() ; ++mc_iter){
-    if(mc_iter->status()!=23) continue;
+    if(mc_iter->status()<20 || mc_iter->status()>30) continue;
+//    if(mc_iter->status()!=23) continue;
+//    cout<< mc_iter->status()<<"                "<<mc_iter->pdgId()<<endl;
     child  = mc_iter->clone()  ;
     // Create a truth record instance.
     MCTruth = new MCTruthObject((reco::Candidate*)&*mc_iter) ;
@@ -157,6 +158,7 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
     counter++ ;
   }
 
+
   for(GenParticleCollection::const_iterator mc_iter = genParticles.begin() ; mc_iter!=genParticles.end() ; ++mc_iter){
     if(mc_iter->status()==23) continue;
     int pdgId = mc_iter->pdgId() ;
@@ -169,7 +171,7 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
         break ;
       }
     }
-    
+   
     // Ignore particles with exactly one daughter (X => X => X etc)
     bool daughters_accept = (mc_iter->numberOfDaughters()!=1) ;
     
@@ -197,9 +199,9 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
     MCTruth = new MCTruthObject((reco::Candidate*)&*mc_iter) ;
     
     // Add all the mothers
-//    for(unsigned int mother_iter=0 ; mother_iter<child->numberOfMothers() ; ++mother_iter){
-//      MCTruth->addMother(child->mother(mother_iter)) ;
-//    }
+    for(unsigned int mother_iter=0 ; mother_iter<child->numberOfMothers() ; ++mother_iter){
+      MCTruth->addMother(child->mother(mother_iter)) ;
+    }
     
     // Finally check to see if this overlaps with an existing truth particle.
     bool overlap = false ;

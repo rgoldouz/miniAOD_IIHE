@@ -6,6 +6,8 @@
 // class decleration
 class IIHEModuleVertex : public IIHEModule {
 private:
+  edm::InputTag           primaryVertexLabel_ ;
+  edm::EDGetTokenT<View<reco::Vertex>> vtxToken_;
 public:
   explicit IIHEModuleVertex(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
   explicit IIHEModuleVertex(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};

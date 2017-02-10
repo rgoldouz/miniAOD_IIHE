@@ -42,6 +42,15 @@ private:
   bool saveZem_  ;
   bool saveZeeg_ ;
   bool saveZmmg_ ;
+
+  edm::EDGetTokenT<edm::View<pat::Electron> > electronCollectionToken_;
+  edm::EDGetTokenT<edm::View<pat::Muon> > muonCollectionToken_;
+  edm::EDGetTokenT<edm::View<pat::Photon> > photonCollectionToken_;
+
+  edm::InputTag        photonCollectionLabel_ ;
+  edm::InputTag      electronCollectionLabel_ ;
+  edm::InputTag          muonCollectionLabel_ ;
+
   
 public:
   explicit IIHEModuleZBoson(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);

@@ -11,7 +11,10 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleVertex::IIHEModuleVertex(const edm::ParameterSet& iConfig , edm::ConsumesCollector && iC): IIHEModule(iConfig){}
+IIHEModuleVertex::IIHEModuleVertex(const edm::ParameterSet& iConfig , edm::ConsumesCollector && iC): IIHEModule(iConfig){
+  primaryVertexLabel_          = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
+  vtxToken_ = iC.consumes<View<reco::Vertex>>(primaryVertexLabel_);
+}
 IIHEModuleVertex::~IIHEModuleVertex(){}
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -31,14 +34,12 @@ void IIHEModuleVertex::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModuleVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  // Get the beamspot from the Event:
-  // The beamspot is passed to the IIHEAnalysis class, so we call it from parent_
-  // Don't forget to declare IIHEModuleVertex as a friend of IIHEAnalysis!
+  edm::Handle<View<reco::Vertex> > pvCollection_ ;
+  iEvent.getByToken( vtxToken_ , pvCollection_);
 
-  // Retrieve primary vertex collection
-  const reco::VertexCollection* pvcoll = parent_->getPrimaryVertices() ;
-  store("pv_n", (unsigned int) pvcoll->size()) ;
-  for(reco::VertexCollection::const_iterator pvIt = pvcoll->begin(); pvIt!=pvcoll->end(); ++pvIt){
+  store("pv_n", (unsigned int) pvCollection_->size()) ;
+  for( unsigned int i = 0 ; i < pvCollection_->size() ; i++ ) {
+  edm::Ptr<reco::Vertex> pvIt = pvCollection_->ptrAt( i );
     store("pv_x"             , pvIt->x()                ) ;
     store("pv_y"             , pvIt->y()                ) ;   
     store("pv_z"             , pvIt->z()                ) ;  

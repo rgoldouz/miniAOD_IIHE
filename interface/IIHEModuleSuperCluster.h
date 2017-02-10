@@ -7,6 +7,11 @@
 class IIHEModuleSuperCluster : public IIHEModule {
 private:
   inline float etacorr(float eta, float pvz, float scz){ return asinh(sinh(eta)*(1.0-pvz/scz)) ; }
+  edm::InputTag  superClusterCollectionLabel_ ;
+  edm::EDGetTokenT<edm::View<reco::SuperCluster>> superClusterCollectionToken_ ;
+
+  edm::EDGetTokenT<View<reco::Vertex>> vtxToken_;
+  edm::InputTag           primaryVertexLabel_ ;
 public:
   explicit IIHEModuleSuperCluster(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
   explicit IIHEModuleSuperCluster(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};

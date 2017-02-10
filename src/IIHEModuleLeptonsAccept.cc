@@ -12,6 +12,12 @@ IIHEModuleLeptonsAccept::IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfi
   ptThreshold_         = iConfig.getUntrackedParameter<double>("LeptonsAccept_pTThreshold", 30.0 ) ;
   nElectronsThreshold_ = iConfig.getUntrackedParameter<double>("LeptonsAccept_nElectrons" ,    1 ) ;
   nLeptonsThreshold_   = iConfig.getUntrackedParameter<double>("LeptonsAccept_nLeptons"   ,    2 ) ;
+
+  electronCollectionLabel_     = iConfig.getParameter<edm::InputTag>("electronCollection"      ) ;
+  muonCollectionLabel_         = iConfig.getParameter<edm::InputTag>("muonCollection"          ) ;
+
+  electronCollectionToken_ =  iC.consumes<View<pat::Electron> > (electronCollectionLabel_);
+  muonCollectionToken_ =  iC.consumes<View<pat::Muon> > (muonCollectionLabel_);
 }
 IIHEModuleLeptonsAccept::~IIHEModuleLeptonsAccept(){}
 
@@ -22,20 +28,25 @@ void IIHEModuleLeptonsAccept::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModuleLeptonsAccept::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  pat::ElectronCollection electrons = parent_->getElectronCollection() ;
-  pat::MuonCollection muons = parent_->getMuonCollection() ;
+
+  edm::Handle<edm::View<pat::Electron> > electronCollection_;
+  iEvent.getByToken( electronCollectionToken_, electronCollection_) ;
+
+  edm::Handle<edm::View<pat::Muon> > muonCollection_;
+  iEvent.getByToken( muonCollectionToken_, muonCollection_) ;
 
   int nEl = 0 ;
   int nMu = 0 ;
   
-//  for(pat::ElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
-  for(vector<pat::Electron>::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
+  for( unsigned int i = 0 ; i < electronCollection_->size() ; i++ ) {
+    Ptr<pat::Electron> gsfiter = electronCollection_->ptrAt( i );
     float pt = gsfiter->pt() ;
     float HEEP_ET  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
     if(pt>ptThreshold_ || HEEP_ET>ptThreshold_) nEl++ ;
   }
-//  for(pat::MuonCollection::const_iterator muiter = muons.begin(); muiter!=muons.end() ; ++muiter){
-  for(vector<pat::Muon>::const_iterator muiter = muons.begin() ; muiter != muons.end() ; ++muiter){
+
+  for( unsigned int i = 0 ; i < muonCollection_->size() ; i++ ) {
+    Ptr<pat::Muon> muiter = muonCollection_->ptrAt( i );
     float pt = muiter->pt() ;
     if(pt>ptThreshold_) nMu++ ;
   }

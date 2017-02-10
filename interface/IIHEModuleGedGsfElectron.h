@@ -9,12 +9,16 @@ private:
   inline float etacorr(float eta, float pvz, float scz){ return asinh(sinh(eta)*(1.0-pvz/scz)) ; }
   edm::EDGetTokenT<EcalRecHitCollection>        ebReducedRecHitCollection_;
   edm::EDGetTokenT<EcalRecHitCollection>        eeReducedRecHitCollection_;
+  edm::EDGetTokenT<EcalRecHitCollection>        esReducedRecHitCollection_;
   edm::EDGetTokenT<reco::TrackCollection>       generalTracksToken_;
   edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_ ;
   edm::EDGetTokenT<double> rhoTokenAll_; 
   edm::EDGetTokenT<edm::ValueMap<float> > eleTrkPtIso_;
   edm::EDGetTokenT<edm::View<pat::Electron>> electronCollectionToken_;
   edm::InputTag      electronCollectionLabel_ ;
+  edm::EDGetTokenT<View<reco::Vertex>> vtxToken_;
+  edm::InputTag           primaryVertexLabel_ ;
+
 
 public:
   explicit IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);

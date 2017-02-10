@@ -25,6 +25,17 @@ IIHEModuleZBoson::IIHEModuleZBoson(const edm::ParameterSet& iConfig, edm::Consum
   saveZem_  = iConfig.getUntrackedParameter<bool>("ZBosonSaveZem" , true) ;
   saveZeeg_ = iConfig.getUntrackedParameter<bool>("ZBosonSaveZeeg", true) ;
   saveZmmg_ = iConfig.getUntrackedParameter<bool>("ZBosonSaveZmmg", true) ;
+
+
+  photonCollectionLabel_       = iConfig.getParameter<edm::InputTag>("photonCollection"        ) ;
+  electronCollectionLabel_     = iConfig.getParameter<edm::InputTag>("electronCollection"      ) ;
+  muonCollectionLabel_         = iConfig.getParameter<edm::InputTag>("muonCollection"          ) ;
+
+  electronCollectionToken_ =  iC.consumes<View<pat::Electron> > (electronCollectionLabel_);
+  muonCollectionToken_ =  iC.consumes<View<pat::Muon> > (muonCollectionLabel_);
+  photonCollectionToken_ =  iC.consumes<View<pat::Photon> > (photonCollectionLabel_);
+
+
 }
 IIHEModuleZBoson::~IIHEModuleZBoson(){}
 
@@ -89,19 +100,24 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   float mEl = 0.000511 ;
   float mMu = 0.105    ;
   
-  // Get leptons and photons
-  pat::ElectronCollection electrons = parent_->getElectronCollection() ;
-  pat::PhotonCollection photons        = parent_->getPhotonCollection() ;
-  pat::MuonCollection muons            = parent_->getMuonCollection() ;
-  
+
+  edm::Handle<edm::View<pat::Photon> > photonCollection_;
+  iEvent.getByToken( photonCollectionToken_, photonCollection_) ;
+
+  edm::Handle<edm::View<pat::Electron> > electronCollection_;
+  iEvent.getByToken( electronCollectionToken_, electronCollection_) ;
+
+  edm::Handle<edm::View<pat::Muon> > muonCollection_;
+  iEvent.getByToken( muonCollectionToken_, muonCollection_) ;
+
   // Declare and fill four vectors
   std::vector<TLorentzVector> php4s ;
   std::vector<TLorentzVector> elp4s ;
   std::vector<TLorentzVector> mup4s ;
   std::vector<TLorentzVector> HEEPp4s ;
   
-//  for(pat::PhotonCollection::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){
-  for(vector<pat::Photon>::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){
+  for( unsigned int i = 0 ; i < photonCollection_->size() ; i++ ) {
+    Ptr<pat::Photon> phiter = photonCollection_->ptrAt( i );
     float px = phiter->px() ;
     float py = phiter->py() ;
     float pz = phiter->pz() ;
@@ -110,9 +126,9 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     if(ET<ETThreshold_) continue ;
     php4s.push_back(TLorentzVector(px, py, pz, E)) ;
   }
-  
-//  for(pat::ElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
-  for(vector<pat::Electron>::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
+ 
+  for( unsigned int i = 0 ; i < electronCollection_->size() ; i++ ) {
+    Ptr<pat::Electron> gsfiter = electronCollection_->ptrAt( i );
     float px = gsfiter->px() ;
     float py = gsfiter->py() ;
     float pz = gsfiter->pz() ;
@@ -130,9 +146,8 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     HEEPp4s.push_back(HEEPp4) ;
   }
   
-
-//  for(pat::MuonCollection::const_iterator muiter = muons.begin(); muiter!=muons.end() ; ++muiter){
-  for(vector<pat::Muon>::const_iterator muiter = muons.begin() ; muiter != muons.end() ; ++muiter){
+  for( unsigned int i = 0 ; i < muonCollection_->size() ; i++ ) {
+    Ptr<pat::Muon> muiter = muonCollection_->ptrAt( i );
     float px = muiter->px() ;
     float py = muiter->py() ;
     float pz = muiter->pz() ;

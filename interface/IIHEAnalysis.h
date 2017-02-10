@@ -38,6 +38,7 @@
 #include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include "HLTrigger/HLTcore/interface/HLTPrescaleProvider.h"
+#include "DataFormats/Math/interface/Point3D.h"
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
@@ -94,47 +95,6 @@ public:
   void addToMCTruthWhitelist(std::vector<int>) ;
   std::vector<int> getMCTruthWhitelist(){ return MCTruthWhitelist_ ; }
   
-  // Particle collections
-  reco::SuperClusterCollection getSuperClusters(){
-    reco::SuperClusterCollection superClusters(superClusterCollection_->begin(), superClusterCollection_->end()) ;
-    return superClusters   ;
-  }
-  pat::PhotonCollection getPhotonCollection(){
-    pat::PhotonCollection        photons(  photonCollection_->begin(),   photonCollection_->end()) ;
-    return photons   ;
-  }
-  pat::ElectronCollection getElectronCollection(){
-    pat::ElectronCollection electrons(electronCollection_->begin(), electronCollection_->end());
-    return electrons ;
-  }
-  pat::MuonCollection getMuonCollection(){
-    pat::MuonCollection            muons(    muonCollection_->begin(),     muonCollection_->end()) ;
-    return muons     ;
-  }
-  
-  // Primary vertices
-  const reco::VertexCollection* getPrimaryVertices(){
-    const reco::VertexCollection* primaryVertices = pvCollection_.product() ;
-    return primaryVertices ;
-  }
-  math::XYZPoint* getFirstPrimaryVertex(){ return firstPrimaryVertex_ ; }
-  math::XYZPoint* getBeamspot(){ return beamspot_ ; }
-  int getPreScaleIndex(){ return preScaleIndex_ ; }
-/* CHOOSE_RELEASE_START DEFAULT
-  edm::EDGetTokenT<EcalRecHitCollection> getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollectionToken_ ; }
-  edm::EDGetTokenT<EcalRecHitCollection> getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollectionToken_ ; }
-  edm::EDGetTokenT<EcalRecHitCollection>     getReducedESRecHitCollectionToken(){ return     reducedESRecHitCollectionToken_ ; }
- CHOOSE_RELEASE_END DEFAULT*/
-// CHOOSE_RELEASE_START CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_7_6_3
-  edm::EDGetTokenT<EcalRecHitCollection> getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollectionToken_ ; }
-  edm::EDGetTokenT<EcalRecHitCollection> getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollectionToken_ ; }
-  edm::EDGetTokenT<EcalRecHitCollection>     getReducedESRecHitCollectionToken(){ return esReducedRecHitCollection_; }
-//CHOOSE_RELEASE_END CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_7_6_3
-/* CHOOSE_RELEASE_START CMSSW_5_3_11
-  edm::InputTag getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollection_ ; }
-  edm::InputTag getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollection_ ; }
-CHOOSE_RELEASE_END CMSSW_5_3_11*/
-
   void configureBranches();
   std::vector<std::string> splitString(const std::string&, const char*) ;
   
@@ -186,7 +146,6 @@ private:
   bool includeElectronModule_        ;
   bool includeMuonModule_            ;
   bool includeMETModule_             ;
-  bool includeHEEPModule_            ;
   bool includeMCTruthModule_         ;
   bool includeTriggerModule_         ;
   bool includeZBosonModule_          ;
@@ -196,34 +155,6 @@ private:
 
 
   
-  // Collections of physics objects
-  edm::Handle<reco::SuperClusterCollection> superClusterCollection_ ;
-  edm::Handle<edm::View<pat::Photon>>       photonCollection_ ;
-  edm::Handle<edm::View<pat::Electron>>     electronCollection_ ;
-  edm::Handle<edm::View<pat::Muon>>         muonCollection_ ;
-  edm::Handle<reco::VertexCollection > pvCollection_ ;
-  edm::Handle<pat::ElectronCollection >     electronCollectionMiniAOD_ ;
-
-  edm::EDGetTokenT<reco::VertexCollection> vtxToken_;
-  edm::EDGetTokenT<edm::View<pat::Electron> > electronCollectionToken_;
-  edm::EDGetTokenT<edm::View<pat::Muon> > muonCollectionToken_;
-  edm::EDGetTokenT<edm::View<pat::Photon> > photonCollectionToken_; 
-  edm::EDGetTokenT<reco::SuperClusterCollection> superClusterCollectionToken_ ;
-
-  edm::InputTag  superClusterCollectionLabel_ ;
-  edm::InputTag        photonCollectionLabel_ ;
-  edm::InputTag      electronCollectionLabel_ ;
-  edm::InputTag          muonCollectionLabel_ ;
-  edm::InputTag           primaryVertexLabel_ ;
-  edm::InputTag trigEventTag_;
-  edm::EDGetTokenT<trigger::TriggerEvent> trigEvent_;
-  edm::Handle<reco::BeamSpot> beamspotHandle_ ;
-  edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_ ;
-  math::XYZPoint* beamspot_ ;
-  math::XYZPoint* firstPrimaryVertex_ ;
-  int preScaleIndex_; 
-  HLTPrescaleProvider hltPrescaleProvider_;
- 
   // The event only gets saved if acceptEvent_ == true
   bool acceptEvent_ ;
   // This variable is used to reject an event early on.  This prevents the analyser
@@ -233,24 +164,6 @@ private:
   std::vector<float> nRuns_; 
   int nEvents_ ;
   int nEventsStored_ ;
-  
-  edm::InputTag reducedBarrelRecHitCollection_ ;
-  edm::InputTag reducedEndcapRecHitCollection_ ;
-  
-/*CHOOSE_RELEASE_START DEFAULT
-  edm::EDGetTokenT<EcalRecHitCollection> reducedBarrelRecHitCollectionToken_ ;
-  edm::EDGetTokenT<EcalRecHitCollection> reducedEndcapRecHitCollectionToken_ ;
-  edm::EDGetTokenT<EcalRecHitCollection>     reducedESRecHitCollectionToken_ ;
- CHOOSE_RELEASE_END DEFAULT*/
-//CHOOSE_RELEASE_START CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_7_6_3
-  edm::EDGetTokenT<EcalRecHitCollection> reducedBarrelRecHitCollectionToken_ ;
-  edm::EDGetTokenT<EcalRecHitCollection> reducedEndcapRecHitCollectionToken_ ;
-  edm::EDGetTokenT<EcalRecHitCollection> esReducedRecHitCollection_;
-//CHOOSE_RELEASE_END CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_7_6_3
-/*CHOOSE_RELEASE_START CMSSW_5_3_11 
-CHOOSE_RELEASE_END CMSSW_5_3_11*/
-
-    
   bool debug_;
   std::string git_hash_  ;
   std::string globalTag_ ;
@@ -258,9 +171,7 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
   // MC truth module
   IIHEModuleMCTruth* MCTruthModule_ ;
   std::vector<int> MCTruthWhitelist_ ;
-  
   std::vector<IIHEModule*> childModules_;
-  
   std::vector<BranchWrapperF*> metaTreePars_ ;
   
   TTree* dataTree_ ;

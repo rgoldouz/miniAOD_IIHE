@@ -112,7 +112,6 @@ void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup&
 
 void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
   bool changed = true ;
-  
   if(hltConfig_.init(iRun, iSetup, hlTriggerResultsTag_.process(), changed)){
     if(changed){
       clearHLTrigger();

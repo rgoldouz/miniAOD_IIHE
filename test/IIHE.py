@@ -92,11 +92,7 @@ if options.DataProcessing == "data":
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring())
 
-process.source.fileNames.append( 'file:MC_MINIAOD.root' )
-#process.source.fileNames.append( 'file:rerecodata.root' )
-#process.source.fileNames.append( 'file:data.root' )
-#process.source.fileNames.append( 'file:ZToEE_NNPDF30_13TeV-powheg_M_2300_3500.root' )
-#process.source.fileNames.append( 'file:ZToEE_NNPDF30_13TeV-powheg_M_120_200_PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3-v1_S2EGHEIssue_11.root')
+process.source.fileNames.append( 'file:MC_MINIAOD2.root' )
 ###
 filename_out = "outfile.root"
 if options.DataProcessing == "mc":
@@ -121,7 +117,6 @@ process.load("UserCode.IIHETree.IIHETree_cfi")
 # Setting thresholds reduces the size of the output files significantly
 process.IIHEAnalysis.MCTruth_ptThreshold = cms.untracked.double(10.0)
 process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
-
 pt_threshold = 15
 
 # Only save some triggers.
@@ -142,8 +137,6 @@ process.IIHEAnalysis.globalTag = cms.string(globalTag)
 
 #Track isolation correction
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-#process.load("PhysicsTools.PatAlgos.slimming.packedCandidatesForTrkIso_cfi")
-#process.load("PhysicsTools.PatAlgos.slimming.primaryVertexAssociation_cfi")
 process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
 
 
@@ -152,7 +145,6 @@ process.IIHEAnalysis.photonCollection    = cms.InputTag('slimmedPhotons'        
 process.IIHEAnalysis.electronCollection  = cms.InputTag('slimmedElectrons')
 process.IIHEAnalysis.muonCollection      = cms.InputTag('slimmedMuons'          )
 process.IIHEAnalysis.METCollection      = cms.InputTag('slimmedMETs')
-
 process.IIHEAnalysis.superClusterCollection = cms.InputTag('reducedEgamma', 'reducedSuperClusters')
 process.IIHEAnalysis.reducedBarrelRecHitCollection = cms.InputTag('reducedEcalRecHitsEB')
 process.IIHEAnalysis.reducedEndcapRecHitCollection = cms.InputTag('reducedEcalRecHitsEE')
@@ -233,9 +225,6 @@ process.IIHEAnalysis.debug = cms.bool(False)
 #)
 
 process.p1 = cms.Path(
-#    process.CorrectedEle  *
-#    process.primaryVertexAssociation   *
-#    process.packedCandsForTkIso    *
     process.heepIDVarValueMaps    *
     process.IIHEAnalysis 
 )

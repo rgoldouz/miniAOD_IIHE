@@ -52,7 +52,7 @@ public:
   
   void addBranches(IIHEAnalysis*) ;
   void reset() ;
-  void fill(reco::TrackRef&, math::XYZPoint*, math::XYZPoint*) ;
+  void fill(reco::TrackRef&, math::XYZPoint, math::XYZPoint) ;
   void store(IIHEAnalysis*) ;
   
   // Taken from DataFormats/MuonReco/interface/Muon.h
@@ -123,10 +123,19 @@ private:
   IIHEMuonTrackWrapper* globalTrackWrapper_ ;
   IIHEMuonTrackWrapper* outerTrackWrapper_  ;
   IIHEMuonTrackWrapper* innerTrackWrapper_  ;
-  
+  IIHEMuonTrackWrapper* improvedMuonBestTrackWrapper_  ;
+
+  edm::EDGetTokenT<edm::View<pat::Muon> > muonCollectionToken_;
+  edm::InputTag          muonCollectionLabel_ ;
+
+  edm::Handle<View<reco::Vertex>> pvCollection_ ;
+  edm::EDGetTokenT<View<reco::Vertex>> vtxToken_;
+  edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_ ;
+  edm::InputTag           primaryVertexLabel_ ;
   bool storeGlobalTrackMuons_ ;
   bool storeStandAloneMuons_  ;
   bool storeInnerTrackMuons_  ;
+  bool storeImprovedMuonBestTrackMuons_  ;
   float ptThreshold_ ;
 };
 #endif

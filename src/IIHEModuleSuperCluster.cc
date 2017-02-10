@@ -21,7 +21,13 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleSuperCluster::IIHEModuleSuperCluster(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){}
+IIHEModuleSuperCluster::IIHEModuleSuperCluster(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
+  superClusterCollectionLabel_ = iConfig.getParameter<edm::InputTag>("superClusterCollection"  ) ;
+  superClusterCollectionToken_ =  iC.consumes<View<reco::SuperCluster>> (superClusterCollectionLabel_);
+
+  primaryVertexLabel_          = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
+  vtxToken_ = iC.consumes<View<reco::Vertex>>(primaryVertexLabel_);
+}
 IIHEModuleSuperCluster::~IIHEModuleSuperCluster(){}
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -45,13 +51,20 @@ void IIHEModuleSuperCluster::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModuleSuperCluster::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+
+  edm::Handle<View<reco::SuperCluster>> superClusterCollection_ ;
+  iEvent.getByToken(superClusterCollectionToken_, superClusterCollection_) ;
   // Retrieve primary vertex collection
-  math::XYZPoint* firstPV = parent_->getFirstPrimaryVertex() ;
-  float pv_z = firstPV->z() ;
+  edm::Handle<View<reco::Vertex> > pvCollection_ ;
+  iEvent.getByToken( vtxToken_ , pvCollection_);
+  edm::Ptr<reco::Vertex> firstpvertex = pvCollection_->ptrAt( 0 );;
+
+  float pv_z = firstpvertex->z() ;
   
-  reco::SuperClusterCollection superClusters = parent_->getSuperClusters() ;
-  store("sc_n", (unsigned int) superClusters.size()) ;
-  for(reco::SuperClusterCollection::const_iterator scIt=superClusters.begin(); scIt!=superClusters.end(); ++scIt){
+  store("sc_n", (unsigned int) superClusterCollection_->size()) ;
+
+  for( unsigned int i = 0 ; i < superClusterCollection_->size() ; i++ ) {
+    Ptr<reco::SuperCluster> scIt = superClusterCollection_->ptrAt( i );
     float sc_energy = scIt->rawEnergy()+scIt->preshowerEnergy() ;
     float sc_et     = sc_energy/cosh(scIt->eta()) ;
     float etaCorr = etacorr( scIt->eta(), pv_z, scIt->position().z()) ;
@@ -67,6 +80,7 @@ void IIHEModuleSuperCluster::analyze(const edm::Event& iEvent, const edm::EventS
     store("sc_py"       , sc_et*sin(scIt->phi()));
     store("sc_pz"       , sc_energy*tanh(scIt->eta())) ;
     store("sc_x"        , scIt->position().x()) ;
+  edm::InputTag          muonCollectionLabel_ ;
     store("sc_y"        , scIt->position().y()) ;
     store("sc_z"        , scIt->position().z()) ;
   }

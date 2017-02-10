@@ -11,6 +11,13 @@ private:
   float ptThreshold_ ;
   int   nElectronsThreshold_ ;
   int   nLeptonsThreshold_   ;
+
+  edm::EDGetTokenT<edm::View<pat::Electron> > electronCollectionToken_;
+  edm::EDGetTokenT<edm::View<pat::Muon> > muonCollectionToken_;
+
+  edm::InputTag      electronCollectionLabel_ ;
+  edm::InputTag          muonCollectionLabel_ ;
+
 public:
   explicit IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
   explicit IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};

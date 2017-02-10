@@ -12,7 +12,10 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModulePhoton::IIHEModulePhoton(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){}
+IIHEModulePhoton::IIHEModulePhoton(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
+  photonCollectionLabel_       = iConfig.getParameter<edm::InputTag>("photonCollection"        ) ;
+  photonCollectionToken_ =  iC.consumes<View<pat::Photon> > (photonCollectionLabel_);
+}
 IIHEModulePhoton::~IIHEModulePhoton(){}
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -135,11 +138,14 @@ CHOOSE_RELEASE_END CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
 
 // ------------ method called to for each event  ------------
 void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  pat::PhotonCollection photons = parent_->getPhotonCollection() ;
-  
-  store("ph_n", (unsigned int) photons.size()) ;
-//  for(pat::PhotonCollection::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){
-  for(vector<pat::Photon>::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){
+
+  edm::Handle<edm::View<pat::Photon> > photonCollection_;
+  iEvent.getByToken( photonCollectionToken_, photonCollection_) ;
+
+  store("ph_n", (unsigned int) photonCollection_->size()) ;
+  for( unsigned int i = 0 ; i < photonCollection_->size() ; i++ ) {
+    Ptr<pat::Photon> phiter = photonCollection_->ptrAt( i );
+
     store("ph_px"    , phiter->px()) ;
     store("ph_py"    , phiter->py()) ;
     store("ph_pz"    , phiter->pz()) ;
@@ -149,12 +155,10 @@ void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     store("ph_phi"   , phiter->phi()) ;
     store("ph_energy", phiter->energy()) ;
     store("ph_mass"  , phiter->mass()) ;
-  
     store("ph_isPFlowPhoton"                 , phiter->isPFlowPhoton()                   ) ;
     store("ph_isStandardPhoton"              , phiter->isStandardPhoton()                ) ;
     store("ph_hasConversionTracks"           , phiter->hasConversionTracks()             ) ;
     store("ph_hasPixelSeed"                  , phiter->hasPixelSeed()                    ) ;
-    //store("ph_conversionTrackProvenance"     , phiter->conversionTrackProvenance()       ) ;
     store("ph_isEB"                          , phiter->isEB()                            ) ;
     store("ph_isEE"                          , phiter->isEE()                            ) ;
     store("ph_isEBGap"                       , phiter->isEBGap()                         ) ;
@@ -164,7 +168,6 @@ void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     store("ph_isEERingGap"                   , phiter->isEERingGap()                     ) ;
     store("ph_isEEDeeGap"                    , phiter->isEEDeeGap()                      ) ;
     store("ph_isEBEEGap"                     , phiter->isEBEEGap()                       ) ;
-
     store("ph_hadronicOverEm"                , phiter->hadronicOverEm()                  ) ;
     store("ph_hadronicDepth1OverEm"          , phiter->hadronicDepth1OverEm()            ) ;
     store("ph_hadronicDepth2OverEm"          , phiter->hadronicDepth2OverEm()            ) ;
@@ -176,17 +179,12 @@ void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     store("ph_e2x5"                          , phiter->e2x5()                            ) ;
     store("ph_e3x3"                          , phiter->e3x3()                            ) ;
     store("ph_e5x5"                          , phiter->e5x5()                            ) ;
-
     store("ph_maxEnergyXtal"                 , phiter->maxEnergyXtal()                   ) ;
     store("ph_sigmaEtaEta"                   , phiter->sigmaEtaEta()                     ) ;
     store("ph_sigmaIetaIeta"                 , phiter->sigmaIetaIeta()                   ) ;
-
     store("ph_r1x5"                          , phiter->r1x5()                            ) ;
     store("ph_r2x5"                          , phiter->r2x5()                            ) ;
     store("ph_r9"                            , phiter->r9()                              ) ;
-
-    //store("ph_CorrectedEnergy"               , phiter->CorrectedEnergy()                 ) ;
-    //store("ph_CorrectedEnergyError"          , phiter->CorrectedEnergyError()            ) ;
 
     store("ph_mipChi2"                       , phiter->mipChi2()                         ) ;
     store("ph_mipTotEnergy"                  , phiter->mipTotEnergy()                    ) ;
@@ -223,15 +221,11 @@ void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     store("ph_neutralHadronIso"               , phiter->neutralHadronIso()               ) ;
     store("ph_photonIso"                      , phiter->photonIso()                      ) ;
     
-//CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_6_3
     store("ph_chargedHadronIsoWrongVtx"       , phiter->chargedHadronIsoWrongVtx()       ) ;
     store("ph_sumChargedParticlePt"           , phiter->sumChargedParticlePt()           ) ;
     store("ph_sumNeutralHadronEtHighThreshold", phiter->sumNeutralHadronEtHighThreshold()) ;
     store("ph_sumPhotonEtHighThreshold"       , phiter->sumPhotonEtHighThreshold()       ) ;
     store("ph_sumPUPt"                        , phiter->sumPUPt()                        ) ;
-//CHOOSE_RELEASE_END CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_6_3
-/*CHOOSE_RELEASE_START CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
-CHOOSE_RELEASE_END CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
 
     store("ph_nClusterOutsideMustache"        , phiter->nClusterOutsideMustache()        ) ;
     store("ph_etOutsideMustache"              , phiter->etOutsideMustache()              ) ;
