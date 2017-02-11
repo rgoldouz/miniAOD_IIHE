@@ -32,7 +32,7 @@ options.register('DataProcessing',
                  "data",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
-                 'Data processing types. Options are:mc,mcreHLT,data,rerecodata,promptdata')
+                 'Data processing types. Options are:mc,rerecodata,promptdata')
 options.register('dataset',
                  "",
                  opts.VarParsing.multiplicity.singleton,
@@ -44,18 +44,12 @@ options.parseArguments()
 ##########################################################################################
 #                                      Global tags                                       #
 ##########################################################################################
-if options.DataProcessing == "mc":
-  globalTag = '80X_mcRun2_asymptotic_2016_v3'
 if options.DataProcessing == "mc2016":
   globalTag = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
-if options.DataProcessing == "mcreHLT":
-  globalTag = '80X_mcRun2_asymptotic_v14'
-if options.DataProcessing == "data":
-  globalTag = '80X_dataRun2_Prompt_v8'
 if options.DataProcessing == "rerecodata":
-  globalTag = '80X_dataRun2_2016SeptRepro_v4'
+  globalTag = '80X_dataRun2_2016SeptRepro_v7'
 if options.DataProcessing == "promptdata":
-  globalTag = '80X_dataRun2_Prompt_v14'
+  globalTag = '80X_dataRun2_Prompt_v16'
 
 ##########################################################################################
 #                                  Start the sequences                                   #
@@ -92,7 +86,8 @@ if options.DataProcessing == "data":
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring())
 
-process.source.fileNames.append( 'file:MC_MINIAOD2.root' )
+#process.source.fileNames.append( 'file:MC_MINIAOD2.root' )
+process.source.fileNames.append( 'file:03Feb2017data.root' )
 ###
 filename_out = "outfile.root"
 if options.DataProcessing == "mc":
@@ -119,19 +114,8 @@ process.IIHEAnalysis.MCTruth_ptThreshold = cms.untracked.double(10.0)
 process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
 pt_threshold = 15
 
-# Only save some triggers.
-process.IIHEAnalysis.TriggerResults = cms.InputTag('TriggerResults', '', 'HLT')
-process.IIHEAnalysis.triggerEvent = cms.InputTag('hltTriggerSummaryAOD','','HLT')
-if options.DataProcessing == "mcreHLT":
-  process.IIHEAnalysis.TriggerResults = cms.InputTag('TriggerResults', '', 'HLT2')
-  process.IIHEAnalysis.triggerEvent = cms.InputTag('hltTriggerSummaryAOD','','HLT2')
-
-
 triggers = 'singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon'
 process.IIHEAnalysis.triggers = cms.untracked.string(triggers)
-
-#process.IIHEAnalysis.triggers = cms.untracked.string('doubleElectron')
-
 process.IIHEAnalysis.globalTag = cms.string(globalTag)
 
 
@@ -140,23 +124,31 @@ process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
 
 
-# Collections.
-process.IIHEAnalysis.photonCollection    = cms.InputTag('slimmedPhotons'        )
-process.IIHEAnalysis.electronCollection  = cms.InputTag('slimmedElectrons')
-process.IIHEAnalysis.muonCollection      = cms.InputTag('slimmedMuons'          )
-process.IIHEAnalysis.METCollection      = cms.InputTag('slimmedMETs')
-process.IIHEAnalysis.superClusterCollection = cms.InputTag('reducedEgamma', 'reducedSuperClusters')
-process.IIHEAnalysis.reducedBarrelRecHitCollection = cms.InputTag('reducedEcalRecHitsEB')
-process.IIHEAnalysis.reducedEndcapRecHitCollection = cms.InputTag('reducedEcalRecHitsEE')
-process.IIHEAnalysis.eventRho = cms.InputTag('fixedGridRhoFastjetAll')
-process.IIHEAnalysis.ebReducedRecHitCollection = cms.InputTag("reducedEgamma", "reducedEBRecHits")
-process.IIHEAnalysis.eeReducedRecHitCollection = cms.InputTag("reducedEgamma", "reducedEERecHits")
-process.IIHEAnalysis.esReducedRecHitCollection = cms.InputTag("reducedEgamma", "reducedESRecHits")
-process.IIHEAnalysis.generatorLabel = cms.InputTag("generator")
-process.IIHEAnalysis.PileUpSummaryInfo = cms.untracked.InputTag('slimmedAddPileupInfo')
-process.IIHEAnalysis.genParticleSrc = cms.InputTag("prunedGenParticles")
-process.IIHEAnalysis.pfCands = cms.InputTag("packedPFCandidates")
-process.IIHEAnalysis.eleTrkPtIsoLabel =  cms.InputTag("heepIDVarValueMaps","eleTrkPtIso","IIHEAnalysis")
+# Collections for DATA and MC.
+process.IIHEAnalysis.TriggerResults             = cms.InputTag('TriggerResults', '', 'HLT')
+process.IIHEAnalysis.triggerEvent               = cms.InputTag('hltTriggerSummaryAOD','','HLT')
+process.IIHEAnalysis.photonCollection           = cms.InputTag('slimmedPhotons'        )
+process.IIHEAnalysis.electronCollection         = cms.InputTag('slimmedElectrons')
+process.IIHEAnalysis.muonCollection             = cms.InputTag('slimmedMuons'          )
+process.IIHEAnalysis.METCollection              = cms.InputTag('slimmedMETs')
+process.IIHEAnalysis.superClusterCollection     = cms.InputTag('reducedEgamma', 'reducedSuperClusters')
+process.IIHEAnalysis.eventRho                   = cms.InputTag('fixedGridRhoFastjetAll')
+process.IIHEAnalysis.ebReducedRecHitCollection  = cms.InputTag("reducedEgamma", "reducedEBRecHits")
+process.IIHEAnalysis.eeReducedRecHitCollection  = cms.InputTag("reducedEgamma", "reducedEERecHits")
+process.IIHEAnalysis.esReducedRecHitCollection  = cms.InputTag("reducedEgamma", "reducedESRecHits")
+process.IIHEAnalysis.PileUpSummaryInfo          = cms.untracked.InputTag('slimmedAddPileupInfo')
+process.IIHEAnalysis.eleTrkPtIsoLabel           = cms.InputTag("heepIDVarValueMaps","eleTrkPtIso","IIHEAnalysis")
+
+# Collections for MC only.
+process.IIHEAnalysis.generatorLabel             = cms.InputTag("generator")
+process.IIHEAnalysis.genParticleSrc             = cms.InputTag("prunedGenParticles")
+# Collections for DATA only.
+process.IIHEAnalysis.electronsBeforeGSFixCollection              = cms.InputTag('slimmedElectronsBeforeGSFix')
+process.IIHEAnalysis.particleFlowEGammaGSFixedCollection         = cms.InputTag('particleFlowEGammaGSFixed', 'dupECALClusters')
+process.IIHEAnalysis.ecalMultiAndGSGlobalRecHitEBCollection      = cms.InputTag('ecalMultiAndGSGlobalRecHitEB', 'hitsNotReplaced')
+process.IIHEAnalysis.METsMuEGCleanCollection                     = cms.InputTag('slimmedMETsMuEGClean')
+process.IIHEAnalysis.discardedMuonCollection                     = cms.InputTag('packedPFCandidatesDiscarded')
+
 
 # Trigger matching stuff.  0.5 should be sufficient.
 process.IIHEAnalysis.muon_triggerDeltaRThreshold = cms.untracked.double(0.5)
@@ -200,15 +192,15 @@ process.IIHEAnalysis.includePhotonModule         = cms.untracked.bool(True)
 process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
-
-process.IIHEAnalysis.includeHEEPModule           = cms.untracked.bool(False)
 process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(True)
 process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(False)
 process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(False)
 
+if ('data' in options.DataProcessing): 
+    process.IIHEAnalysis.includeMCTruthModule         = cms.untracked.bool(False)
+if ('mc' in options.DataProcessing):
+    process.IIHEAnalysis.includeDataModule            = cms.untracked.bool(False)
 
-process.IIHEAnalysis.includeMCTruthModule         = cms.untracked.bool(('mc' in options.DataProcessing))
-#process.IIHEAnalysis.includeMCTruthModule         = cms.untracked.bool(False)
 #change it to true if you want to save all events
 process.IIHEAnalysis.includeAutoAcceptEventModule= cms.untracked.bool(False)
 

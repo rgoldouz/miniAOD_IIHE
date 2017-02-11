@@ -476,7 +476,7 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
       gsfiter->dr03EcalRecHitSumEt() + gsfiter->dr03HcalDepth1TowerSumEt() < 2 + 0.03 * ET + 0.28 * rho   && 
       (*eleTrkPtIsoHandle_).get(gsfref) < 5) isHeep = true;
     //endcap
-    if ( ET > 35  && (fabs(gsfiter->superCluster()->eta()) > 1.566  || (abs(gsfiter->superCluster()->eta()) < 2.5) )&&
+    if ( ET > 35  && (fabs(gsfiter->superCluster()->eta()) > 1.566  && (abs(gsfiter->superCluster()->eta()) < 2.5) )&&
       gsfiter->ecalDrivenSeed()                                            &&
       fabs(gsfiter->deltaEtaSeedClusterTrackAtVtx()) < 0.006                    &&
       fabs(gsfiter->deltaPhiSuperClusterTrackAtVtx()) < 0.06                     &&
@@ -486,7 +486,7 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
       fabs(gsfiter->gsfTrack()->dxy(firstpvertex->position())) < 0.05                       &&
       (( ET < 50 && gsfiter->dr03EcalRecHitSumEt() + gsfiter->dr03HcalDepth1TowerSumEt() < 2.5 + 0.28 * rho) || 
       ( ET > 50 && gsfiter->dr03EcalRecHitSumEt() + gsfiter->dr03HcalDepth1TowerSumEt() < 2.5 + 0.03 * (ET-50) + 0.28 * rho)) &&
-      (*eleTrkPtIsoHandle_).get(gsfref)) isHeep = true;
+      (*eleTrkPtIsoHandle_).get(gsfref) < 5) isHeep = true;
 
     store("gsf_isHeepV7", isHeep);
  }

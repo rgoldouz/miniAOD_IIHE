@@ -19,6 +19,7 @@
 #include "UserCode/IIHETree/interface/IIHEModuleMuon.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMCTruth.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMET.h"
+#include "UserCode/IIHETree/interface/IIHEModuleData.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTrigger.h"
 #include "UserCode/IIHETree/interface/IIHEModuleZBoson.h"
 #include "UserCode/IIHETree/interface/IIHEModuleLeptonsAccept.h"
@@ -58,6 +59,7 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   includeElectronModule_        = iConfig.getUntrackedParameter<bool>("includeElectronModule"       , true ) ;
   includeMuonModule_            = iConfig.getUntrackedParameter<bool>("includeMuonModule"           , true ) ;
   includeMETModule_             = iConfig.getUntrackedParameter<bool>("includeMETModule"            , true ) ;
+  includeDataModule_             = iConfig.getUntrackedParameter<bool>("includeDataModule"            , true ) ;
   includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"        , true ) ;
   includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"         , true ) ;
   includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule", true ) ;
@@ -75,6 +77,7 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   if(includeElectronModule_       ) childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig ,consumesCollector()) ) ;
   if(includeMuonModule_           ) childModules_.push_back(new IIHEModuleMuon(iConfig ,consumesCollector())           ) ;
   if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig ,consumesCollector())            ) ;
+  if(includeDataModule_            ) childModules_.push_back(new IIHEModuleData(iConfig ,consumesCollector())            ) ;
   if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig ,consumesCollector())         ) ;  
   if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig ,consumesCollector())) ;  
 }

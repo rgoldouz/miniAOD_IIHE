@@ -146,6 +146,7 @@ private:
   bool includeElectronModule_        ;
   bool includeMuonModule_            ;
   bool includeMETModule_             ;
+  bool includeDataModule_             ;
   bool includeMCTruthModule_         ;
   bool includeTriggerModule_         ;
   bool includeZBosonModule_          ;
