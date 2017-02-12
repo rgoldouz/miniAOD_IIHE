@@ -37,8 +37,12 @@ private:
   edm::EDGetTokenT<View<pat::PackedCandidate> > pfcandidateCollectionToken_;
   edm::InputTag   pfcandidateCollectionLabel_ ;
 
-  edm::EDGetTokenT<View<edm::EDCollection<DetId>>> ecalMultiAndGSGlobalRecHitEBToken_;
+  edm::EDGetTokenT<edm::EDCollection<DetId>> ecalMultiAndGSGlobalRecHitEBToken_;
   edm::InputTag   ecalMultiAndGSGlobalRecHitEBLabel_ ;
 
+  edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
+  edm::InputTag triggerResultsLabel_;
+
+  float ETThreshold_ ;
 };
 #endif

@@ -66,7 +66,7 @@ process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
 
 process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring('ProductNotFound') )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -145,7 +145,7 @@ process.IIHEAnalysis.genParticleSrc             = cms.InputTag("prunedGenParticl
 # Collections for DATA only.
 process.IIHEAnalysis.electronsBeforeGSFixCollection              = cms.InputTag('slimmedElectronsBeforeGSFix')
 process.IIHEAnalysis.particleFlowEGammaGSFixedCollection         = cms.InputTag('particleFlowEGammaGSFixed', 'dupECALClusters')
-process.IIHEAnalysis.ecalMultiAndGSGlobalRecHitEBCollection      = cms.InputTag('ecalMultiAndGSGlobalRecHitEB', 'hitsNotReplaced')
+process.IIHEAnalysis.ecalMultiAndGSGlobalRecHitEBCollection      = cms.InputTag('ecalMultiAndGSGlobalRecHitEB','dupESClusters','PAT')
 process.IIHEAnalysis.METsMuEGCleanCollection                     = cms.InputTag('slimmedMETsMuEGClean')
 process.IIHEAnalysis.discardedMuonCollection                     = cms.InputTag('packedPFCandidatesDiscarded')
 
