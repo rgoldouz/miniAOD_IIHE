@@ -34,6 +34,7 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
@@ -146,6 +147,7 @@ private:
   bool includeElectronModule_        ;
   bool includeMuonModule_            ;
   bool includeMETModule_             ;
+  bool includeTauModule_             ;
   bool includeDataModule_             ;
   bool includeMCTruthModule_         ;
   bool includeTriggerModule_         ;
