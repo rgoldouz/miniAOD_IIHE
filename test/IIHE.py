@@ -181,12 +181,15 @@ process.IIHEAnalysis.ZBosonSaveZmmg = cms.untracked.bool(False)
 process.IIHEAnalysis.electrons_ETThreshold = cms.untracked.double(pt_threshold)
 process.IIHEAnalysis.muon_pTThreshold      = cms.untracked.double(pt_threshold)
 
-process.IIHEAnalysis.LeptonsAccept_pTThreshold = cms.untracked.double(pt_threshold)
-# Require at least two leptons...
-process.IIHEAnalysis.LeptonsAccept_nLeptons    = cms.untracked.double(2)
-# ...at least one of which is an electron.
-process.IIHEAnalysis.LeptonsAccept_nElectrons  = cms.untracked.double(1)
-
+# IMPORTANT         ****SKIM****
+process.IIHEAnalysis.LeptonsAccept_pTThreshold = cms.untracked.double(20)
+process.IIHEAnalysis.LeptonsAccept_Ele        = cms.untracked.double(2)
+process.IIHEAnalysis.LeptonsAccept_nEleMu     = cms.untracked.double(2)
+process.IIHEAnalysis.LeptonsAccept_nEleTau    = cms.untracked.double(2)
+process.IIHEAnalysis.LeptonsAccept_nMu        = cms.untracked.double(999)
+process.IIHEAnalysis.LeptonsAccept_nMuTau     = cms.untracked.double(2)
+process.IIHEAnalysis.LeptonsAccept_nTau       = cms.untracked.double(999)
+#***********************************************************************
 
 process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)

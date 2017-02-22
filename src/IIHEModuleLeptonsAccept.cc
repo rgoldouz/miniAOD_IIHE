@@ -9,15 +9,21 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleLeptonsAccept::IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
-  ptThreshold_         = iConfig.getUntrackedParameter<double>("LeptonsAccept_pTThreshold", 30.0 ) ;
-  nElectronsThreshold_ = iConfig.getUntrackedParameter<double>("LeptonsAccept_nElectrons" ,    1 ) ;
-  nLeptonsThreshold_   = iConfig.getUntrackedParameter<double>("LeptonsAccept_nLeptons"   ,    2 ) ;
+  ptThreshold_         = iConfig.getUntrackedParameter<double>("LeptonsAccept_pTThreshold", 15.0 ) ;
+  nEleThreshold_       = iConfig.getUntrackedParameter<double>("LeptonsAccept_Ele"      ,    0 ) ;
+  nEleMuThreshold_     = iConfig.getUntrackedParameter<double>("LeptonsAccept_nEleMu"   ,    0 ) ;
+  nEleTauThreshold_    = iConfig.getUntrackedParameter<double>("LeptonsAccept_nEleTau"  ,    0 ) ;
+  nMuThreshold_        = iConfig.getUntrackedParameter<double>("LeptonsAccept_nMu"      ,    0 ) ;
+  nMuTauThreshold_     = iConfig.getUntrackedParameter<double>("LeptonsAccept_nMuTau"   ,    0 ) ;
+  nTauThreshold_       = iConfig.getUntrackedParameter<double>("LeptonsAccept_nTau"     ,    0 ) ;
 
   electronCollectionLabel_     = iConfig.getParameter<edm::InputTag>("electronCollection"      ) ;
   muonCollectionLabel_         = iConfig.getParameter<edm::InputTag>("muonCollection"          ) ;
+  tauCollectionLabel_          = iConfig.getParameter<edm::InputTag>("tauCollection");
 
   electronCollectionToken_ =  iC.consumes<View<pat::Electron> > (electronCollectionLabel_);
-  muonCollectionToken_ =  iC.consumes<View<pat::Muon> > (muonCollectionLabel_);
+  muonCollectionToken_     =  iC.consumes<View<pat::Muon> > (muonCollectionLabel_);
+  tauCollectionToken_      =  iC.consumes<View<pat::Tau>> (tauCollectionLabel_);
 }
 IIHEModuleLeptonsAccept::~IIHEModuleLeptonsAccept(){}
 
@@ -35,8 +41,12 @@ void IIHEModuleLeptonsAccept::analyze(const edm::Event& iEvent, const edm::Event
   edm::Handle<edm::View<pat::Muon> > muonCollection_;
   iEvent.getByToken( muonCollectionToken_, muonCollection_) ;
 
+  Handle<View<pat::Tau> > tauCollection_ ;
+  iEvent.getByToken( tauCollectionToken_, tauCollection_ );
+
   int nEl = 0 ;
   int nMu = 0 ;
+  int nTau = 0 ;
   
   for( unsigned int i = 0 ; i < electronCollection_->size() ; i++ ) {
     Ptr<pat::Electron> gsfiter = electronCollection_->ptrAt( i );
@@ -50,10 +60,22 @@ void IIHEModuleLeptonsAccept::analyze(const edm::Event& iEvent, const edm::Event
     float pt = muiter->pt() ;
     if(pt>ptThreshold_) nMu++ ;
   }
+
+  for ( unsigned int i = 0; i <tauCollection_->size(); ++i) {
+    Ptr<pat::Tau> tauni = tauCollection_->ptrAt( i );
+    float pt = tauni->pt();
+    if(pt>ptThreshold_) nTau++ ;
+  }
+
   
-  bool acceptEl      = (nEl     >= nElectronsThreshold_) ;
-  bool acceptLeptons = (nEl+nMu >= nLeptonsThreshold_  ) ;
-  bool acceptThisEvent = (acceptEl && acceptLeptons) ;
+  bool acceptEle         = (nEl           >= nEleThreshold_     ) ;
+  bool acceptElemu       = (nEl + nMu     >= nEleMuThreshold_ && nEl >0 &&  nMu>0 ) ;
+  bool acceptEleTau      = (nEl + nTau    >= nEleTauThreshold_  && nEl >0 && nTau>0 ) ;
+  bool acceptMu          = (nMu           >= nMuThreshold_      ) ;
+  bool acceptMuTau       = (nMu + nTau    >= nMuTauThreshold_  && nMu>0 && nTau>0 ) ;
+  bool acceptTau         = (nTau          >= nTauThreshold_     ) ;
+
+  bool acceptThisEvent = (acceptEle || acceptElemu || acceptEleTau || acceptMu || acceptMuTau || acceptTau) ;
   
   // Save the event if we see something we like
   if(acceptThisEvent){
