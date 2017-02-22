@@ -279,7 +279,7 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     Ptr<pat::Electron> gsfiter = electronCollection_->ptrAt( i );
 
     gsfref++;
-    float ET = gsfiter->caloEnergy()*sin(2.*atan(exp(-1.*gsfiter->superCluster()->eta()))) ;
+    float ET = gsfiter->caloEnergy()*sin(2.*atan(exp(-1.*gsfiter->eta()))) ;
     if(ET<ETThreshold_ && gsfiter->pt()<ETThreshold_) continue ;
     gsf_n++ ;
 

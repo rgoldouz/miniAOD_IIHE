@@ -23,8 +23,11 @@ IIHEModuleMCTruth::~IIHEModuleMCTruth(){}
 void IIHEModuleMCTruth::beginJob(){
  std::vector<int> MCPdgIdsToSave ;
   MCPdgIdsToSave.push_back(11) ; // Electron
+  MCPdgIdsToSave.push_back(12) ; // Neutrino electron
   MCPdgIdsToSave.push_back(13) ; // Muon
+  MCPdgIdsToSave.push_back(14) ; // Neutrino muon
   MCPdgIdsToSave.push_back(15) ; // Tau
+  MCPdgIdsToSave.push_back(16) ; // Neutrino tau
   MCPdgIdsToSave.push_back(21) ; // gluon
   MCPdgIdsToSave.push_back( 1) ; // d quark
   MCPdgIdsToSave.push_back( 2) ; // u quark

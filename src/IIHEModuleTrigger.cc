@@ -17,15 +17,19 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
-  hlTriggerResultsTag_ = iConfig.getParameter<edm::InputTag>("TriggerResults") ;
+//  hlTriggerResultsTag_ = iConfig.getParameter<edm::InputTag>("TriggerResults") ;
   nEvents_ = 0 ;
   nWasRun_ = 0 ;
   nAccept_ = 0 ;
   nErrors_ = 0 ;
 
-  triggerBits_ = iC.consumes<edm::TriggerResults>(InputTag("TriggerResults","","HLT"));
-  triggerObjects_ = iC.consumes<pat::TriggerObjectStandAloneCollection>(InputTag("selectedPatTrigger"));
-  triggerPrescales_ = iC.consumes<pat::PackedTriggerPrescales>(InputTag("patTrigger"));
+  triggerBitsLabel_       = iConfig.getParameter<edm::InputTag>("triggerResultsCollectionHLT") ;
+  triggerObjectsLabel_    = iConfig.getParameter<edm::InputTag>("triggerObjectStandAloneCollection") ;
+  triggerPrescalesLabel_  = iConfig.getParameter<edm::InputTag>("patTriggerCollection") ;
+
+  triggerBits_ = iC.consumes<edm::TriggerResults>(InputTag(triggerBitsLabel_));
+  triggerObjects_ = iC.consumes<pat::TriggerObjectStandAloneCollection>(InputTag(triggerObjectsLabel_));
+  triggerPrescales_ = iC.consumes<pat::PackedTriggerPrescales>(InputTag(triggerPrescalesLabel_));
   
   std::string triggersIn = iConfig.getUntrackedParameter<std::string>("triggers" , "") ;
   triggerNamesFromPSet_ = splitString(triggersIn, ",") ;
@@ -65,7 +69,10 @@ bool IIHEModuleTrigger::addHLTrigger(HLTrigger* hlt){
       return false ;
     }
   }
-  if(hlt->nSubstringInString(hlt->name(), "Ele27" ) || hlt->nSubstringInString(hlt->name(), "DoubleEle33" ) || hlt->nSubstringInString(hlt->name(), "Mu50" ) || hlt->nSubstringInString(hlt->name(), "Mu33_Ele33" )) hlt->saveFilters();
+  if(hlt->nSubstringInString(hlt->name(), "Ele27" ) || hlt->nSubstringInString(hlt->name(), "DoubleEle33" ) || hlt->nSubstringInString(hlt->name(), "Mu50" ) || hlt->nSubstringInString(hlt->name(), "Mu33_Ele33" )) {
+    hlt->saveFilters();
+    hlt->savePrescale();
+  }
   HLTriggers_.push_back(hlt) ;
   return true ;
 }
@@ -104,7 +111,7 @@ void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup&
   IIHEAnalysis* analysis = parent_ ;
   for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
     HLTrigger* hlt = HLTriggers_.at(i) ;
-    hlt->status(iEvent, iSetup, hltConfig_, HLTR, triggerObjects, triggerPrescales ,analysis) ;
+    hlt->fullStatus(iEvent, iSetup, hltConfig_, HLTR, triggerObjects, triggerPrescales ,analysis) ;
     hlt->store(analysis) ;
   }
   nEvents_++ ;
@@ -112,7 +119,7 @@ void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup&
 
 void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
   bool changed = true ;
-  if(hltConfig_.init(iRun, iSetup, hlTriggerResultsTag_.process(), changed)){
+  if(hltConfig_.init(iRun, iSetup, triggerBitsLabel_.process(), changed)){
     if(changed){
       clearHLTrigger();
       if(false) hltConfig_.dump("Modules") ;

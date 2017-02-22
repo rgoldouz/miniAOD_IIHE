@@ -6,7 +6,7 @@
 
 // class decleration
 class IIHEModuleTau : public IIHEModule {
-public:
+ public:
   explicit IIHEModuleTau(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
   explicit IIHEModuleTau(const edm::ParameterSet& iConfig): IIHEModule(iConfig){};
   ~IIHEModuleTau();
@@ -23,6 +23,8 @@ public:
   virtual void endJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
 
-private:
+ private:
+  edm::EDGetTokenT<edm::View<pat::Tau> > tauCollectionToken_;
+  edm::InputTag                          tauCollectionLabel_ ;
 };
 #endif

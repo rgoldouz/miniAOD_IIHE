@@ -79,7 +79,8 @@ private:
   int  prescale_ ;
   int  index_ ;
   int  searchStatus_ ;
-  bool saveFilters_; 
+  bool saveFilters_;
+  bool savePrescale_; 
  
   std::vector<float> etaValues_ ;
   std::vector<float> phiValues_ ;
@@ -128,7 +129,8 @@ public:
   int nSubstringInString(const std::string&, const std::string&) ; 
  
   int findIndex(HLTConfigProvider const&) ;
-  int status(const edm::Event&, edm::EventSetup const&, HLTConfigProvider const&, Handle<TriggerResults> const&, edm::Handle<pat::TriggerObjectStandAloneCollection>, edm::Handle<pat::PackedTriggerPrescales>, IIHEAnalysis*) ;
+  int fullStatus(const edm::Event&, edm::EventSetup const&, HLTConfigProvider const&, Handle<TriggerResults> const&, edm::Handle<pat::TriggerObjectStandAloneCollection>, edm::Handle<pat::PackedTriggerPrescales>, IIHEAnalysis*) ;
+  int status(Handle<TriggerResults> const&) ;
   void store(IIHEAnalysis*) ;
   
   bool addFilter(std::string) ;
@@ -155,7 +157,8 @@ public:
   bool isOnlySingleElectronSingleMuon(){ return (nTypes_==1*pow(10,(int)kElectron)+1*pow(10,(int)kMuon)) ; }
   bool isOnlySingleElectronDoubleMuon(){ return (nTypes_==1*pow(10,(int)kElectron)+2*pow(10,(int)kMuon)) ; }
   bool isOnlyDoubleElectronSingleMuon(){ return (nTypes_==2*pow(10,(int)kElectron)+1*pow(10,(int)kMuon)) ; }
-  void saveFilters(){saveFilters_=1 ;} 
+  void saveFilters(){saveFilters_=1 ;}
+  void savePrescale(){savePrescale_=1 ;} 
   std::vector<TriggerFilter*> filters_ ;
 };
 

@@ -114,6 +114,7 @@ bool L1Trigger::matchObject(edm::Handle<trigger::TriggerEvent> trigEvent, float 
 HLTrigger::HLTrigger(std::string name, HLTConfigProvider hltConfig){
   name_ = name ;
   index_ = -1 ;
+  savePrescale_= 0;
   saveFilters_ = 0;
   searchStatus_ = notSearchedFor ;
   reset() ;
@@ -232,7 +233,7 @@ int HLTrigger::nSubstringInString(const std::string& str, const std::string& sub
   return count;
 }
 
-int HLTrigger::status(const edm::Event& iEvent, edm::EventSetup const& iSetup, HLTConfigProvider const& hltConfig, Handle<TriggerResults> const& triggerResults, edm::Handle<pat::TriggerObjectStandAloneCollection> trigEvent, edm::Handle<pat::PackedTriggerPrescales> prescale ,IIHEAnalysis* analysis){
+int HLTrigger::fullStatus(const edm::Event& iEvent, edm::EventSetup const& iSetup, HLTConfigProvider const& hltConfig, Handle<TriggerResults> const& triggerResults, edm::Handle<pat::TriggerObjectStandAloneCollection> trigEvent, edm::Handle<pat::PackedTriggerPrescales> prescale ,IIHEAnalysis* analysis){
   if(searchStatus_==searchedForAndFound && index_>=0){
     touched_  = true ;
     accept_   = triggerResults->accept(index_) ;
@@ -246,15 +247,27 @@ int HLTrigger::status(const edm::Event& iEvent, edm::EventSetup const& iSetup, H
   }
   return 2 ;
 }
+
+int HLTrigger::status(Handle<TriggerResults> const& triggerResults){
+  accept_   = triggerResults->accept(index_) ;
+  return 0 ;
+}
+
+
+
 void HLTrigger::store(IIHEAnalysis* analysis){
   analysis->store(  acceptBranchName_, accept_  ) ;
+  if (savePrescale_){
   analysis->store(prescaleBranchName_, prescale_) ;
+  }
 }
 
 int HLTrigger::createBranches(IIHEAnalysis* analysis){
   int result = 0 ;
   result += analysis->addBranch(  acceptBranchName_, kInt) ;
-  result += analysis->addBranch(prescaleBranchName_, kInt) ;
+  if (savePrescale_){
+    result += analysis->addBranch(prescaleBranchName_, kInt) ;
+  }
   if (saveFilters_){ 
     for(unsigned i=0 ; i<filters_.size() ; ++i){
       result += filters_.at(i)->createBranches(analysis) ;

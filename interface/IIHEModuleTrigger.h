@@ -39,6 +39,11 @@ private:
   std::vector<std::string> savedHLTriggers_ ; 
   void clearHLTrigger(){HLTriggers_.clear();} ;
 
+
+  edm::InputTag  triggerBitsLabel_;
+  edm::InputTag  triggerObjectsLabel_;
+  edm::InputTag  triggerPrescalesLabel_;
+
   edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> triggerObjects_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;

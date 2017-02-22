@@ -3,6 +3,7 @@
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 #include "DataFormats/Common/interface/EDCollection.h"
+#include "UserCode/IIHETree/interface/TriggerObject.h"
 
 // class decleration
 class IIHEModuleData : public IIHEModule {
@@ -43,6 +44,10 @@ private:
   edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
   edm::InputTag triggerResultsLabel_;
 
+  bool changed_ = true ;
   float ETThreshold_ ;
+  HLTConfigProvider hltConfig_ ;
+  std::vector<std::string> HLTNamesFromConfig_ ;
+  std::vector<HLTrigger*> HLTriggers_ ;
 };
 #endif
