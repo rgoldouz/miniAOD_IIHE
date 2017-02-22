@@ -108,11 +108,6 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string(filenam
 
 
 process.load("UserCode.IIHETree.IIHETree_cfi")
-# Set pt or mass thresholds for the truth module here
-# Setting thresholds reduces the size of the output files significantly
-process.IIHEAnalysis.MCTruth_ptThreshold = cms.untracked.double(10.0)
-process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
-pt_threshold = 15
 
 triggers = "singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon"
 process.IIHEAnalysis.triggers = cms.untracked.string(triggers)
@@ -134,6 +129,7 @@ process.IIHEAnalysis.photonCollection                            = cms.InputTag(
 process.IIHEAnalysis.electronCollection                          = cms.InputTag("slimmedElectrons"                                          )
 process.IIHEAnalysis.muonCollection                              = cms.InputTag("slimmedMuons"                                              )
 process.IIHEAnalysis.METCollection                               = cms.InputTag("slimmedMETs"                                               )
+process.IIHEAnalysis.JetCollection                               = cms.InputTag("slimmedJets"                                               )
 process.IIHEAnalysis.tauCollection                               = cms.InputTag("slimmedTaus"                                               )
 process.IIHEAnalysis.superClusterCollection                      = cms.InputTag("reducedEgamma"         , "reducedSuperClusters"            )
 process.IIHEAnalysis.eventRho                                    = cms.InputTag("fixedGridRhoFastjetAll"                                    )
@@ -171,34 +167,45 @@ process.IIHEAnalysis.ZBosonZMassLowerCuttoff   = cms.untracked.double( 50)
 process.IIHEAnalysis.ZBosonDeltaRCut           = cms.untracked.double(1e-3)
 
 # Only save Z->ee, Z->em.
-process.IIHEAnalysis.ZBosonEtThreshold = cms.untracked.double(pt_threshold)
+process.IIHEAnalysis.ZBosonEtThreshold = cms.untracked.double(15)
 process.IIHEAnalysis.ZBosonSaveZee  = cms.untracked.bool(True )
 process.IIHEAnalysis.ZBosonSaveZmm  = cms.untracked.bool(True )
 process.IIHEAnalysis.ZBosonSaveZem  = cms.untracked.bool(True )
 process.IIHEAnalysis.ZBosonSaveZeeg = cms.untracked.bool(False)
 process.IIHEAnalysis.ZBosonSaveZmmg = cms.untracked.bool(False)
 
-process.IIHEAnalysis.electrons_ETThreshold = cms.untracked.double(pt_threshold)
-process.IIHEAnalysis.muon_pTThreshold      = cms.untracked.double(pt_threshold)
 
-# IMPORTANT         ****SKIM****
-process.IIHEAnalysis.LeptonsAccept_pTThreshold = cms.untracked.double(20)
-process.IIHEAnalysis.LeptonsAccept_Ele        = cms.untracked.double(2)
-process.IIHEAnalysis.LeptonsAccept_nEleMu     = cms.untracked.double(2)
-process.IIHEAnalysis.LeptonsAccept_nEleTau    = cms.untracked.double(2)
-process.IIHEAnalysis.LeptonsAccept_nMu        = cms.untracked.double(999)
-process.IIHEAnalysis.LeptonsAccept_nMuTau     = cms.untracked.double(2)
-process.IIHEAnalysis.LeptonsAccept_nTau       = cms.untracked.double(999)
+# Set pt or mass thresholds for the truth module here
+# Setting thresholds reduces the size of the output files significantly
+process.IIHEAnalysis.MCTruth_ptThreshold = cms.untracked.double(10.0)
+process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
+
+# IMPORTANT         ****SKIM OBJECT****
+process.IIHEAnalysis.electronPtThreshold  = cms.untracked.double(15)
+process.IIHEAnalysis.muonPtThreshold      = cms.untracked.double(15)
+process.IIHEAnalysis.photonPtThreshold    = cms.untracked.double(15)
+process.IIHEAnalysis.jetPtThreshold       = cms.untracked.double(25)
+process.IIHEAnalysis.tauPtTThreshold      = cms.untracked.double(15)
+
+# IMPORTANT         ****SKIM EVENT****
+process.IIHEAnalysis.leptonsAcceptPtThreshold    = cms.untracked.double(20)
+process.IIHEAnalysis.leptonsAccept_nEle           = cms.untracked.int32(2)
+process.IIHEAnalysis.leptonsAccept_nEleMu         = cms.untracked.int32(2)
+process.IIHEAnalysis.leptonsAccept_nEleTau        = cms.untracked.int32(2)
+process.IIHEAnalysis.leptonsAccept_nMu            = cms.untracked.int32(999)
+process.IIHEAnalysis.leptonsAccept_nMuTau         = cms.untracked.int32(2)
+process.IIHEAnalysis.leptonsAccept_nTau           = cms.untracked.int32(999)
 #***********************************************************************
 
 process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)
 process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(True)
 process.IIHEAnalysis.includeVertexModule         = cms.untracked.bool(True) 
-process.IIHEAnalysis.includePhotonModule         = cms.untracked.bool(True)
+process.IIHEAnalysis.includePhotonModule         = cms.untracked.bool(False)
 process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
+process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(False)
 process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(False)

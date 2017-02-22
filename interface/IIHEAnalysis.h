@@ -34,6 +34,7 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
@@ -147,6 +148,7 @@ private:
   bool includeElectronModule_        ;
   bool includeMuonModule_            ;
   bool includeMETModule_             ;
+  bool includeJetModule_             ;
   bool includeTauModule_             ;
   bool includeDataModule_             ;
   bool includeMCTruthModule_         ;

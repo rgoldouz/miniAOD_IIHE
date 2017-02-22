@@ -41,13 +41,6 @@ private:
   edm::EDGetTokenT<edm::EDCollection<DetId>> ecalMultiAndGSGlobalRecHitEBToken_;
   edm::InputTag   ecalMultiAndGSGlobalRecHitEBLabel_ ;
 
-  edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
-  edm::InputTag triggerResultsLabel_;
-
-  bool changed_ = true ;
   float ETThreshold_ ;
-  HLTConfigProvider hltConfig_ ;
-  std::vector<std::string> HLTNamesFromConfig_ ;
-  std::vector<HLTrigger*> HLTriggers_ ;
 };
 #endif

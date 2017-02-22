@@ -30,8 +30,11 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig, edm::Cons
   triggerBits_ = iC.consumes<edm::TriggerResults>(InputTag(triggerBitsLabel_));
   triggerObjects_ = iC.consumes<pat::TriggerObjectStandAloneCollection>(InputTag(triggerObjectsLabel_));
   triggerPrescales_ = iC.consumes<pat::PackedTriggerPrescales>(InputTag(triggerPrescalesLabel_));
+
+  triggerResultsLabel_                      = iConfig.getParameter<edm::InputTag>("triggerResultsCollectionPAT") ;
+  triggerResultsToken_                      = iC.consumes<edm::TriggerResults>(triggerResultsLabel_);
   
-  std::string triggersIn = iConfig.getUntrackedParameter<std::string>("triggers" , "") ;
+  std::string triggersIn = iConfig.getUntrackedParameter<std::string>("triggers") ;
   triggerNamesFromPSet_ = splitString(triggersIn, ",") ;
   
   std::cout << triggersIn << std::endl ;
@@ -46,16 +49,16 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig, edm::Cons
   includeDoubleElectronSingleMuonTriggers_ = (triggersIn.find("doubleElectronSingleMuon")!=std::string::npos) ;
   includeSinglePhotonTriggers_ = (triggersIn.find("singlePhoton" )!=std::string::npos) ;  
 
-  std::cout << "Including single electron triggers: " << includeSingleElectronTriggers_ << std::endl ;
-  std::cout << "Including double electron triggers: " << includeDoubleElectronTriggers_ << std::endl ;
-  std::cout << "Including triple electron triggers: " << includeTripleElectronTriggers_ << std::endl ;
-  std::cout << "Including single muon triggers:     " << includeSingleMuonTriggers_     << std::endl ;
-  std::cout << "Including double muon triggers:     " << includeDoubleMuonTriggers_     << std::endl ;
-  std::cout << "Including triple muon triggers:     " << includeTripleMuonTriggers_     << std::endl ;
-  std::cout << "Including single electron single muon triggers: " << includeSingleElectronSingleMuonTriggers_ << std::endl ;
-  std::cout << "Including single electron double muon triggers: " << includeSingleElectronDoubleMuonTriggers_ << std::endl ;
-  std::cout << "Including double electron single muon triggers: " << includeDoubleElectronSingleMuonTriggers_ << std::endl ;
-  std::cout << "Including single photon triggers:     " << includeSinglePhotonTriggers_ << std::endl ; 
+  std::cout << "Including single electron triggers:            " << includeSingleElectronTriggers_ << std::endl ;
+  std::cout << "Including double electron triggers:            " << includeDoubleElectronTriggers_ << std::endl ;
+  std::cout << "Including triple electron triggers:            " << includeTripleElectronTriggers_ << std::endl ;
+  std::cout << "Including single muon triggers:                " << includeSingleMuonTriggers_     << std::endl ;
+  std::cout << "Including double muon triggers:                " << includeDoubleMuonTriggers_     << std::endl ;
+  std::cout << "Including triple muon triggers:                " << includeTripleMuonTriggers_     << std::endl ;
+  std::cout << "Including single electron single muon triggers:" << includeSingleElectronSingleMuonTriggers_ << std::endl ;
+  std::cout << "Including single electron double muon triggers:" << includeSingleElectronDoubleMuonTriggers_ << std::endl ;
+  std::cout << "Including double electron single muon triggers:" << includeDoubleElectronSingleMuonTriggers_ << std::endl ;
+  std::cout << "Including single photon triggers:              " << includeSinglePhotonTriggers_ << std::endl ; 
 }
 IIHEModuleTrigger::~IIHEModuleTrigger(){}
 
@@ -106,9 +109,17 @@ void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup&
   iEvent.getByToken(triggerObjects_, triggerObjects);
   iEvent.getByToken(triggerPrescales_, triggerPrescales);
 
- 
+  edm::Handle<TriggerResults> triggerResultsCollection_ ;
+  iEvent.getByToken(triggerResultsToken_, triggerResultsCollection_);
+
   // Now fill the values
   IIHEAnalysis* analysis = parent_ ;
+  for(unsigned int i=0 ; i<HLTriggersPAT_.size() ; i++){
+    HLTrigger* hlt = HLTriggersPAT_.at(i) ;
+    hlt->status(triggerResultsCollection_) ;
+    hlt->store(analysis) ;
+  } 
+
   for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
     HLTrigger* hlt = HLTriggers_.at(i) ;
     hlt->fullStatus(iEvent, iSetup, hltConfig_, HLTR, triggerObjects, triggerPrescales ,analysis) ;
@@ -165,8 +176,6 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
       
       // Attempt to add branches
       addBranches() ;
-      parent_->configureBranches() ;
-    
       // Now reset things to 0
       nEvents_ = 0 ;
       nWasRun_ = 0 ;
@@ -177,6 +186,23 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
   else{
     std::cout << "Failed to init hltConfig" << std::endl ;
   }
+
+  if(changed_){
+    IIHEAnalysis* analysis = parent_ ;
+    hltConfigPAT_.init(iRun, iSetup, triggerResultsLabel_.process(), changed_);
+    HLTNamesFromConfigPAT_ = hltConfigPAT_.triggerNames() ;
+    for(unsigned int i=0 ; i<HLTNamesFromConfigPAT_.size() ; ++i){
+      std::string namePAT = HLTNamesFromConfigPAT_.at(i) ;
+      HLTrigger* hltPAT = new HLTrigger(namePAT, hltConfigPAT_) ;
+      HLTriggersPAT_.push_back(hltPAT) ;
+      hltPAT->createBranches(analysis) ;
+    }
+  parent_->configureBranches() ;
+  changed_ = false ;
+  }
+
+
+
 }
 
 void IIHEModuleTrigger::beginEvent(){}

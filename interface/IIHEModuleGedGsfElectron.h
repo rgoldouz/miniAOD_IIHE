@@ -18,7 +18,7 @@ private:
   edm::InputTag      electronCollectionLabel_ ;
   edm::EDGetTokenT<View<reco::Vertex>> vtxToken_;
   edm::InputTag           primaryVertexLabel_ ;
-
+  float ETThreshold_ ;
 
 public:
   explicit IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
@@ -37,6 +37,5 @@ public:
   virtual void endJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
   
-  float ETThreshold_ ;
 };
 #endif

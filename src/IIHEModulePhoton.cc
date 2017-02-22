@@ -13,6 +13,7 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModulePhoton::IIHEModulePhoton(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
+  ETThreshold_ = iConfig.getUntrackedParameter<double>("photonPtThreshold") ;
   photonCollectionLabel_       = iConfig.getParameter<edm::InputTag>("photonCollection"        ) ;
   photonCollectionToken_ =  iC.consumes<View<pat::Photon> > (photonCollectionLabel_);
 }
@@ -145,7 +146,7 @@ void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   store("ph_n", (unsigned int) photonCollection_->size()) ;
   for( unsigned int i = 0 ; i < photonCollection_->size() ; i++ ) {
     Ptr<pat::Photon> phiter = photonCollection_->ptrAt( i );
-
+    if(phiter->pt() < ETThreshold_) continue ;
     store("ph_px"    , phiter->px()) ;
     store("ph_py"    , phiter->py()) ;
     store("ph_pz"    , phiter->pz()) ;

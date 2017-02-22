@@ -9,6 +9,7 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleTau::IIHEModuleTau(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
+  ETThreshold_ = iConfig.getUntrackedParameter<double>("tauPtTThreshold" ) ;
   tauCollectionLabel_     = iConfig.getParameter<edm::InputTag>("tauCollection");
   tauCollectionToken_     = iC.consumes<View<pat::Tau>> (tauCollectionLabel_);
 }
@@ -111,6 +112,7 @@ void IIHEModuleTau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   store("tau_n", (unsigned int) tauCollection_ -> size() );
   for ( unsigned int i = 0; i <tauCollection_->size(); ++i) {
     Ptr<pat::Tau> tauni = tauCollection_->ptrAt( i );
+    if(tauni->pt() < ETThreshold_) continue ;
 
     store("tau_px"    , tauni->px()) ;
     store("tau_py"    , tauni->py()) ;

@@ -136,6 +136,6 @@ private:
   bool storeStandAloneMuons_  ;
   bool storeInnerTrackMuons_  ;
   bool storeImprovedMuonBestTrackMuons_  ;
-  float ptThreshold_ ;
+  float ETThreshold_ ;
 };
 #endif

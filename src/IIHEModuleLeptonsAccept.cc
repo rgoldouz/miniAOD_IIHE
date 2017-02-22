@@ -9,13 +9,13 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleLeptonsAccept::IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
-  ptThreshold_         = iConfig.getUntrackedParameter<double>("LeptonsAccept_pTThreshold", 15.0 ) ;
-  nEleThreshold_       = iConfig.getUntrackedParameter<double>("LeptonsAccept_Ele"      ,    0 ) ;
-  nEleMuThreshold_     = iConfig.getUntrackedParameter<double>("LeptonsAccept_nEleMu"   ,    0 ) ;
-  nEleTauThreshold_    = iConfig.getUntrackedParameter<double>("LeptonsAccept_nEleTau"  ,    0 ) ;
-  nMuThreshold_        = iConfig.getUntrackedParameter<double>("LeptonsAccept_nMu"      ,    0 ) ;
-  nMuTauThreshold_     = iConfig.getUntrackedParameter<double>("LeptonsAccept_nMuTau"   ,    0 ) ;
-  nTauThreshold_       = iConfig.getUntrackedParameter<double>("LeptonsAccept_nTau"     ,    0 ) ;
+  ptThreshold_         = iConfig.getUntrackedParameter<double>("leptonsAcceptPtThreshold") ;
+  nEleThreshold_       = iConfig.getUntrackedParameter<int>("leptonsAccept_nEle"     ) ;
+  nEleMuThreshold_     = iConfig.getUntrackedParameter<int>("leptonsAccept_nEleMu"   ) ;
+  nEleTauThreshold_    = iConfig.getUntrackedParameter<int>("leptonsAccept_nEleTau"  ) ;
+  nMuThreshold_        = iConfig.getUntrackedParameter<int>("leptonsAccept_nMu"      ) ;
+  nMuTauThreshold_     = iConfig.getUntrackedParameter<int>("leptonsAccept_nMuTau"   ) ;
+  nTauThreshold_       = iConfig.getUntrackedParameter<int>("leptonsAccept_nTau"     ) ;
 
   electronCollectionLabel_     = iConfig.getParameter<edm::InputTag>("electronCollection"      ) ;
   muonCollectionLabel_         = iConfig.getParameter<edm::InputTag>("muonCollection"          ) ;
@@ -76,7 +76,6 @@ void IIHEModuleLeptonsAccept::analyze(const edm::Event& iEvent, const edm::Event
   bool acceptTau         = (nTau          >= nTauThreshold_     ) ;
 
   bool acceptThisEvent = (acceptEle || acceptElemu || acceptEleTau || acceptMu || acceptMuTau || acceptTau) ;
-  
   // Save the event if we see something we like
   if(acceptThisEvent){
     acceptEvent() ;
@@ -86,7 +85,6 @@ void IIHEModuleLeptonsAccept::analyze(const edm::Event& iEvent, const edm::Event
     //rejectEvent() ;
   }
 }
-
 void IIHEModuleLeptonsAccept::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
 void IIHEModuleLeptonsAccept::beginEvent(){}
 void IIHEModuleLeptonsAccept::endEvent(){}

@@ -26,5 +26,6 @@ private:
 
   edm::EDGetTokenT<edm::View<pat::Photon> > photonCollectionToken_;
   edm::InputTag        photonCollectionLabel_ ;
+  float ETThreshold_ ;
 };
 #endif

@@ -12,7 +12,7 @@ using namespace edm ;
 IIHEModuleData::IIHEModuleData(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
   electronCollectionLabel_                  = iConfig.getParameter<edm::InputTag>("electronsBeforeGSFixCollection") ;
   electronCollectionToken_                  = iC.consumes<View<pat::Electron> > (electronCollectionLabel_);
-  ETThreshold_ = iConfig.getUntrackedParameter<double>("electrons_ETThreshold", 0.0 ) ;
+  ETThreshold_ = iConfig.getUntrackedParameter<double>("electronPtThreshold") ;
 
   METCollectionLabel_                       = iConfig.getParameter<edm::InputTag>("METsMuEGCleanCollection") ; 
   METCollectionToken_                       = iC.consumes<View<pat::MET> > (METCollectionLabel_);
@@ -25,10 +25,6 @@ IIHEModuleData::IIHEModuleData(const edm::ParameterSet& iConfig, edm::ConsumesCo
 
   ecalMultiAndGSGlobalRecHitEBLabel_        = iConfig.getParameter<edm::InputTag>("ecalMultiAndGSGlobalRecHitEBCollection") ;
   ecalMultiAndGSGlobalRecHitEBToken_        = iC.consumes<edm::EDCollection<DetId>>(ecalMultiAndGSGlobalRecHitEBLabel_);
-
-  triggerResultsLabel_                      = iConfig.getParameter<edm::InputTag>("triggerResultsCollectionPAT") ;
-  triggerResultsToken_                      = iC.consumes<edm::TriggerResults>(triggerResultsLabel_);
-
 }
 IIHEModuleData::~IIHEModuleData(){}
 
@@ -64,7 +60,6 @@ void IIHEModuleData::beginJob(){
 
   addBranch("ev_particleFlowEGammaGSFixed", kBool) ;
   addBranch("ev_ecalMultiAndGSGlobalRecHitEB", kBool) ;
-  addBranch("ev_duplicateMuons", kBool) ;
 
 }
 
@@ -75,26 +70,14 @@ void IIHEModuleData::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   edm::Handle<edm::View<pat::Electron>>     electronCollection_ ;
   iEvent.getByToken( electronCollectionToken_ , electronCollection_) ;
-
   edm::Handle<edm::View<pat::MET> > METCollection_;
   iEvent.getByToken(METCollectionToken_, METCollection_);
-
   edm::Handle<bool> particleFlowEGammaGSFixedCollection_ ;
   iEvent.getByToken(particleFlowEGammaGSFixedCollectionToken_, particleFlowEGammaGSFixedCollection_) ;
-
   edm::Handle<edm::EDCollection<DetId>> ecalMultiAndGSGlobalRecHitEB_;
   iEvent.getByToken(ecalMultiAndGSGlobalRecHitEBToken_, ecalMultiAndGSGlobalRecHitEB_) ;
 
-  edm::Handle<TriggerResults> triggerResultsCollection_ ;
-  iEvent.getByToken(triggerResultsToken_, triggerResultsCollection_);
 
-
-  IIHEAnalysis* analysis = parent_ ;
-  for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
-    HLTrigger* hlt = HLTriggers_.at(i) ;
-    hlt->status(triggerResultsCollection_) ;
-    hlt->store(analysis) ;
-  }
 
   store("ev_ecalMultiAndGSGlobalRecHitEB", ecalMultiAndGSGlobalRecHitEB_.isValid()) ;
 
@@ -136,21 +119,8 @@ void IIHEModuleData::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 
 }
-void IIHEModuleData::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
-  if(changed_){
-    IIHEAnalysis* analysis = parent_ ;
-    hltConfig_.init(iRun, iSetup, triggerResultsLabel_.process(), changed_);
-    HLTNamesFromConfig_ = hltConfig_.triggerNames() ;
-    for(unsigned int i=0 ; i<HLTNamesFromConfig_.size() ; ++i){
-      std::string name = HLTNamesFromConfig_.at(i) ;
-      HLTrigger* hlt = new HLTrigger(name, hltConfig_) ;
-      HLTriggers_.push_back(hlt) ;
-      hlt->createBranches(analysis) ;
-    }
-  parent_->configureBranches() ;
-  changed_ = false ;
-  }
-}
+
+void IIHEModuleData::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
 void IIHEModuleData::beginEvent(){}
 void IIHEModuleData::endEvent(){}
 

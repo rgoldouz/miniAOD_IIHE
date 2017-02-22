@@ -26,5 +26,6 @@ class IIHEModuleTau : public IIHEModule {
  private:
   edm::EDGetTokenT<edm::View<pat::Tau> > tauCollectionToken_;
   edm::InputTag                          tauCollectionLabel_ ;
+  float ETThreshold_ ;
 };
 #endif

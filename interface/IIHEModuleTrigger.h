@@ -31,10 +31,14 @@ private:
   bool addHLTrigger(HLTrigger*) ;
   std::vector<L1Trigger*> L1Triggers_ ;
   std::vector<HLTrigger*> HLTriggers_ ;
-  
+  std::vector<HLTrigger*> HLTriggersPAT_ ;
+  bool changed_ = true ;
+
   HLTConfigProvider hltConfig_ ;
+  HLTConfigProvider hltConfigPAT_ ;
   edm::InputTag hlTriggerResultsTag_ ;
   std::vector<std::string> HLTNamesFromConfig_ ;
+  std::vector<std::string> HLTNamesFromConfigPAT_ ;
   std::vector<std::string> triggerNamesFromPSet_ ;
   std::vector<std::string> savedHLTriggers_ ; 
   void clearHLTrigger(){HLTriggers_.clear();} ;
@@ -48,6 +52,9 @@ private:
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> triggerObjects_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
 
+
+  edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
+  edm::InputTag triggerResultsLabel_;
  
   bool isSingleElectonTriggerName(std::string) ;
   bool isDoubleElectonTriggerName(std::string) ;

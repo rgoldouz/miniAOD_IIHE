@@ -198,7 +198,7 @@ IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig, edm::ConsumesCo
   storeStandAloneMuons_  = iConfig.getUntrackedParameter<bool>("storeStandAloneMuons" , true ) ;
   storeInnerTrackMuons_  = iConfig.getUntrackedParameter<bool>("storeInnerTrackMuons" , true ) ;
   storeImprovedMuonBestTrackMuons_  = iConfig.getUntrackedParameter<bool>("storeImprovedMuonBestTrackMuons" , true ) ;
-  ptThreshold_           = iConfig.getUntrackedParameter<double>("muons_pTThreshold"  ,  0.0 ) ;
+  ETThreshold_          = iConfig.getUntrackedParameter<double>("muonPtThreshold") ;
 
   primaryVertexLabel_          = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
   vtxToken_ = iC.consumes<View<reco::Vertex>>(primaryVertexLabel_);
@@ -386,17 +386,17 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     
     if(storeInnerTrackMuons_){
       if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){
-        if(innerTrack->pt() > ptThreshold_) saveMuon = true ;
+        if(innerTrack->pt() > ETThreshold_) saveMuon = true ;
       }
     }
     if(storeStandAloneMuons_){
       if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){
-        if(outerTrack->pt() > ptThreshold_) saveMuon = true ;
+        if(outerTrack->pt() > ETThreshold_) saveMuon = true ;
       }
     }
     if(storeGlobalTrackMuons_){
       if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){
-        if(globalTrack->pt() > ptThreshold_ || improvedMuonBestTrack->pt() > ptThreshold_) saveMuon = true ;
+        if(globalTrack->pt() > ETThreshold_ || improvedMuonBestTrack->pt() > ETThreshold_) saveMuon = true ;
       }
     }
     

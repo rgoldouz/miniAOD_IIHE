@@ -46,7 +46,7 @@ IIHEModuleGedGsfElectron::IIHEModuleGedGsfElectron(const edm::ParameterSet& iCon
   rhoTokenAll_ = iC.consumes<double> (iConfig.getParameter<edm::InputTag>("eventRho"));
   eleTrkPtIso_ = iC.consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleTrkPtIsoLabel"));
   electronCollectionToken_     = iC.consumes<edm::View<pat::Electron>> (iConfig.getParameter<edm::InputTag>("electronCollection")) ;
-  ETThreshold_ = iConfig.getUntrackedParameter<double>("electrons_ETThreshold", 0.0 ) ;
+  ETThreshold_ = iConfig.getUntrackedParameter<double>("electronPtThreshold") ;
   primaryVertexLabel_          = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
   vtxToken_ = iC.consumes<View<reco::Vertex>>(primaryVertexLabel_);
 }
@@ -97,6 +97,7 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_trackerdrivenSeed") ;
   addBranch("gsf_isEB") ;
   addBranch("gsf_isEE") ;
+  addBranch("gsf_passConversionVeto") ;
   setBranchType(kVectorFloat) ;
   addBranch("gsf_deltaEtaSeedClusterTrackAtCalo") ;
   addBranch("gsf_deltaPhiSeedClusterTrackAtCalo") ;
@@ -319,6 +320,7 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_trackerdrivenSeed"             , gsfiter->trackerDrivenSeed()             ) ;
     store("gsf_isEB"                          , gsfiter->isEB()                          ) ;
     store("gsf_isEE"                          , gsfiter->isEE()                          ) ;
+    store("gsf_passConversionVeto"            , gsfiter->passConversionVeto()            ) ;
     store("gsf_deltaEtaSeedClusterTrackAtCalo", gsfiter->deltaEtaSeedClusterTrackAtCalo()) ;
     store("gsf_deltaPhiSeedClusterTrackAtCalo", gsfiter->deltaPhiSeedClusterTrackAtCalo()) ;
     store("gsf_ecalEnergy"                    , gsfiter->ecalEnergy()                    ) ;

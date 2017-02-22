@@ -9,9 +9,9 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleMCTruth::IIHEModuleMCTruth(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): IIHEModule(iConfig){
-  pt_threshold_            = iConfig.getUntrackedParameter<double>("MCTruth_ptThreshold"            , 10.0) ;
-  m_threshold_             = iConfig.getUntrackedParameter<double>("MCTruth_mThreshold"             , 20.0) ;
-  DeltaROverlapThreshold_  = iConfig.getUntrackedParameter<double>("MCTruth_DeltaROverlapThreshold" , 1e-3) ;
+  pt_threshold_            = iConfig.getUntrackedParameter<double>("MCTruth_ptThreshold"            ) ;
+  m_threshold_             = iConfig.getUntrackedParameter<double>("MCTruth_mThreshold"             ) ;
+  DeltaROverlapThreshold_  = iConfig.getUntrackedParameter<double>("MCTruth_DeltaROverlapThreshold" ) ;
   puInfoSrc_               = iConfig.getUntrackedParameter<edm::InputTag>("PileUpSummaryInfo") ;
   generatorLabel_ = iC.consumes<GenEventInfoProduct> (iConfig.getParameter<InputTag>("generatorLabel"));
   puCollection_ = iC.consumes<vector<PileupSummaryInfo> > (puInfoSrc_);
