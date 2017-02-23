@@ -45,6 +45,14 @@ IIHEModuleGedGsfElectron::IIHEModuleGedGsfElectron(const edm::ParameterSet& iCon
   beamSpotToken_      = iC.consumes<reco::BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
   rhoTokenAll_ = iC.consumes<double> (iConfig.getParameter<edm::InputTag>("eventRho"));
   eleTrkPtIso_ = iC.consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleTrkPtIsoLabel"));
+  VIDVeto_ = iC.consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("VIDVeto"));
+  VIDLoose_ = iC.consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("VIDLoose"));
+  VIDMedium_ = iC.consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("VIDMedium"));
+  VIDTight_ = iC.consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("VIDTight"));
+  VIDmvaEleIDwp90_ = iC.consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("VIDmvaEleIDwp90"));
+  VIDmvaEleIDwp80_ = iC.consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("VIDmvaEleIDwp80"));
+  VIDHEEP7_ = iC.consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("VIDHEEP7"));
+
   electronCollectionToken_     = iC.consumes<edm::View<pat::Electron>> (iConfig.getParameter<edm::InputTag>("electronCollection")) ;
   ETThreshold_ = iConfig.getUntrackedParameter<double>("electronPtThreshold") ;
   primaryVertexLabel_          = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
@@ -98,6 +106,14 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_isEB") ;
   addBranch("gsf_isEE") ;
   addBranch("gsf_passConversionVeto") ;
+  addBranch("gsf_VIDVeto");
+  addBranch("gsf_VIDLoose");
+  addBranch("gsf_VIDMedium");
+  addBranch("gsf_VIDTight");
+  addBranch("gsf_VIDmvaEleIDwp90");
+  addBranch("gsf_VIDmvaEleIDwp80");
+  addBranch("gsf_VIDHEEP7");
+
   setBranchType(kVectorFloat) ;
   addBranch("gsf_deltaEtaSeedClusterTrackAtCalo") ;
   addBranch("gsf_deltaPhiSeedClusterTrackAtCalo") ;
@@ -251,8 +267,30 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
 
   edm::Handle<edm::View<pat::Electron>>     electronCollection_ ;
   iEvent.getByToken( electronCollectionToken_ , electronCollection_) ;
+
   edm::Handle<edm::ValueMap<float>> eleTrkPtIsoHandle_;
   iEvent.getByToken(eleTrkPtIso_,eleTrkPtIsoHandle_);
+
+  edm::Handle<edm::ValueMap<bool>> VIDVetoHandle_;
+  iEvent.getByToken(VIDVeto_,VIDVetoHandle_);
+
+  edm::Handle<edm::ValueMap<bool>> VIDLooseHandle_;
+  iEvent.getByToken(VIDLoose_,VIDLooseHandle_);
+
+  edm::Handle<edm::ValueMap<bool>> VIDMediumHandle_;
+  iEvent.getByToken(VIDMedium_,VIDMediumHandle_);
+
+  edm::Handle<edm::ValueMap<bool>> VIDTightHandle_;
+  iEvent.getByToken(VIDTight_,VIDTightHandle_);
+
+  edm::Handle<edm::ValueMap<bool>> VIDmvaEleIDwp90Handle_;
+  iEvent.getByToken(VIDmvaEleIDwp90_,VIDmvaEleIDwp90Handle_);
+
+  edm::Handle<edm::ValueMap<bool>> VIDmvaEleIDwp80Handle_;
+  iEvent.getByToken(VIDmvaEleIDwp80_,VIDmvaEleIDwp80Handle_);
+
+  edm::Handle<edm::ValueMap<bool>> VIDHEEP7Handle_;
+  iEvent.getByToken(VIDHEEP7_,VIDHEEP7Handle_);
 
   edm::Handle<reco::BeamSpot> beamspotHandle_ ;
   iEvent.getByToken(beamSpotToken_, beamspotHandle_) ;
@@ -311,6 +349,13 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_hcalDepth2OverEcal"            , gsfiter->hcalDepth2OverEcal()            ) ;
     store("gsf_dr03TkSumPt"                   , gsfiter->dr03TkSumPt()                   ) ;
     store("gsf_dr03TkSumPtHEEP7"              , (*eleTrkPtIsoHandle_).get(gsfref)        ) ;
+    store("gsf_VIDVeto"                       , (*VIDVetoHandle_).get(gsfref)        ) ;  
+    store("gsf_VIDLoose"                      , (*VIDLooseHandle_).get(gsfref)        ) ;
+    store("gsf_VIDMedium"                     , (*VIDMediumHandle_).get(gsfref)        ) ;
+    store("gsf_VIDTight"                      , (*VIDTightHandle_).get(gsfref)        ) ;
+    store("gsf_VIDHEEP7"                      , (*VIDHEEP7Handle_).get(gsfref)        ) ;
+    store("gsf_VIDmvaEleIDwp90"               , (*VIDmvaEleIDwp90Handle_).get(gsfref)        ) ;
+    store("gsf_VIDmvaEleIDwp80"               , (*VIDmvaEleIDwp80Handle_).get(gsfref)        ) ;
     store("gsf_dr03EcalRecHitSumEt"           , gsfiter->dr03EcalRecHitSumEt()           ) ;
     store("gsf_dr03HcalDepth1TowerSumEt"      , gsfiter->dr03HcalDepth1TowerSumEt()      ) ;
     store("gsf_dr03HcalDepth2TowerSumEt"      , gsfiter->dr03HcalDepth2TowerSumEt()      ) ;

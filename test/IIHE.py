@@ -117,7 +117,15 @@ process.IIHEAnalysis.globalTag = cms.string(globalTag)
 #Track isolation correction
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
-
+#EGamma VID
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+dataFormat = DataFormat.MiniAOD
+switchOnVIDElectronIdProducer(process, dataFormat)
+# define which IDs we want to produce
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff','RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
+#add them to the VID producer
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 # Collections for DATA and MC.
 process.IIHEAnalysis.triggerResultsCollectionHLT                 = cms.InputTag("TriggerResults"        ,""                           ,"HLT")
@@ -137,7 +145,16 @@ process.IIHEAnalysis.ebReducedRecHitCollection                   = cms.InputTag(
 process.IIHEAnalysis.eeReducedRecHitCollection                   = cms.InputTag("reducedEgamma"         , "reducedEERecHits"                )
 process.IIHEAnalysis.esReducedRecHitCollection                   = cms.InputTag("reducedEgamma"         , "reducedESRecHits"                )
 process.IIHEAnalysis.PileUpSummaryInfo                           = cms.InputTag("slimmedAddPileupInfo"                                      )
+
+# VID output
 process.IIHEAnalysis.eleTrkPtIsoLabel                            = cms.InputTag("heepIDVarValueMaps"    ,"eleTrkPtIso"       ,"IIHEAnalysis")
+process.IIHEAnalysis.VIDVeto                                     = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto")
+process.IIHEAnalysis.VIDLoose                                    = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose")
+process.IIHEAnalysis.VIDMedium                                   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium")
+process.IIHEAnalysis.VIDTight                                    = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight")
+process.IIHEAnalysis.VIDmvaEleIDwp90                             = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90")
+process.IIHEAnalysis.VIDmvaEleIDwp80                             = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80")
+process.IIHEAnalysis.VIDHEEP7                                    = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV70")
 
 # Collections for MC only.
 process.IIHEAnalysis.generatorLabel                              = cms.InputTag("generator"                                                 )
@@ -232,6 +249,7 @@ process.IIHEAnalysis.debug = cms.bool(False)
 #)
 
 process.p1 = cms.Path(
+    process.egmGsfElectronIDSequence *
     process.heepIDVarValueMaps    *
     process.IIHEAnalysis 
 )
