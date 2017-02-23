@@ -86,8 +86,8 @@ if options.DataProcessing == "data":
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring())
 
-#process.source.fileNames.append( "file:MC_MINIAOD2.root" )
-process.source.fileNames.append( "file:03Feb2017data.root" )
+process.source.fileNames.append( "file:MC_MINIAOD2.root" )
+#process.source.fileNames.append( "file:03Feb2017data.root" )
 ###
 filename_out = "outfile.root"
 if options.DataProcessing == "mc":
@@ -196,7 +196,7 @@ process.IIHEAnalysis.ZBosonSaveZmmg = cms.untracked.bool(False)
 # Setting thresholds reduces the size of the output files significantly
 process.IIHEAnalysis.MCTruth_ptThreshold = cms.untracked.double(10.0)
 process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
-
+process.IIHEAnalysis.MCTruth_DeltaROverlapThreshold = cms.untracked.double(0.001)
 # IMPORTANT         ****SKIM OBJECT****
 process.IIHEAnalysis.electronPtThreshold  = cms.untracked.double(15)
 process.IIHEAnalysis.muonPtThreshold      = cms.untracked.double(15)

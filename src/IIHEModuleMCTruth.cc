@@ -12,7 +12,7 @@ IIHEModuleMCTruth::IIHEModuleMCTruth(const edm::ParameterSet& iConfig, edm::Cons
   pt_threshold_            = iConfig.getUntrackedParameter<double>("MCTruth_ptThreshold"            ) ;
   m_threshold_             = iConfig.getUntrackedParameter<double>("MCTruth_mThreshold"             ) ;
   DeltaROverlapThreshold_  = iConfig.getUntrackedParameter<double>("MCTruth_DeltaROverlapThreshold" ) ;
-  puInfoSrc_               = iConfig.getUntrackedParameter<edm::InputTag>("PileUpSummaryInfo") ;
+  puInfoSrc_               = iConfig.getParameter<edm::InputTag>("PileUpSummaryInfo") ;
   generatorLabel_ = iC.consumes<GenEventInfoProduct> (iConfig.getParameter<InputTag>("generatorLabel"));
   puCollection_ = iC.consumes<vector<PileupSummaryInfo> > (puInfoSrc_);
   genParticlesCollection_ = iC.consumes<vector<reco::GenParticle> > (iConfig.getParameter<InputTag>("genParticleSrc"));
