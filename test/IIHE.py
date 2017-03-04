@@ -86,7 +86,8 @@ if options.DataProcessing == "data":
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring())
 
-process.source.fileNames.append( "file:MC_MINIAOD2.root" )
+#process.source.fileNames.append( "file:MC_MINIAOD2.root" )
+process.source.fileNames.append("file:pickevents_1.root" )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
 ###
 filename_out = "outfile.root"

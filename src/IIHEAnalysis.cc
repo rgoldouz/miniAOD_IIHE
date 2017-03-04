@@ -175,6 +175,12 @@ bool IIHEAnalysis::addBranch(std::string name, int type){
       allVars_.push_back((BranchWrapperBase*)bw) ;
       break ;
     }
+    case kULInt:{
+      BranchWrapperUL*  bw = new BranchWrapperUL(name) ;
+      vars_UL_  .push_back(bw) ;
+      allVars_.push_back((BranchWrapperBase*)bw) ;
+      break ;
+    }
     case kVectorBool:{
       BranchWrapperBV* bw = new BranchWrapperBV(name) ;
       vars_BV_ .push_back(bw) ;
@@ -202,6 +208,12 @@ bool IIHEAnalysis::addBranch(std::string name, int type){
     case kVectorUInt:{
       BranchWrapperUV* bw = new BranchWrapperUV(name) ;
       vars_UV_ .push_back(bw) ;
+      allVars_.push_back((BranchWrapperBase*)bw) ;
+      break ;
+    }
+    case kVectorULInt:{
+      BranchWrapperULV* bw = new BranchWrapperULV(name) ;
+      vars_ULV_ .push_back(bw) ;
       allVars_.push_back((BranchWrapperBase*)bw) ;
       break ;
     }
@@ -480,6 +492,24 @@ bool IIHEAnalysis::store(std::string name, unsigned int value){
   if(debug_) std::cout << "Could not find a (uint) branch named " << name << std::endl ;
   return false ;
 }
+
+bool IIHEAnalysis::store(std::string name, unsigned long int value){ 
+  for(unsigned int i=0 ; i<vars_UL_.size() ; ++i){
+    if(vars_UL_.at(i)->name()==name){
+      vars_UL_ .at(i)->set(value) ;
+      return true ;
+    }
+  } 
+  for(unsigned int i=0 ; i<vars_ULV_.size() ; ++i){
+    if(vars_ULV_.at(i)->name()==name){
+      vars_ULV_ .at(i)->push(value) ;
+      return true ;
+    }
+  }
+  if(debug_) std::cout << "Could not find a (ulint) branch named " << name << std::endl ;
+  return false ;
+}
+
 
 bool IIHEAnalysis::store(std::string name, std::vector<bool> values){
   for(unsigned int i=0 ; i<vars_BVV_.size() ; ++i){

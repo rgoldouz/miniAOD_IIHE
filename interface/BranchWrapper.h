@@ -78,7 +78,7 @@ class BranchWrapperI  : public BranchWrapperBase{
 
 class BranchWrapperU  : public BranchWrapperBase{
   private:
-    int value_ ;
+    unsigned int value_ ;
   public:
     BranchWrapperU(std::string) ;
     ~BranchWrapperU(){} ;
@@ -88,7 +88,17 @@ class BranchWrapperU  : public BranchWrapperBase{
     void endEvent() ;
 };
 
-
+class BranchWrapperUL  : public BranchWrapperBase{
+  private:
+    unsigned long int value_ ;
+  public:
+    BranchWrapperUL(std::string) ;
+    ~BranchWrapperUL(){} ;
+    void set(unsigned long int) ;
+    int  config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
+};
 
 class BranchWrapperBV : public BranchWrapperBase{
   private:
@@ -150,7 +160,17 @@ class BranchWrapperUV : public BranchWrapperBase{
     void endEvent() ;
 };
 
-
+class BranchWrapperULV : public BranchWrapperBase{
+  private:
+    std::vector<unsigned long int> values_;
+  public:
+    BranchWrapperULV(std::string) ;
+    ~BranchWrapperULV() ;
+    void push(unsigned long int) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
+};
 
 class BranchWrapperBVV: public BranchWrapperBase{
   private:

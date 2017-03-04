@@ -68,6 +68,7 @@ public:
   void store(std::string, float       );
   void store(std::string, int         );
   void store(std::string, unsigned int);
+  void store(std::string, unsigned long int);
   void store(std::string, std::vector<bool        >);
   void store(std::string, std::vector<double      >);
   void store(std::string, std::vector<float       >);

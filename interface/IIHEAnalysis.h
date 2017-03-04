@@ -75,7 +75,8 @@ public:
   bool store(std::string, double  );
   bool store(std::string, float   );
   bool store(std::string, int     );
-  bool store(std::string, unsigned);
+  bool store(std::string, unsigned int);
+  bool store(std::string, unsigned long int);
   bool store(std::string, std::vector<bool        >);
   bool store(std::string, std::vector<double      >);
   bool store(std::string, std::vector<float       >);
@@ -130,11 +131,13 @@ private:
   std::vector<BranchWrapperFV*  > vars_FV_ ;
   std::vector<BranchWrapperIV*  > vars_IV_ ;
   std::vector<BranchWrapperUV*  > vars_UV_ ;
+  std::vector<BranchWrapperULV* > vars_ULV_ ;
   std::vector<BranchWrapperB*   > vars_B_  ;
   std::vector<BranchWrapperD*   > vars_D_  ;
   std::vector<BranchWrapperF*   > vars_F_  ;
   std::vector<BranchWrapperI*   > vars_I_  ;
   std::vector<BranchWrapperU*   > vars_U_  ;
+  std::vector<BranchWrapperUL*   > vars_UL_  ;
   
   int currentVarType_ ;
   std::vector< std::pair<std::string, int> > listOfBranches_  ;

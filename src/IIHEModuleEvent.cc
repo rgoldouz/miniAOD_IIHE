@@ -3,6 +3,7 @@
 #include <iostream>
 #include <TMath.h>
 #include <vector>
+#include <typeinfo>
 
 using namespace std ;
 using namespace reco;
@@ -23,10 +24,11 @@ IIHEModuleEvent::~IIHEModuleEvent(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleEvent::beginJob(){
-  setBranchType(kUInt) ;
+  setBranchType(kULInt) ;
   addBranch("ev_event"                 ) ;
   addBranch("ev_run"                   ) ;
   addBranch("ev_luminosityBlock"       ) ;
+  setBranchType(kUInt) ;
   addBranch("ev_time"                  ) ;
   addBranch("ev_time_unixTime"         ) ;
   addBranch("ev_time_microsecondOffset") ;
@@ -43,10 +45,12 @@ void IIHEModuleEvent::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModuleEvent::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  store("ev_event"          , ((unsigned int) (iEvent.id().event()          ))) ;
-  store("ev_run"            , ((unsigned int) (iEvent.id().run()            ))) ;
-  store("ev_luminosityBlock", ((unsigned int) (iEvent.id().luminosityBlock()))) ;
-  
+unsigned long int eventNumber = (unsigned long int)(iEvent.id().event());
+  store("ev_event"          , eventNumber) ;
+  store("ev_run"            , (unsigned long int) (iEvent.id().run() ) ) ;
+  store("ev_luminosityBlock", (unsigned long int) (iEvent.id().luminosityBlock() )) ;
+cout<<eventNumber<<endl;
+
   edm::Timestamp time = iEvent.time() ;
   int timestamp_value = time.value() ;
   store("ev_time"                  , timestamp_value         ) ;

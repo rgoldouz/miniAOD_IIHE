@@ -117,6 +117,25 @@ void BranchWrapperU::beginEvent(){
 }
 void BranchWrapperU::endEvent(){}
 
+// unsigned long int
+BranchWrapperUL::BranchWrapperUL(std::string name): BranchWrapperBase(name){
+  value_ = 999 ;
+}
+int BranchWrapperUL::config(TTree* tree){
+  if(!tree) return 1 ;
+  if(tree->GetBranch(name().c_str())) return 2 ;
+  tree->Branch(name().c_str(), &value_, Form("%s/l", name().c_str())) ;
+  return 0 ;
+}
+void BranchWrapperUL::set(unsigned long int value){
+  value_ = value ;
+  fill() ;
+}
+void BranchWrapperUL::beginEvent(){
+  value_ = 999 ;
+  unfill() ;
+}
+void BranchWrapperUL::endEvent(){}
 //////////////////////////////////////////////////////////////////////////////////////////
 //                                    Vector classes                                    //
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +215,26 @@ void BranchWrapperIV::beginEvent(){
 }
 void BranchWrapperIV::endEvent(){}
 
-// Vector of unsigned ints
+// Vector of unsigned long ints
+BranchWrapperULV::BranchWrapperULV(std::string name): BranchWrapperBase(name){}
+BranchWrapperULV::~BranchWrapperULV(){}
+int BranchWrapperULV::config(TTree* tree){
+  if(!tree) return 1 ;
+  if(tree->GetBranch(name().c_str())) return 2 ;
+  tree->Branch(name().c_str(), &values_) ;
+  return 0 ;
+}
+void BranchWrapperULV::push(unsigned long int value){
+  values_.push_back(value) ;
+  fill() ;
+}
+void BranchWrapperULV::beginEvent(){
+  unfill() ;
+  values_.clear() ;
+}
+void BranchWrapperULV::endEvent(){}
+
+// Vector of unsigned  ints
 BranchWrapperUV::BranchWrapperUV(std::string name): BranchWrapperBase(name){}
 BranchWrapperUV::~BranchWrapperUV(){}
 int BranchWrapperUV::config(TTree* tree){
