@@ -31,6 +31,7 @@ void IIHEModuleJet::beginJob(){
   addBranch("jet_phi");
   addBranch("jet_energy");
   addBranch("jet_mass");
+  addBranch("jet_chargedEmEnergyFraction");
   addBranch("jet_neutralHadronEnergyFraction");
   addBranch("jet_neutralEmEnergyFraction");
   addBranch("jet_chargedHadronEnergyFraction");
@@ -39,20 +40,14 @@ void IIHEModuleJet::beginJob(){
   addBranch("jet_chargedMultiplicity");
   addBranch("jet_neutralMultiplicity");
   setBranchType(kVectorFloat);
-  addBranch("jet_TCHE");
-  addBranch("jet_TCHP");
-  addBranch("jet_JTP");
-  addBranch("jet_JBTP ");
-  addBranch("jet_SSV");
-  addBranch("jet_CSV ");
-  addBranch("jet_MSV");
-  addBranch("jet_IPM");
-  addBranch("jet_SET");
-  addBranch("jet_SMT");
-  addBranch("jet_SMNoIPT");  
-
-
-
+  addBranch("jet_CSV");
+  addBranch("jet_CSVv2");
+  addBranch("jet_CvsL");
+  addBranch("jet_CvsB");
+  setBranchType(kVectorBool);
+  addBranch("jet_isJetIDLoose");
+  addBranch("jet_isJetIDTight");
+  addBranch("jet_isJetIDTightLepVeto");
 }
 
 // ------------ method called to for each event  ------------
@@ -60,7 +55,6 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   edm::Handle<edm::View<pat::Jet> > pfJetHandle_;
   iEvent.getByToken(pfJetToken_, pfJetHandle_);
-
 
   store("jet_n", (unsigned int) pfJetHandle_ -> size() );
   for ( unsigned int i = 0; i <pfJetHandle_->size(); ++i) {
@@ -84,19 +78,43 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     store("jet_chargedMultiplicity"                 ,pfjet->chargedMultiplicity());
     store("jet_neutralMultiplicity"                 ,pfjet->neutralMultiplicity());
 
-    store("jet_TCHE",pfjet->bDiscriminator("trackCountingHighEffBJetTags"));
-    store("jet_TCHP",pfjet->bDiscriminator("trackCountingHighPurBJetTags"));
-    store("jet_JTP",pfjet->bDiscriminator("jetProbabilityBJetTags"));
-    store("jet_JBTP",pfjet->bDiscriminator("jetBProbabilityBJetTags"));
-    store("jet_SSV",pfjet->bDiscriminator("simpleSecondaryVertexBJetTags"));
     store("jet_CSV",pfjet->bDiscriminator("combinedSecondaryVertexBJetTags"));
-    store("jet_MSV",pfjet->bDiscriminator("combinedSecondaryVertexMVABJetTags"));
-    store("jet_IPM",pfjet->bDiscriminator("impactParameterMVABJetTags"));
-    store("jet_SET",pfjet->bDiscriminator("softElectronBJetTags"));
-    store("jet_SMT",pfjet->bDiscriminator("softMuonBJetTags"));
-    store("jet_SMNoIPT",pfjet->bDiscriminator("softMuonNoIPBJetTags"));
+    store("jet_CSVv2",pfjet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags"));
+    store("jet_CvsL",pfjet->bDiscriminator("pfCombinedCvsLJetTags"));
+    store("jet_CvsB",pfjet->bDiscriminator("pfCombinedCvsBJetTags"));
 
+    float eta = pfjet->eta();
+    float NHF = pfjet->neutralHadronEnergyFraction();
+    float NEMF = pfjet->neutralEmEnergyFraction();
+    float CHF = pfjet->chargedHadronEnergyFraction();
+    float MUF = pfjet->muonEnergyFraction();
+    float CEMF = pfjet->chargedEmEnergyFraction();
+    int NumConst = pfjet->chargedMultiplicity()+pfjet->neutralMultiplicity();
+    int NumNeutralParticles =pfjet->neutralMultiplicity();
+    int CHM = pfjet->chargedMultiplicity(); 
 
+    bool isJetIDLoose;
+    bool isJetIDTight;
+    bool isJetIDTightLepVeto;
+
+    if( fabs(eta) <= 2.7){
+      isJetIDLoose = ((NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4));
+      isJetIDTight = ((NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(eta)>2.4));
+      isJetIDTightLepVeto = ((NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(eta)>2.4));
+      }
+    else if (abs(eta)>2.7 && abs(eta)<=3.0 ){
+      isJetIDLoose = (NEMF<0.90 && NumNeutralParticles>2 );
+      isJetIDTight = (NEMF<0.90 && NumNeutralParticles>2 );
+      isJetIDTightLepVeto = false;
+      }
+    else{
+      isJetIDLoose = (NEMF<0.90 && NumNeutralParticles>10 );
+      isJetIDTight = (NEMF<0.90 && NumNeutralParticles>10 ) ;
+      isJetIDTightLepVeto = false;
+    }
+    store("jet_isJetIDLoose"                 ,isJetIDLoose);
+    store("jet_isJetIDTight"                 ,isJetIDTight);
+    store("jet_isJetIDTightLepVeto"          ,isJetIDTightLepVeto);
   }
 }
 void IIHEModuleJet::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
