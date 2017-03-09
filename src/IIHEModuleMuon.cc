@@ -275,7 +275,8 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_pfIsolationR04_sumNeutralHadronEtHighThreshold") ;
   addBranch("mu_pfIsolationR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfIsolationR04_sumPUPt"                        ) ;
-  
+
+/*  
   addBranch("mu_pfMeanDRIsoProfileR03_sumChargedHadronPt"             ) ;
   addBranch("mu_pfMeanDRIsoProfileR03_sumChargedParticlePt"           ) ;
   addBranch("mu_pfMeanDRIsoProfileR03_sumPhotonEt"                    ) ;
@@ -289,6 +290,10 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold") ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPUPt"                        ) ;
+*/
+  addBranch("mu_pfIsoDbCorrected03"             ) ;
+  addBranch("mu_pfIsoDbCorrected04"             ) ;
+  addBranch("mu_isoTrackerBased03"             ) ;
   
   addBranch("mu_mc_bestDR", kVectorFloat) ;
   addBranch("mu_mc_index" , kVectorInt  ) ;
@@ -465,8 +470,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_pfIsolationR04_sumNeutralHadronEtHighThreshold", pfIso40.sumNeutralHadronEtHighThreshold) ;
     store("mu_pfIsolationR04_sumPhotonEtHighThreshold"       , pfIso40.sumPhotonEtHighThreshold       ) ;
     store("mu_pfIsolationR04_sumPUPt"                        , pfIso40.sumPUPt                        ) ;
-
-//CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_7_6_3
+/*
     const MuonPFIsolation pfMeanIso30 = muIt->pfMeanDRIsoProfileR03() ;
     const MuonPFIsolation pfMeanIso40 = muIt->pfMeanDRIsoProfileR04() ;
 
@@ -483,10 +487,11 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold", pfMeanIso40.sumNeutralHadronEtHighThreshold) ;
     store("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       , pfMeanIso40.sumPhotonEtHighThreshold       ) ;
     store("mu_pfMeanDRIsoProfileR04_sumPUPt"                        , pfMeanIso40.sumPUPt                        ) ;
-//CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_7_6_3
-/*CHOOSE_RELEASE_START  CMSSW_5_3_11
-CHOOSE_RELEASE_END CMSSW_5_3_11*/
-    
+*/   
+    store("mu_pfIsoDbCorrected03" , (muIt->pfIsolationR03().sumChargedHadronPt + max(0., muIt->pfIsolationR03().sumNeutralHadronEt + muIt->pfIsolationR03().sumPhotonEt - 0.5*muIt->pfIsolationR03().sumPUPt))/muIt->pt()          ) ;
+    store("mu_pfIsoDbCorrected04" , (muIt->pfIsolationR04().sumChargedHadronPt + max(0., muIt->pfIsolationR04().sumNeutralHadronEt + muIt->pfIsolationR04().sumPhotonEt - 0.5*muIt->pfIsolationR04().sumPUPt))/muIt->pt()         ) ;
+    store("mu_isoTrackerBased03"  , muIt->isolationR03().sumPt/muIt->pt()          ) ;
+ 
     // Now apply truth matching.
     int index = MCTruth_matchEtaPhi_getIndex(muIt->eta(), muIt->phi()) ;
     if(index>=0){

@@ -103,8 +103,8 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       isJetIDTightLepVeto = ((NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(eta)>2.4));
       }
     else if (abs(eta)>2.7 && abs(eta)<=3.0 ){
-      isJetIDLoose = (NEMF<0.90 && NumNeutralParticles>2 );
-      isJetIDTight = (NEMF<0.90 && NumNeutralParticles>2 );
+      isJetIDLoose = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 );
+      isJetIDTight = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2 );
       isJetIDTightLepVeto = false;
       }
     else{

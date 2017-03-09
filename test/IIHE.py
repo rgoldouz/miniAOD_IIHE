@@ -61,18 +61,14 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.EventContent.EventContent_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
+process.load("FWCore.MessageService.MessageLogger_cfi")
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
-
-process.options = cms.untracked.PSet( SkipEvent = cms.untracked.vstring("ProductNotFound") )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
-
-process.load("FWCore.MessageService.MessageLogger_cfi")
-process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-#process.MessageLogger = cms.Service("MessageLogger")
 
 ##########################################################################################
 #                                         Files                                          #
@@ -86,8 +82,8 @@ if options.DataProcessing == "data":
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring())
 
-#process.source.fileNames.append( "file:MC_MINIAOD2.root" )
-process.source.fileNames.append("file:pickevents_1.root" )
+process.source.fileNames.append( "root://eoscms//eos/cms/store/mc/RunIISummer16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/36CDAE89-B3BE-E611-B022-0025905B8604.root" )
+#process.source.fileNames.append("file:pickevents_1.root" )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
 ###
 filename_out = "outfile.root"
@@ -104,29 +100,7 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string(filenam
 ##########################################################################################
 #                                   IIHETree options                                     #
 ##########################################################################################
-#from TrkIsoCorr.CorrectedElectronTrkisoProducers.CorrectedElectronTrkisoProducers_cfi import *
-#process.CorrectedEle = CorrectedElectronTrkiso.clone()
-
-
 process.load("UserCode.IIHETree.IIHETree_cfi")
-
-triggers = "singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon"
-process.IIHEAnalysis.triggers = cms.untracked.string(triggers)
-process.IIHEAnalysis.globalTag = cms.string(globalTag)
-
-
-#Track isolation correction
-process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
-#EGamma VID
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-dataFormat = DataFormat.MiniAOD
-switchOnVIDElectronIdProducer(process, dataFormat)
-# define which IDs we want to produce
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff','RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
-#add them to the VID producer
-for idmod in my_id_modules:
-    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 # Collections for DATA and MC.
 process.IIHEAnalysis.triggerResultsCollectionHLT                 = cms.InputTag("TriggerResults"        ,""                           ,"HLT")
@@ -146,7 +120,6 @@ process.IIHEAnalysis.ebReducedRecHitCollection                   = cms.InputTag(
 process.IIHEAnalysis.eeReducedRecHitCollection                   = cms.InputTag("reducedEgamma"         , "reducedEERecHits"                )
 process.IIHEAnalysis.esReducedRecHitCollection                   = cms.InputTag("reducedEgamma"         , "reducedESRecHits"                )
 process.IIHEAnalysis.PileUpSummaryInfo                           = cms.InputTag("slimmedAddPileupInfo"                                      )
-
 # VID output
 process.IIHEAnalysis.eleTrkPtIsoLabel                            = cms.InputTag("heepIDVarValueMaps"    ,"eleTrkPtIso"       ,"IIHEAnalysis")
 process.IIHEAnalysis.VIDVeto                                     = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto")
@@ -156,7 +129,6 @@ process.IIHEAnalysis.VIDTight                                    = cms.InputTag(
 process.IIHEAnalysis.VIDmvaEleIDwp90                             = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90")
 process.IIHEAnalysis.VIDmvaEleIDwp80                             = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80")
 process.IIHEAnalysis.VIDHEEP7                                    = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV70")
-
 # Collections for MC only.
 process.IIHEAnalysis.generatorLabel                              = cms.InputTag("generator"                                                 )
 process.IIHEAnalysis.genParticleSrc                              = cms.InputTag("prunedGenParticles"                                        )
@@ -167,6 +139,23 @@ process.IIHEAnalysis.ecalMultiAndGSGlobalRecHitEBCollection      = cms.InputTag(
 process.IIHEAnalysis.METsMuEGCleanCollection                     = cms.InputTag("slimmedMETsMuEGClean"                                      )
 process.IIHEAnalysis.discardedMuonCollection                     = cms.InputTag("packedPFCandidatesDiscarded"                               )
 
+#*******************************************************************************************************************************************
+
+#Trigger paths that we want to save
+triggers = "singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon;doubleMuon"
+process.IIHEAnalysis.triggers = cms.untracked.string(triggers)
+process.IIHEAnalysis.globalTag = cms.string(globalTag)
+
+#Track isolation correction value for HEEP v7
+process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
+#EGamma VID for various working points
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+dataFormat = DataFormat.MiniAOD
+switchOnVIDElectronIdProducer(process, dataFormat)
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff','RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 # Trigger matching stuff.  0.5 should be sufficient.
 process.IIHEAnalysis.muon_triggerDeltaRThreshold = cms.untracked.double(0.5)
@@ -202,18 +191,23 @@ process.IIHEAnalysis.MCTruth_DeltaROverlapThreshold = cms.untracked.double(0.001
 process.IIHEAnalysis.electronPtThreshold  = cms.untracked.double(15)
 process.IIHEAnalysis.muonPtThreshold      = cms.untracked.double(15)
 process.IIHEAnalysis.photonPtThreshold    = cms.untracked.double(15)
-process.IIHEAnalysis.jetPtThreshold       = cms.untracked.double(25)
+process.IIHEAnalysis.jetPtThreshold       = cms.untracked.double(20)
 process.IIHEAnalysis.tauPtTThreshold      = cms.untracked.double(15)
 
 # IMPORTANT         ****SKIM EVENT****
-process.IIHEAnalysis.leptonsAcceptPtThreshold    = cms.untracked.double(20)
+process.IIHEAnalysis.leptonsAcceptPtThreshold    = cms.untracked.double(15)
 process.IIHEAnalysis.leptonsAccept_nEle           = cms.untracked.int32(2)
 process.IIHEAnalysis.leptonsAccept_nEleMu         = cms.untracked.int32(2)
 process.IIHEAnalysis.leptonsAccept_nEleTau        = cms.untracked.int32(2)
-process.IIHEAnalysis.leptonsAccept_nMu            = cms.untracked.int32(999)
+process.IIHEAnalysis.leptonsAccept_nMu            = cms.untracked.int32(2)
 process.IIHEAnalysis.leptonsAccept_nMuTau         = cms.untracked.int32(2)
 process.IIHEAnalysis.leptonsAccept_nTau           = cms.untracked.int32(999)
 #***********************************************************************
+
+#tell the code if you are running on data or MC
+process.IIHEAnalysis.isData  = cms.untracked.bool("data" in options.DataProcessing)
+process.IIHEAnalysis.isMC    = cms.untracked.bool("mc" in options.DataProcessing)
+#**********************************************************************
 
 process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)
@@ -228,15 +222,11 @@ process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(False)
 process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(False)
 process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(False)
-
-if ("data" in options.DataProcessing): 
-    process.IIHEAnalysis.includeMCTruthModule         = cms.untracked.bool(False)
-if ("mc" in options.DataProcessing):
-    process.IIHEAnalysis.includeDataModule            = cms.untracked.bool(False)
+process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
+process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
 #change it to true if you want to save all events
 process.IIHEAnalysis.includeAutoAcceptEventModule= cms.untracked.bool(False)
-
 process.IIHEAnalysis.debug = cms.bool(False)
 
 ##########################################################################################

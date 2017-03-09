@@ -5,13 +5,11 @@ TriggerFilter::TriggerFilter(std::string name, std::string triggerName){
     triggerName_ = triggerName ;
     etaBranchName_ = "trig_" + triggerName_.substr(0, triggerName_.find("_v")) + "_" + name_ + "_eta" ;
     phiBranchName_ = "trig_" + triggerName_.substr(0, triggerName_.find("_v")) + "_" + name_ + "_phi" ;
-    etBranchName_ = "trig_" + triggerName_.substr(0, triggerName_.find("_v")) + "_" + name_ + "_et" ;
 }
 int TriggerFilter::createBranches(IIHEAnalysis* analysis){
   int result = 0 ;
   result += analysis->addBranch(etaBranchName_, kVectorFloat) ;
   result += analysis->addBranch(phiBranchName_, kVectorFloat) ;
-  result += analysis->addBranch(etBranchName_, kVectorFloat) ;
   return result ;
 }
 int TriggerFilter::setIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm::InputTag trigEventTag){
@@ -21,7 +19,6 @@ int TriggerFilter::setIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm::I
 int TriggerFilter::setValues(const edm::Event& iEvent, edm::Handle<pat::TriggerObjectStandAloneCollection> trigEvent, edm::Handle<edm::TriggerResults> triggerBits, HLTConfigProvider hltConfig,IIHEAnalysis* analysis){
   etaValues_.clear() ;
   phiValues_.clear() ;
-  etValues_.clear() ;
   const edm::TriggerNames &names = iEvent.triggerNames(*triggerBits);
   for (pat::TriggerObjectStandAlone obj : *trigEvent) {
     obj.unpackPathNames(names);
@@ -31,10 +28,8 @@ int TriggerFilter::setValues(const edm::Event& iEvent, edm::Handle<pat::TriggerO
       if (name_==label){
         analysis->store(etaBranchName_, obj.eta()) ;
         analysis->store(phiBranchName_, obj.phi()) ;
-        analysis->store(etBranchName_, obj.et()) ;
         etaValues_.push_back(obj.eta()) ;
         phiValues_.push_back(obj.phi()) ;
-        etValues_.push_back(obj.et()) ;
       }
     }
   }
@@ -43,8 +38,7 @@ int TriggerFilter::setValues(const edm::Event& iEvent, edm::Handle<pat::TriggerO
 bool TriggerFilter::store(IIHEAnalysis* analysis){
   bool etaSuccess = analysis->store(etaBranchName_, etaValues_) ;
   bool phiSuccess = analysis->store(phiBranchName_, phiValues_) ;
-  bool etSuccess = analysis->store(etBranchName_, etValues_) ;
-  return (etaSuccess && phiSuccess && etSuccess) ;
+  return (etaSuccess && phiSuccess ) ;
 }
   
   
@@ -71,7 +65,6 @@ int L1Trigger::setFilterIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm:
 }
 bool L1Trigger::matchObject(edm::Handle<trigger::TriggerEvent> trigEvent, float eta, float phi){
   // Careful that L1 triggers only have discrete eta phi. Need to be extremely loose. 
-  // See here: http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/SHarper/SHNtupliser/src/SHTrigInfo.cc?revision=1.5&view=markup&pathrev=HEAD
   // It is important to specify the right HLT process for the filter, not doing this is a common bug
   if(filterIndex_<0) return false ;
   if(filterIndex_<trigEvent->sizeFilters()){ 

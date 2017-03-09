@@ -49,7 +49,6 @@ unsigned long int eventNumber = (unsigned long int)(iEvent.id().event());
   store("ev_event"          , eventNumber) ;
   store("ev_run"            , (unsigned long int) (iEvent.id().run() ) ) ;
   store("ev_luminosityBlock", (unsigned long int) (iEvent.id().luminosityBlock() )) ;
-cout<<eventNumber<<endl;
 
   edm::Timestamp time = iEvent.time() ;
   int timestamp_value = time.value() ;
