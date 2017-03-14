@@ -1,102 +1,119 @@
 import FWCore.ParameterSet.Config as cms
 import getpass, os
 pwd = os.getcwd()
-#os.chdir("../../UserCode/IIHETree/")
-#username = getpass.getuser()
-#git_tmp_filename = '/tmp/%s_git.hash'%username
-#os.system("git log -n 1 | head -n 1 | awk '{print $2}' > %s"%git_tmp_filename)
-#f = open(git_tmp_filename)
-#git_hash = f.read().rstrip('\n')
-#print 'Using git hash: ' , git_hash
-#os.chdir(pwd)
-git_hash = getpass.getuser()
-
-
 IIHEAnalysis = cms.EDAnalyzer("IIHEAnalysis",
-    debug         = cms.bool(True),
-    beamSpot      = cms.InputTag("offlineBeamSpot"),
-    primaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices'),
-    git_hash = cms.string(git_hash),
-    EcalHcal1EffAreaBarrel  = cms.untracked.double(0.28),
-    EcalHcal1EffAreaEndcaps = cms.untracked.double(0.28),
-    barrelEtaUpper_41 = cms.untracked.double( 1.442  ),
-    endcapEtaLower_41 = cms.untracked.double( 1.56   ),
-    endcapEtaUpper_41 = cms.untracked.double( 2.5    ),
-    barrelEtaUpper_50 = cms.untracked.double( 1.4442 ),
-    endcapEtaLower_50 = cms.untracked.double( 1.566  ),
-    endcapEtaUpper_50 = cms.untracked.double( 2.5    ),
-    isolEMHadDepth1ConstantTermBarrel_41       = cms.untracked.double( 2.0  ),
-    isolEMHadDepth1ConstantTermEndcapLowEt_41  = cms.untracked.double( 2.5  ),
-    isolEMHadDepth1ConstantTermEndcapHighEt_41 = cms.untracked.double( 2.5  ),
-    isolEMHadDepth1LinearTermBarrel_41         = cms.untracked.double( 0.03 ),
-    isolEMHadDepth1LinearTermEndcap_41         = cms.untracked.double( 0.03 ),
-    isolEMHadDepth1OffsetTermEndcap_41         = cms.untracked.double( 50.0 ),
-    isolEMHadDepth1ConstantTermBarrel_50_50ns       = cms.untracked.double( 2.0  ),
-    isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns  = cms.untracked.double( 2.5  ),
-    isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns = cms.untracked.double( 2.5  ),
-    isolEMHadDepth1LinearTermBarrel_50_50ns         = cms.untracked.double( 0.03 ),
-    isolEMHadDepth1LinearTermEndcap_50_50ns         = cms.untracked.double( 0.03 ),
-    isolEMHadDepth1OffsetTermEndcap_50_50ns         = cms.untracked.double( 50.0 ),
-    isolEMHadDepth1ConstantTermBarrel_50_25ns       = cms.untracked.double( 2.0  ),
-    isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns  = cms.untracked.double( 2.5  ),
-    isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns = cms.untracked.double( 2.5  ),
-    isolEMHadDepth1LinearTermBarrel_50_25ns         = cms.untracked.double( 0.03 ),
-    isolEMHadDepth1LinearTermEndcap_50_25ns         = cms.untracked.double( 0.03 ),
-    isolEMHadDepth1OffsetTermEndcap_50_25ns         = cms.untracked.double( 50.0 ),
-    EtThresholdBarrel_41 = cms.untracked.double( 35.0 ),
-    EtThresholdEndcap_41 = cms.untracked.double( 35.0 ),
-    EtThresholdBarrel_50 = cms.untracked.double( 35.0 ),
-    EtThresholdEndcap_50 = cms.untracked.double( 35.0 ),
-    dEtaInThresholdBarrel_41 = cms.untracked.double( 0.005 ),
-    dEtaInThresholdEndcap_41 = cms.untracked.double( 0.007 ),
-    dEtaInConstantTermBarrel_50_50ns = cms.untracked.double( 0.016  ),
-    dEtaInLinearTermBarrel_50_50ns   = cms.untracked.double( 0.0001 ),
-    dEtaInCutoffTermBarrel_50_50ns   = cms.untracked.double( 0.004  ),
-    dEtaInThresholdEndcap_50_50ns    = cms.untracked.double( 0.02   ),
-    dEtaInConstantTermBarrel_50_25ns = cms.untracked.double( 0.016  ),
-    dEtaInLinearTermBarrel_50_25ns   = cms.untracked.double( 0.0001 ),
-    dEtaInCutoffTermBarrel_50_25ns   = cms.untracked.double( 0.004  ),
-    dEtaInConstantTermEndcap_50_25ns = cms.untracked.double( 0.016  ),
-    dEtaInLinearTermEndcap_50_25ns   = cms.untracked.double( 0.0001 ),
-    dEtaInCutoffTermEndcap_50_25ns   = cms.untracked.double( 0.004  ),
-    dPhiInThresholdBarrel_41      = cms.untracked.double( 0.06 ),
-    dPhiInThresholdEndcap_41      = cms.untracked.double( 0.06 ),
-    dPhiInThresholdBarrel_50_50ns = cms.untracked.double( 0.06 ),
-    dPhiInThresholdEndcap_50_50ns = cms.untracked.double( 0.15 ),
-    dPhiInThresholdBarrel_50_25ns = cms.untracked.double( 0.06 ),
-    dPhiInThresholdEndcap_50_25ns = cms.untracked.double( 0.06 ),
-    HOverEThresholdBarrel_41 = cms.untracked.double( 0.05 ),
-    HOverEThresholdEndcap_41 = cms.untracked.double( 0.05 ),
-    HOverEReciprocalTermBarrel_50_50ns = cms.untracked.double(  2.0  ),
-    HOverEConstantTermBarrel_50_50ns   = cms.untracked.double(  0.05 ),
-    HOverEReciprocalTermEndcap_50_50ns = cms.untracked.double( 12.5  ),
-    HOverEConstantTermEndcap_50_50ns   = cms.untracked.double(  0.05 ),
-    HOverEReciprocalTermBarrel_50_25ns = cms.untracked.double(  2.0  ),
-    HOverEConstantTermBarrel_50_25ns   = cms.untracked.double(  0.05 ),
-    HOverEReciprocalTermEndcap_50_25ns = cms.untracked.double( 12.5  ),
-    HOverEConstantTermEndcap_50_25ns   = cms.untracked.double(  0.05 ),
-    SigmaIetaIetaThreshold_41      = cms.untracked.double( 0.03 ),
-    SigmaIetaIetaThreshold_50_50ns = cms.untracked.double( 0.03 ),
-    SigmaIetaIetaThreshold_50_25ns = cms.untracked.double( 0.03 ),
-    E1x5threshold_41      = cms.untracked.double( 0.83 ),
-    E2x5threshold_41      = cms.untracked.double( 0.94 ),
-    E1x5threshold_50_50ns = cms.untracked.double( 0.83 ),
-    E2x5threshold_50_50ns = cms.untracked.double( 0.94 ),
-    E1x5threshold_50_25ns = cms.untracked.double( 0.83 ),
-    E2x5threshold_50_25ns = cms.untracked.double( 0.94 ),
-    IsolPtTrksThresholdBarrel_41      = cms.untracked.double( 5.0 ),
-    IsolPtTrksThresholdEndcap_41      = cms.untracked.double( 5.0 ),
-    IsolPtTrksThresholdBarrel_50_50ns = cms.untracked.double( 5.0 ),
-    IsolPtTrksThresholdEndcap_50_50ns = cms.untracked.double( 5.0 ),
-    IsolPtTrksThresholdBarrel_50_25ns = cms.untracked.double( 5.0 ),
-    IsolPtTrksThresholdEndcap_50_25ns = cms.untracked.double( 5.0 ),
-    dxyFirstPvThresholdBarrel_41      = cms.untracked.double( 0.02 ),
-    dxyFirstPvThresholdEndcap_41      = cms.untracked.double( 0.05 ),
-    dxyFirstPvThresholdBarrel_50_50ns = cms.untracked.double( 0.02 ),
-    dxyFirstPvThresholdEndcap_50_50ns = cms.untracked.double( 0.05 ),
-    dxyFirstPvThresholdBarrel_50_25ns = cms.untracked.double( 0.02 ),
-    dxyFirstPvThresholdEndcap_50_25ns = cms.untracked.double( 0.05 ),
-    missingHitsThreshold_41      = cms.untracked.double( 1 ),
-    missingHitsThreshold_50_50ns = cms.untracked.double( 1 ),
-    missingHitsThreshold_50_25ns = cms.untracked.double( 1 )
-)
+    # Collections for DATA and MC.
+    triggerResultsCollectionHLT                 = cms.InputTag("TriggerResults"        ,""                           ,"HLT" ),
+    triggerResultsCollectionPAT                 = cms.InputTag("TriggerResults"        ,""                           ,"PAT" ),
+    triggerObjectStandAloneCollection           = cms.InputTag("selectedPatTrigger"                                         ),
+    patTriggerCollection                        = cms.InputTag("patTrigger"                                                 ),
+    triggerEvent                                = cms.InputTag("hltTriggerSummaryAOD"  ,""                           ,"PAT" ),
+    photonCollection                            = cms.InputTag("slimmedPhotons"                                             ),
+    electronCollection                          = cms.InputTag("slimmedElectrons"                                           ),
+    muonCollection                              = cms.InputTag("slimmedMuons"                                               ),
+    METCollection                               = cms.InputTag("slimmedMETs"                                                ),
+    JetCollection                               = cms.InputTag("slimmedJets"                                                ),
+    tauCollection                               = cms.InputTag("slimmedTaus"                                                ),
+    superClusterCollection                      = cms.InputTag("reducedEgamma"         , "reducedSuperClusters"             ),
+    eventRho                                    = cms.InputTag("fixedGridRhoFastjetAll"                                     ),
+    ebReducedRecHitCollection                   = cms.InputTag("reducedEgamma"         , "reducedEBRecHits"                 ),
+    eeReducedRecHitCollection                   = cms.InputTag("reducedEgamma"         , "reducedEERecHits"                 ),
+    esReducedRecHitCollection                   = cms.InputTag("reducedEgamma"         , "reducedESRecHits"                 ),
+    PileUpSummaryInfo                           = cms.InputTag("slimmedAddPileupInfo"                                       ),
+    primaryVertex                               = cms.InputTag('offlineSlimmedPrimaryVertices'                              ),
+    beamSpot                                    = cms.InputTag("offlineBeamSpot"                                            ),
+    # VID output
+    eleTrkPtIsoLabel                            = cms.InputTag("heepIDVarValueMaps"    ,"eleTrkPtIso"       ,"IIHEAnalysis" ),
+    VIDVeto                                     = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto"  ),
+    VIDLoose                                    = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose" ),
+    VIDMedium                                   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium"),
+    VIDTight                                    = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight" ),
+    VIDmvaEleIDwp90                             = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90" ),
+    VIDmvaEleIDwp80                             = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80" ),
+    VIDHEEP7                                    = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV70"                   ),
+    # Collections for MC only.
+    generatorLabel                              = cms.InputTag("generator"                                                 ),
+    genParticleSrc                              = cms.InputTag("prunedGenParticles"                                        ),
+    # Collections for DATA only.
+    electronsBeforeGSFixCollection              = cms.InputTag("slimmedElectronsBeforeGSFix"                               ),
+    particleFlowEGammaGSFixedCollection         = cms.InputTag("particleFlowEGammaGSFixed", "dupECALClusters"              ),
+    ecalMultiAndGSGlobalRecHitEBCollection      = cms.InputTag("ecalMultiAndGSGlobalRecHitEB","dupESClusters"        ,"PAT"),
+    METsMuEGCleanCollection                     = cms.InputTag("slimmedMETsMuEGClean"                                      ),
+    discardedMuonCollection                     = cms.InputTag("packedPFCandidatesDiscarded"                               ),
+    
+    #*******************************************************************************************************************************************
+    #Trigger paths that we want to save
+    triggers                                    = cms.untracked.string("singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon;doubleMuon"),
+    globalTag                                   = cms.string(""),
+    
+    # Trigger matching stuff.  0.5 should be sufficient.
+    muon_triggerDeltaRThreshold                 = cms.untracked.double(0.5),
+    HEEP_triggerDeltaRThreshold                 = cms.untracked.double(0.5),
+    
+    # In the absence of high ET electrons, only save events with really high Z candidates.
+    ZBosonZMassAcceptLower                      = cms.untracked.double(850),
+    # Don"t bother with J/psi or Upsilon, they will only weigh us down!
+    ZBosonJPsiAcceptMassLower                   = cms.untracked.double(1e6),
+    ZBosonJPsiAcceptMassUpper                   = cms.untracked.double(1e6),
+    ZBosonUpsAcceptMassLower                    = cms.untracked.double(1e6),
+    ZBosonUpsAcceptMassUpper                    = cms.untracked.double(1e6),
+    
+    # But make sure we save Z bosons from 50 GeV and up.
+    ZBosonZMassLowerCuttoff                     = cms.untracked.double( 50),
+    ZBosonDeltaRCut                             = cms.untracked.double(1e-3),
+    
+    # Only save Z->ee, Z->em.
+    ZBosonEtThreshold                           = cms.untracked.double(15),
+    ZBosonSaveZee                               = cms.untracked.bool(False ),
+    ZBosonSaveZmm                               = cms.untracked.bool(False ),
+    ZBosonSaveZem                               = cms.untracked.bool(False ),
+    ZBosonSaveZeeg                              = cms.untracked.bool(False),
+    ZBosonSaveZmmg                              = cms.untracked.bool(False),
+    
+    # Set pt or mass thresholds for the truth module here
+    # Setting thresholds reduces the size of the output files significantly
+    MCTruth_ptThreshold                         = cms.untracked.double(10.0),
+    MCTruth_mThreshold                          = cms.untracked.double(20.0),
+    MCTruth_DeltaROverlapThreshold              = cms.untracked.double(0.001),
+    # IMPORTANT         ****SKIM OBJECT****
+    electronPtThreshold                         = cms.untracked.double(15),
+    muonPtThreshold                             = cms.untracked.double(15),
+    photonPtThreshold                           = cms.untracked.double(15),
+    jetPtThreshold                              = cms.untracked.double(20),
+    tauPtTThreshold                             = cms.untracked.double(15),
+    
+    # IMPORTANT         ****SKIM EVENT****
+    leptonsAcceptPtThreshold                    = cms.untracked.double(15),
+    leptonsAccept_nEle                          = cms.untracked.int32(2),
+    leptonsAccept_nEleMu                        = cms.untracked.int32(2),
+    leptonsAccept_nEleTau                       = cms.untracked.int32(2),
+    leptonsAccept_nMu                           = cms.untracked.int32(2),
+    leptonsAccept_nMuTau                        = cms.untracked.int32(2),
+    leptonsAccept_nTau                          = cms.untracked.int32(999),
+    #***********************************************************************
+    
+    #tell the code if you are running on data or MC
+    isData                                      = cms.untracked.bool(False),
+    isMC                                        = cms.untracked.bool(False),
+    #**********************************************************************
+    
+    includeLeptonsAcceptModule                  = cms.untracked.bool(False),
+    includeTriggerModule                        = cms.untracked.bool(False),
+    includeEventModule                          = cms.untracked.bool(False),
+    includeVertexModule                         = cms.untracked.bool(False),
+    includePhotonModule                         = cms.untracked.bool(False),
+    includeElectronModule                       = cms.untracked.bool(False),
+    includeMuonModule                           = cms.untracked.bool(False),
+    includeMETModule                            = cms.untracked.bool(False),
+    includeJetModule                            = cms.untracked.bool(False),
+    includeTauModule                            = cms.untracked.bool(False),
+    includeZBosonModule                         = cms.untracked.bool(False),
+    includeSuperClusterModule                   = cms.untracked.bool(False),
+    includeTracksModule                         = cms.untracked.bool(False),
+    includeMCTruthModule                        = cms.untracked.bool(False),
+    includeDataModule                           = cms.untracked.bool(False),
+    
+    #change it to true if you want to save all events
+    includeAutoAcceptEventModule                = cms.untracked.bool(False),
+    debug                                       = cms.bool(False)
+    )

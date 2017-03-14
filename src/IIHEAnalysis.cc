@@ -35,7 +35,6 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
 {
   currentVarType_ = -1 ;
   debug_     = iConfig.getParameter<bool  >("debug"    ) ;
-  git_hash_  = iConfig.getParameter<string>("git_hash" ) ;
   globalTag_ = iConfig.getParameter<string>("globalTag") ;
   nEvents_ = 0 ;
   nEventsStored_ = 0 ;
@@ -47,7 +46,6 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   //mainFile_ = TFile("outfile.root", "RECREATE") ;
   dataTree_ = new TTree("IIHEAnalysis", "IIHEAnalysis") ;
   metaTree_ = new TTree("meta", "Information about globalTag etc") ;
-  metaTree_->Branch("git_hash" , &git_hash_ ) ;
   metaTree_->Branch("globalTag", &globalTag_) ;
   
   MCTruthModule_ = 0 ;
@@ -509,7 +507,6 @@ bool IIHEAnalysis::store(std::string name, unsigned long int value){
   if(debug_) std::cout << "Could not find a (ulint) branch named " << name << std::endl ;
   return false ;
 }
-
 
 bool IIHEAnalysis::store(std::string name, std::vector<bool> values){
   for(unsigned int i=0 ; i<vars_BVV_.size() ; ++i){

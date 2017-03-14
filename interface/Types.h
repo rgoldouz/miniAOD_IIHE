@@ -8,6 +8,8 @@ enum variableTypes{
   kInt,
   kUInt,
   kULInt,
+  kSize_t,
+  kVectorSize_t,
   kVectorBool,
   kVectorDouble,
   kVectorFloat,

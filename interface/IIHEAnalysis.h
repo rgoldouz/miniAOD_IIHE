@@ -173,7 +173,6 @@ private:
   int nEvents_ ;
   int nEventsStored_ ;
   bool debug_;
-  std::string git_hash_  ;
   std::string globalTag_ ;
   
   // MC truth module

@@ -100,6 +100,7 @@ class BranchWrapperUL  : public BranchWrapperBase{
     void endEvent() ;
 };
 
+
 class BranchWrapperBV : public BranchWrapperBase{
   private:
     std::vector<bool> values_;
@@ -171,6 +172,7 @@ class BranchWrapperULV : public BranchWrapperBase{
     void beginEvent() ;
     void endEvent() ;
 };
+
 
 class BranchWrapperBVV: public BranchWrapperBase{
   private:
