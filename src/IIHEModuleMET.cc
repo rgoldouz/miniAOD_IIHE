@@ -92,6 +92,7 @@ IIHEModuleMET::IIHEModuleMET(const edm::ParameterSet& iConfig, edm::ConsumesColl
   metWrapper_(new IIHEMETWrapper("MET_T1"))
 {
   pfMETToken_ =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("METCollection"));
+  patPFMetTxyToken_ =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetTxyCollection"));
 }
 IIHEModuleMET::~IIHEModuleMET(){}
 
@@ -106,17 +107,21 @@ void IIHEModuleMET::beginJob(){
 // ------------ method called to for each event  ------------
 void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
-  edm::Handle<edm::View<pat::MET> > pfMETHandle;
-  iEvent.getByToken(pfMETToken_, pfMETHandle);
+  edm::Handle<edm::View<pat::MET> > pfMETHandle_;
+  iEvent.getByToken(pfMETToken_, pfMETHandle_);
   IIHEAnalysis* analysis = parent_ ;
   metWrapper_->reset() ;
-  if (pfMETHandle.isValid()) {
-    const pat::MET *pfMET = 0;
-    pfMET = &(pfMETHandle->front());
-    store("MET_gen"   , pfMET->genMET()     ) ;
-    metWrapper_->fill(pfMETHandle->front()) ;
-    metWrapper_ ->store(analysis) ;
-  }
+  
+  Ptr<pat::MET> pfMET = pfMETHandle_->ptrAt( 0 );
+  store("MET_gen"   , pfMET->genMET()     ) ;
+  metWrapper_->fill(pfMETHandle_->front()) ;
+  metWrapper_ ->store(analysis) ;
+
+  edm::Handle<edm::View<pat::MET> > pfMETTxyHandle_;
+  iEvent.getByToken(patPFMetTxyToken_, pfMETTxyHandle_);
+  Ptr<pat::MET> pfMETTxy = pfMETTxyHandle_->ptrAt( 0 );
+//  cout<<pfMET->phi()  <<"  "<< pfMETTxy->phi() <<endl;
+//  cout<<pfMET->et()  <<"  "<< pfMETTxy->et() <<endl;
 }
 void IIHEModuleMET::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
 void IIHEModuleMET::beginEvent(){}

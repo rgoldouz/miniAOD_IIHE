@@ -93,6 +93,9 @@ void IIHEModuleTau::beginJob(){
   addBranch("tau_mc_bestDR");
   addBranch("tau_mc_ERatio");
 
+  setBranchType(kVectorUInt);
+  addBranch("tau_numberOfIsolationChargedHadrCands");
+  addBranch("tau_numberOfSignalChargedHadrCands");
 
   setBranchType(kVectorInt);
   addBranch("tau_mc_index");
@@ -188,6 +191,9 @@ void IIHEModuleTau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     store("tau_charge"            , tauni->charge()) ;
     store("tau_isPFTau"           , tauni->isPFTau()) ;
     store("tau_hasSecondaryVertex", tauni->hasSecondaryVertex()) ;
+
+    store("tau_numberOfIsolationChargedHadrCands"  , tauni->isolationChargedHadrCands().size());
+    store("tau_numberOfSignalChargedHadrCands"     , tauni->signalChargedHadrCands().size());
 
     // Now apply truth matching.
     int index = MCTruth_matchEtaPhi_getIndex(tauni->eta(), tauni->phi()) ;

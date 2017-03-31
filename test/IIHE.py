@@ -62,6 +62,7 @@ process.load("Configuration.EventContent.EventContent_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.load('Configuration.StandardSequences.Services_cff')
 
 process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
@@ -81,7 +82,7 @@ if options.DataProcessing == "data":
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring())
 
-#process.source.fileNames.append( "root://eoscms//eos/cms/store/mc/RunIISummer16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/36CDAE89-B3BE-E611-B022-0025905B8604.root" )
+#process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
 #process.source.fileNames.append("file:pickevents_1.root" )
 process.source.fileNames.append( "file:03Feb2017data.root" )
 ###
@@ -121,14 +122,15 @@ process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in op
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
 
+
 #Track isolation correction value for HEEP v7
-process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
 #EGamma VID for various working points
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 dataFormat = DataFormat.MiniAOD
 switchOnVIDElectronIdProducer(process, dataFormat)
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff','RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
+my_id_modules = ["RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff",
+                 "RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff"]
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
@@ -137,22 +139,52 @@ from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMet
 runMetCorAndUncFromMiniAOD(process,
                            isData= "data" in options.DataProcessing
                            )
+#electron 80 energy regression
+from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
+process = regressionWeights(process)
+process.load("EgammaAnalysis.ElectronTools.regressionApplication_cff")
+
+#Electron energy scale and smearing
+process.load("Configuration.StandardSequences.Services_cff")
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+                                                    calibratedPatElectrons  = cms.PSet( initialSeed = cms.untracked.uint32(81),
+                                                    engineName = cms.untracked.string("TRandom3")),
+                                                  )
+process.load("EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi")
+process.calibratedPatElectrons.isMC = cms.bool("mc" in options.DataProcessing)
+process.calibratedPatElectrons.electrons = cms.InputTag("slimmedElectrons80","","IIHEAnalysis")
+process.calibratedPatElectrons.isSynchronization = cms.bool(False)
+# Compatibility with VID 
+process.selectedElectrons80 = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("calibratedPatElectrons","","IIHEAnalysis"),
+    cut = cms.string("pt>5 && abs(eta)")
+)
+
+process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
+process.egmGsfElectronIDs.physicsObjectSrc            = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
+process.electronIDValueMapProducer.srcMiniAOD         = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
+process.electronRegressionValueMapProducer.srcMiniAOD = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
+process.electronMVAValueMapProducer.srcMiniAOD        = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
+
 
 ##########################################################################################
 #                            Woohoo!  We"re ready to start!                              #
 ##########################################################################################
 #process.p1 = cms.Path(process.kt6PFJetsForIsolation+process.IIHEAnalysis)
+process.out = cms.OutputModule(
+    "PoolOutputModule",
+    fileName = cms.untracked.string("test.root")
+    )
 
-#process.out = cms.OutputModule(
-#    "PoolOutputModule",
-#    fileName = cms.untracked.string("test.root")
-#)
 process.p1 = cms.Path(
-    process.egmGsfElectronIDSequence *
-    process.heepIDVarValueMaps    *
-    process.fullPatMetSequence * 
+    process.fullPatMetSequence       *
+    process.regressionApplication    *
+    process.calibratedPatElectrons   *
+    process.selectedElectrons80      *
+    process.egmGsfElectronIDSequence * 
+    process.heepIDVarValueMaps       *
     process.IIHEAnalysis 
     )
 
-#process.outpath = cms.EndPath(process.out)
+process.outpath = cms.EndPath(process.out)
 

@@ -39,6 +39,9 @@ void IIHEModuleJet::beginJob(){
   setBranchType(kVectorInt);
   addBranch("jet_chargedMultiplicity");
   addBranch("jet_neutralMultiplicity");
+  addBranch("jet_partonFlavour");
+  addBranch("jet_hadronFlavour");
+
   setBranchType(kVectorFloat);
   addBranch("jet_CSV");
   addBranch("jet_CSVv2");
@@ -77,6 +80,8 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     store("jet_chargedEmEnergyFraction"             ,pfjet->chargedEmEnergyFraction());
     store("jet_chargedMultiplicity"                 ,pfjet->chargedMultiplicity());
     store("jet_neutralMultiplicity"                 ,pfjet->neutralMultiplicity());
+    store("jet_partonFlavour"                       ,pfjet->partonFlavour());
+    store("jet_hadronFlavour"                       ,pfjet->hadronFlavour());
 
     store("jet_CSV",pfjet->bDiscriminator("combinedSecondaryVertexBJetTags"));
     store("jet_CSVv2",pfjet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags"));

@@ -89,6 +89,7 @@ public:
 
 private:
  edm::EDGetTokenT<edm::View<pat::MET> > pfMETToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> >patPFMetTxyToken_;
   IIHEMETWrapper* metWrapper_ ;
 
 };

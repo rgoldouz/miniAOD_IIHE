@@ -110,8 +110,8 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_VIDLoose");
   addBranch("gsf_VIDMedium");
   addBranch("gsf_VIDTight");
-  addBranch("gsf_VIDmvaEleIDwp90");
-  addBranch("gsf_VIDmvaEleIDwp80");
+//  addBranch("gsf_VIDmvaEleIDwp90");
+//  addBranch("gsf_VIDmvaEleIDwp80");
   addBranch("gsf_VIDHEEP7");
 
   setBranchType(kVectorFloat) ;
@@ -283,11 +283,11 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
   edm::Handle<edm::ValueMap<bool>> VIDTightHandle_;
   iEvent.getByToken(VIDTight_,VIDTightHandle_);
 
-  edm::Handle<edm::ValueMap<bool>> VIDmvaEleIDwp90Handle_;
-  iEvent.getByToken(VIDmvaEleIDwp90_,VIDmvaEleIDwp90Handle_);
+//  edm::Handle<edm::ValueMap<bool>> VIDmvaEleIDwp90Handle_;
+//  iEvent.getByToken(VIDmvaEleIDwp90_,VIDmvaEleIDwp90Handle_);
 
-  edm::Handle<edm::ValueMap<bool>> VIDmvaEleIDwp80Handle_;
-  iEvent.getByToken(VIDmvaEleIDwp80_,VIDmvaEleIDwp80Handle_);
+//  edm::Handle<edm::ValueMap<bool>> VIDmvaEleIDwp80Handle_;
+//  iEvent.getByToken(VIDmvaEleIDwp80_,VIDmvaEleIDwp80Handle_);
 
   edm::Handle<edm::ValueMap<bool>> VIDHEEP7Handle_;
   iEvent.getByToken(VIDHEEP7_,VIDHEEP7Handle_);
@@ -324,7 +324,7 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
 
     int gsf_nLostInnerHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS) ;
     int gsf_nLostOuterHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_OUTER_HITS) ;
-    
+    if (abs(gsfiter->superCluster()->eta())>2.45) cout<<"eta = "<< gsfiter->eta()<< "   etaSc = "<<gsfiter->superCluster()->eta()<<endl; 
     store("gsf_energy"                        , gsfiter->energy()                        ) ;
     store("gsf_p"                             , gsfiter->p()                             ) ;
     store("gsf_pt"                            , gsfiter->pt()                            ) ;
@@ -354,8 +354,8 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_VIDMedium"                     , (*VIDMediumHandle_).get(gsfref)        ) ;
     store("gsf_VIDTight"                      , (*VIDTightHandle_).get(gsfref)        ) ;
     store("gsf_VIDHEEP7"                      , (*VIDHEEP7Handle_).get(gsfref)        ) ;
-    store("gsf_VIDmvaEleIDwp90"               , (*VIDmvaEleIDwp90Handle_).get(gsfref)        ) ;
-    store("gsf_VIDmvaEleIDwp80"               , (*VIDmvaEleIDwp80Handle_).get(gsfref)        ) ;
+//    store("gsf_VIDmvaEleIDwp90"               , (*VIDmvaEleIDwp90Handle_).get(gsfref)        ) ;
+//    store("gsf_VIDmvaEleIDwp80"               , (*VIDmvaEleIDwp80Handle_).get(gsfref)        ) ;
     store("gsf_dr03EcalRecHitSumEt"           , gsfiter->dr03EcalRecHitSumEt()           ) ;
     store("gsf_dr03HcalDepth1TowerSumEt"      , gsfiter->dr03HcalDepth1TowerSumEt()      ) ;
     store("gsf_dr03HcalDepth2TowerSumEt"      , gsfiter->dr03HcalDepth2TowerSumEt()      ) ;
