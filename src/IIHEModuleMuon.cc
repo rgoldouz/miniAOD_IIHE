@@ -213,11 +213,6 @@ IIHEModuleMuon::~IIHEModuleMuon(){}
 void IIHEModuleMuon::beginJob(){
   setBranchType(kUInt) ;
   addBranch("mu_n"   ) ;
-  addBranch("mu_n_saved") ;
-  addBranch("mu_gt_n") ;
-  addBranch("mu_ot_n") ;
-  addBranch("mu_it_n") ;
-  addBranch("mu_ibt_n") ;
   IIHEAnalysis* analysis = parent_ ;
   if(storeGlobalTrackMuons_) globalTrackWrapper_->addBranches(analysis) ;
   if(storeStandAloneMuons_ )  outerTrackWrapper_->addBranches(analysis) ;
@@ -226,13 +221,21 @@ void IIHEModuleMuon::beginJob(){
   
   // Muon type block
   setBranchType(kVectorBool) ;
-  addBranch("mu_isBad") ;
   addBranch("mu_isGlobalMuon"      ) ;
   addBranch("mu_isStandAloneMuon"  ) ;
   addBranch("mu_isTrackerMuon"     ) ;
   addBranch("mu_isPFMuon"          ) ;
   addBranch("mu_isPFIsolationValid") ;
+  addBranch("mu_isGoodMuonTMLastStationLoose" ) ;
+  addBranch("mu_isGoodMuonTMLastStationTight" ) ;
+  addBranch("mu_isGoodMuonTM2DCompatibilityLoose") ;
+  addBranch("mu_isGoodMuonTM2DCompatibilityTight" ) ;
+  addBranch("mu_isGoodMuonTMOneStationLoose"  ) ;
+  addBranch("mu_isGoodMuonTMOneStationTight"  ) ;
+  addBranch("mu_isGoodMuonTMLastStationOptimizedLowPtLoose" ) ;
+  addBranch("mu_isGoodMuonTMLastStationOptimizedLowPtTight" ) ;
   addBranch("mu_isTightMuon"     ) ;
+  addBranch("mu_isMediumMuon"     ) ;
   addBranch("mu_isLooseMuon"     ) ;
   addBranch("mu_isSoftMuon"     ) ;
   addBranch("mu_isHighPtMuon"     ) ;
@@ -248,6 +251,12 @@ void IIHEModuleMuon::beginJob(){
 
   // Isolation block
   setBranchType(kVectorFloat) ;
+  addBranch("mu_innerTrack_validFraction"        ) ;
+  addBranch("mu_combinedQuality_trkKink"        ) ;
+  addBranch("mu_combinedQuality_chi2LocalPosition"        ) ;
+  addBranch("mu_segmentCompatibility"        ) ;
+  addBranch("mu_dB"        ) ;
+
   addBranch("mu_isolationR03_sumPt"        ) ;
   addBranch("mu_isolationR03_trackerVetoPt") ;
   addBranch("mu_isolationR03_emEt"         ) ;
@@ -323,11 +332,6 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   
   IIHEAnalysis* analysis = parent_ ;
   
-  unsigned int mu_gt_n = 0 ;
-  unsigned int mu_ot_n = 0 ;
-  unsigned int mu_it_n = 0 ;
-  unsigned int mu_ibt_n = 0 ;
-  int mu_n_saved = 0 ;
   for( unsigned int i = 0 ; i < muonCollection_->size() ; i++ ) {
     Ptr<pat::Muon> muIt = muonCollection_->ptrAt( i );
 
@@ -341,18 +345,49 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     if(isStandAloneMuon && storeStandAloneMuons_ ) storeThisMuon = true ;
     if(isTrackerMuon    && storeInnerTrackMuons_ ) storeThisMuon = true ;
     if(storeThisMuon==false) continue ;
+
+    reco::TrackRef globalTrack = muIt->globalTrack() ;
+    reco::TrackRef  outerTrack = muIt->outerTrack()  ;
+    reco::TrackRef  innerTrack = muIt->innerTrack()  ;
+    reco::TrackRef  improvedMuonBestTrack = muIt->tunePMuonBestTrack();
+
+    bool saveMuon = false ;
+    if(storeInnerTrackMuons_){
+      if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){
+        if(innerTrack->pt() > ETThreshold_) saveMuon = true ;
+      }
+    }
+    if(storeStandAloneMuons_){
+      if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){
+        if(outerTrack->pt() > ETThreshold_) saveMuon = true ;
+      }
+    }
+    if(storeGlobalTrackMuons_){
+      if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){
+        if(globalTrack->pt() > ETThreshold_ || improvedMuonBestTrack->pt() > ETThreshold_) saveMuon = true ;
+      }
+    }
+    if(saveMuon==false) continue ;
+
  
-    store("mu_isBad" , 0 ) ;   
     store("mu_isGlobalMuon"      , isGlobalMuon              ) ;
     store("mu_isStandAloneMuon"  , isStandAloneMuon          ) ;
     store("mu_isTrackerMuon"     , isTrackerMuon             ) ;
     store("mu_isPFMuon"          , muIt->isPFMuon()          ) ;
-    store("mu_isPFIsolationValid", muIt->isPFIsolationValid()) ;
-   
-    store("mu_isTightMuon" , muon::isTightMuon(*muIt,*pvCollection_->begin())    ) ;
-    store("mu_isLooseMuon" , muon::isLooseMuon(*muIt)    ) ;
-    store("mu_isSoftMuon"  , muon::isSoftMuon(*muIt,*pvCollection_->begin())  ) ;
-    store("mu_isHighPtMuon", muon::isHighPtMuon(*muIt,*pvCollection_->begin())    ) ;
+    store("mu_isPFIsolationValid", muIt->isPFIsolationValid()) ;  
+    store("mu_isGoodMuonTMLastStationLoose"        , muon::isGoodMuon(*muIt,muon::TMLastStationLoose  )) ;
+    store("mu_isGoodMuonTMLastStationTight"        , muon::isGoodMuon(*muIt,muon::TMLastStationTight  )) ;
+    store("mu_isGoodMuonTM2DCompatibilityLoose"        , muon::isGoodMuon(*muIt,muon::TM2DCompatibilityLoose  )) ;
+    store("mu_isGoodMuonTM2DCompatibilityTight"        , muon::isGoodMuon(*muIt,muon::TM2DCompatibilityTight  )) ;
+    store("mu_isGoodMuonTMOneStationLoose"        , muon::isGoodMuon(*muIt,muon::TMOneStationLoose  )) ;
+    store("mu_isGoodMuonTMOneStationTight"        , muon::isGoodMuon(*muIt,muon::TMOneStationTight  )) ;
+    store("mu_isGoodMuonTMLastStationOptimizedLowPtLoose"        , muon::isGoodMuon(*muIt,muon::TMLastStationOptimizedLowPtLoose  )) ;
+    store("mu_isGoodMuonTMLastStationOptimizedLowPtTight"        , muon::isGoodMuon(*muIt,muon::TMLastStationOptimizedLowPtTight  )) ;
+    store("mu_isTightMuon"       , muon::isTightMuon(*muIt,*pvCollection_->begin())    ) ;
+    store("mu_isMediumMuon"      , muon::isMediumMuon(*muIt)    ) ;
+    store("mu_isLooseMuon"       , muon::isLooseMuon(*muIt)    ) ;
+    store("mu_isSoftMuon"        , muon::isSoftMuon(*muIt,*pvCollection_->begin())  ) ;
+    store("mu_isHighPtMuon"      , muon::isHighPtMuon(*muIt,*pvCollection_->begin())    ) ;
 
     int numberOfMatchStations    = 0 ;
     int numberOfValidPixelHits   = 0 ;
@@ -371,70 +406,49 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       numberOfValidMuonHits = muIt->globalTrack()->hitPattern().numberOfValidMuonHits() ;
     }
     
-    store("mu_numberOfMatchedStations" , numberOfMatchStations   ) ;
-    store("mu_numberOfValidPixelHits"  , numberOfValidPixelHits  ) ;
-    store("mu_trackerLayersWithMeasurement", trackerLayersWithMeasurement) ;
-    store("mu_pixelLayersWithMeasurement", pixelLayersWithMeasurement);
-    store("mu_numberOfValidMuonHits"   , numberOfValidMuonHits   ) ;
+    store("mu_numberOfMatchedStations"           , numberOfMatchStations   ) ;
+    store("mu_numberOfValidPixelHits"            , numberOfValidPixelHits  ) ;
+    store("mu_trackerLayersWithMeasurement"      , trackerLayersWithMeasurement) ;
+    store("mu_pixelLayersWithMeasurement"        , pixelLayersWithMeasurement);
+    store("mu_numberOfValidMuonHits"             , numberOfValidMuonHits   ) ;
+
+    if (innerTrack.isNonnull())    store("mu_innerTrack_validFraction",muIt->innerTrack()->validFraction()        ) ;
+    else store("mu_innerTrack_validFraction", -999        ) ;
+    store("mu_combinedQuality_trkKink" ,muIt->combinedQuality().trkKink        ) ;
+    store("mu_combinedQuality_chi2LocalPosition",muIt->combinedQuality().chi2LocalPosition        ) ;
+    store("mu_segmentCompatibility" ,muon::segmentCompatibility(*muIt)       ) ;
+    store("mu_dB" , muIt->dB()       ) ;
+
+
     
     globalTrackWrapper_->reset() ;
     outerTrackWrapper_ ->reset() ;
     innerTrackWrapper_ ->reset() ;
     improvedMuonBestTrackWrapper_ ->reset() ;
     
-    reco::TrackRef globalTrack = muIt->globalTrack() ;
-    reco::TrackRef  outerTrack = muIt->outerTrack()  ;
-    reco::TrackRef  innerTrack = muIt->innerTrack()  ;
-    reco::TrackRef  improvedMuonBestTrack = muIt->tunePMuonBestTrack();
-    
-    bool saveMuon = false ;
-    
     if(storeInnerTrackMuons_){
       if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){
-        if(innerTrack->pt() > ETThreshold_) saveMuon = true ;
+        innerTrackWrapper_->fill( innerTrack, beamspotHandle_->position(), firstpvertex->position()) ;
       }
+      innerTrackWrapper_ ->store(analysis) ;
     }
     if(storeStandAloneMuons_){
       if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){
-        if(outerTrack->pt() > ETThreshold_) saveMuon = true ;
+        outerTrackWrapper_->fill( outerTrack, beamspotHandle_->position(), firstpvertex->position()) ; 
       }
+      outerTrackWrapper_ ->store(analysis) ;
     }
     if(storeGlobalTrackMuons_){
       if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){
-        if(globalTrack->pt() > ETThreshold_ || improvedMuonBestTrack->pt() > ETThreshold_) saveMuon = true ;
+        globalTrackWrapper_->fill(globalTrack, beamspotHandle_->position(), firstpvertex->position()) ;
       }
+      globalTrackWrapper_->store(analysis) ;
     }
-    
-    if(saveMuon){
-      if(storeInnerTrackMuons_){
-        if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){
-          innerTrackWrapper_->fill( innerTrack, beamspotHandle_->position(), firstpvertex->position()) ;
-        }
-        innerTrackWrapper_ ->store(analysis) ;
-        mu_it_n++ ;
+    if(storeImprovedMuonBestTrackMuons_){
+      if( globalTrack.isNonnull() && muIt->    isGlobalMuon()){
+        improvedMuonBestTrackWrapper_->fill( improvedMuonBestTrack, beamspotHandle_->position(), firstpvertex->position()) ;
       }
-      if(storeStandAloneMuons_){
-        if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){
-          outerTrackWrapper_->fill( outerTrack, beamspotHandle_->position(), firstpvertex->position()) ;
-        }
-        outerTrackWrapper_ ->store(analysis) ;
-        mu_ot_n++ ;
-      }
-      if(storeGlobalTrackMuons_){
-        if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){
-          globalTrackWrapper_->fill(globalTrack, beamspotHandle_->position(), firstpvertex->position()) ;
-        }
-        globalTrackWrapper_->store(analysis) ;
-        mu_gt_n++ ;
-      }
-      if(storeImprovedMuonBestTrackMuons_){
-        if( globalTrack.isNonnull() && muIt->    isGlobalMuon()){
-          improvedMuonBestTrackWrapper_->fill( improvedMuonBestTrack, beamspotHandle_->position(), firstpvertex->position()) ;
-        }
-        improvedMuonBestTrackWrapper_ ->store(analysis) ;
-        mu_ibt_n++ ;
-      }
-      mu_n_saved++ ;
+      improvedMuonBestTrackWrapper_ ->store(analysis) ;
     }
    
     // Isolation variables
@@ -506,11 +520,6 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       store("mu_mc_ERatio", 999.0) ;
     }
   }
-  store("mu_n_saved", mu_n_saved) ;
-  store("mu_gt_n", mu_gt_n) ;
-  store("mu_ot_n", mu_ot_n) ;
-  store("mu_it_n", mu_it_n) ;
-  store("mu_ibt_n", mu_ibt_n) ;
 }
 
 void IIHEModuleMuon::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
