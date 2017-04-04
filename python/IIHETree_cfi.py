@@ -22,27 +22,6 @@ IIHEAnalysis = cms.EDAnalyzer("IIHEAnalysis",
     PileUpSummaryInfo                           = cms.InputTag("slimmedAddPileupInfo"                                       ),
     primaryVertex                               = cms.InputTag('offlineSlimmedPrimaryVertices'                              ),
     beamSpot                                    = cms.InputTag("offlineBeamSpot"                                            ),
-    # VID output
-    eleTrkPtIsoLabel                            = cms.InputTag("heepIDVarValueMaps"    ,"eleTrkPtIso"       ,"IIHEAnalysis" ),
-    VIDVeto                                     = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto"  ),
-    VIDLoose                                    = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose" ),
-    VIDMedium                                   = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium"),
-    VIDTight                                    = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight" ),
-    VIDmvaEleIDwp90                             = cms.InputTag("egmPatElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90" ),
-    VIDmvaEleIDwp80                             = cms.InputTag("egmPatElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80" ),
-    VIDHEEP7                                    = cms.InputTag("egmPatElectronIDs:heepElectronID-HEEPV70"                   ),
-    #corrected collections
-    patPFMetTxyCollection                     = cms.InputTag("patPFMetTxy"             , ""                ,"IIHEAnalysis"  ),
-
-    # Collections for MC only.
-    generatorLabel                              = cms.InputTag("generator"                                                 ),
-    genParticleSrc                              = cms.InputTag("prunedGenParticles"                                        ),
-    # Collections for DATA only.
-    electronsBeforeGSFixCollection              = cms.InputTag("slimmedElectronsBeforeGSFix"                               ),
-    particleFlowEGammaGSFixedCollection         = cms.InputTag("particleFlowEGammaGSFixed", "dupECALClusters"              ),
-    ecalMultiAndGSGlobalRecHitEBCollection      = cms.InputTag("ecalMultiAndGSGlobalRecHitEB","dupESClusters"        ,"PAT"),
-    METsMuEGCleanCollection                     = cms.InputTag("slimmedMETsMuEGClean"                                      ),
-    discardedMuonCollection                     = cms.InputTag("packedPFCandidatesDiscarded"                               ),
     
     #*******************************************************************************************************************************************
     #Trigger paths that we want to save

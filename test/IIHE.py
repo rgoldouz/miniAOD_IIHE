@@ -100,28 +100,6 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string(filenam
 ##########################################################################################
 #                                   IIHETree options                                     #
 ##########################################################################################
-process.load("UserCode.IIHETree.IIHETree_cfi")
-process.IIHEAnalysis.globalTag = cms.string(globalTag)
-process.IIHEAnalysis.isData  = cms.untracked.bool("data" in options.DataProcessing)
-process.IIHEAnalysis.isMC    = cms.untracked.bool("mc" in options.DataProcessing)
-
-process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
-process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)
-process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(True)
-process.IIHEAnalysis.includeVertexModule         = cms.untracked.bool(True)
-process.IIHEAnalysis.includePhotonModule         = cms.untracked.bool(False)
-process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
-process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
-process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
-process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
-process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
-process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(False)
-process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(False)
-process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(False)
-process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
-process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
-
-
 
 #Track isolation correction value for HEEP v7
 process.load("RecoEgamma.ElectronIdentification.heepIdVarValueMapProducer_cfi")
@@ -166,6 +144,56 @@ process.electronIDValueMapProducer.srcMiniAOD         = cms.InputTag("selectedEl
 process.electronRegressionValueMapProducer.srcMiniAOD = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
 process.electronMVAValueMapProducer.srcMiniAOD        = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
 
+##########################################################################################
+#                            MY analysis input!                              #
+##########################################################################################
+process.load("UserCode.IIHETree.IIHETree_cfi")
+process.IIHEAnalysis.globalTag = cms.string(globalTag)
+process.IIHEAnalysis.isData  = cms.untracked.bool("data" in options.DataProcessing)
+process.IIHEAnalysis.isMC    = cms.untracked.bool("mc" in options.DataProcessing)
+
+#****Collections added before the analysis
+# VID output
+process.IIHEAnalysis.eleTrkPtIsoLabel                            = cms.InputTag("heepIDVarValueMaps"    ,"eleTrkPtIso"       ,"IIHEAnalysis" )
+process.IIHEAnalysis.VIDVeto                                     = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto"  )
+process.IIHEAnalysis.VIDLoose                                    = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose" )
+process.IIHEAnalysis.VIDMedium                                   = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium")
+process.IIHEAnalysis.VIDTight                                    = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight" )
+process.IIHEAnalysis.VIDmvaEleIDwp90                             = cms.InputTag("egmPatElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90" )
+process.IIHEAnalysis.VIDmvaEleIDwp80                             = cms.InputTag("egmPatElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80" )
+process.IIHEAnalysis.VIDHEEP7                                    = cms.InputTag("egmPatElectronIDs:heepElectronID-HEEPV70"                   )
+#MET correction collections
+process.IIHEAnalysis.patPFMetTxyCollection                      = cms.InputTag("patPFMetTxy"             , ""                ,"IIHEAnalysis"  )
+# Collections for MC only.
+process.IIHEAnalysis.generatorLabel                              = cms.InputTag("generator"                                                 )
+process.IIHEAnalysis.genParticleSrc                              = cms.InputTag("prunedGenParticles"                                        )
+# Collections for DATA only.
+process.IIHEAnalysis.electronsBeforeGSFixCollection              = cms.InputTag("slimmedElectronsBeforeGSFix"                               )
+process.IIHEAnalysis.particleFlowEGammaGSFixedCollection         = cms.InputTag("particleFlowEGammaGSFixed", "dupECALClusters"              )
+process.IIHEAnalysis.ecalMultiAndGSGlobalRecHitEBCollection      = cms.InputTag("ecalMultiAndGSGlobalRecHitEB","dupESClusters"        ,"PAT")
+process.IIHEAnalysis.METsMuEGCleanCollection                     = cms.InputTag("slimmedMETsMuEGClean"                                      )
+process.IIHEAnalysis.discardedMuonCollection                     = cms.InputTag("packedPFCandidatesDiscarded"                               )
+
+#use 80 regression + scale/smearing for electron
+process.IIHEAnalysis.electronCollection    = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
+process.IIHEAnalysis.electronCollectionold = cms.InputTag("slimmedElectrons","","PAT")
+
+
+process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
+process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)
+process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(True)
+process.IIHEAnalysis.includeVertexModule         = cms.untracked.bool(True)
+process.IIHEAnalysis.includePhotonModule         = cms.untracked.bool(False)
+process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
+process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
+process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
+process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
+process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
+process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(False)
+process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(False)
+process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(False)
+process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
+process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
 ##########################################################################################
 #                            Woohoo!  We"re ready to start!                              #

@@ -23,6 +23,7 @@ private:
   edm::EDGetTokenT<edm::ValueMap<bool> > VIDHEEP7_;
 
   edm::EDGetTokenT<edm::View<pat::Electron>> electronCollectionToken_;
+  edm::EDGetTokenT<edm::View<pat::Electron>> electronCollectionTokenold_;
   edm::InputTag      electronCollectionLabel_ ;
   edm::EDGetTokenT<View<reco::Vertex>> vtxToken_;
   edm::InputTag           primaryVertexLabel_ ;

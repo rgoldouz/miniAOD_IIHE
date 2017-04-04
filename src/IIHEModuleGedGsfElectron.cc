@@ -54,6 +54,7 @@ IIHEModuleGedGsfElectron::IIHEModuleGedGsfElectron(const edm::ParameterSet& iCon
   VIDHEEP7_ = iC.consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("VIDHEEP7"));
 
   electronCollectionToken_     = iC.consumes<edm::View<pat::Electron>> (iConfig.getParameter<edm::InputTag>("electronCollection")) ;
+  electronCollectionTokenold_     = iC.consumes<edm::View<pat::Electron>> (iConfig.getParameter<edm::InputTag>("electronCollectionold")) ;
   ETThreshold_ = iConfig.getUntrackedParameter<double>("electronPtThreshold") ;
   primaryVertexLabel_          = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
   vtxToken_ = iC.consumes<View<reco::Vertex>>(primaryVertexLabel_);
@@ -64,6 +65,27 @@ IIHEModuleGedGsfElectron::~IIHEModuleGedGsfElectron(){}
 void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_n", kUInt) ;
   addBranch("gsf_classification", kVectorInt) ;
+
+  setBranchType(kVectorFloat) ;
+  addBranch("gsf74_energy") ;
+  addBranch("gsf74_p") ;
+  addBranch("gsf74_pt") ;
+  addBranch("gsf74_et") ;
+  addBranch("gsf74_caloEnergy") ;
+  addBranch("gsf74_hadronicOverEm") ;
+  addBranch("gsf74_hcalDepth1OverEcal") ;
+  addBranch("gsf74_hcalDepth2OverEcal") ;
+
+  setBranchType(kVectorBool) ;
+  addBranch("gsf74_isHeepV7");
+
+  setBranchType(kVectorFloat) ;
+  addBranch("gsf_energy") ;
+  addBranch("gsf_p") ;
+  addBranch("gsf_pt") ;
+  addBranch("gsf_et") ;
+
+
   setBranchType(kVectorFloat) ;
   addBranch("gsf_energy") ;
   addBranch("gsf_p") ;
@@ -268,6 +290,9 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
   edm::Handle<edm::View<pat::Electron>>     electronCollection_ ;
   iEvent.getByToken( electronCollectionToken_ , electronCollection_) ;
 
+  edm::Handle<edm::View<pat::Electron>>     electronCollectionold_ ;
+  iEvent.getByToken( electronCollectionTokenold_ , electronCollectionold_) ;
+
   edm::Handle<edm::ValueMap<float>> eleTrkPtIsoHandle_;
   iEvent.getByToken(eleTrkPtIso_,eleTrkPtIsoHandle_);
 
@@ -324,7 +349,6 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
 
     int gsf_nLostInnerHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS) ;
     int gsf_nLostOuterHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_OUTER_HITS) ;
-    if (abs(gsfiter->superCluster()->eta())>2.45) cout<<"eta = "<< gsfiter->eta()<< "   etaSc = "<<gsfiter->superCluster()->eta()<<endl; 
     store("gsf_energy"                        , gsfiter->energy()                        ) ;
     store("gsf_p"                             , gsfiter->p()                             ) ;
     store("gsf_pt"                            , gsfiter->pt()                            ) ;
@@ -536,6 +560,49 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
       (*eleTrkPtIsoHandle_).get(gsfref) < 5) isHeep = true;
 
     store("gsf_isHeepV7", isHeep);
+
+
+    for( unsigned int j = 0 ; j < electronCollectionold_->size() ; j++ ) {
+      Ptr<pat::Electron> gsfiterold = electronCollectionold_->ptrAt( j );
+      if (abs(gsfiterold->eta() - gsfiter->eta())<0.0001){
+        store("gsf74_energy"                        , gsfiterold->energy()                        ) ;
+        store("gsf74_p"                             , gsfiterold->p()                             ) ;
+        store("gsf74_pt"                            , gsfiterold->pt()                            ) ;
+        store("gsf74_et"                            , gsfiterold->et()                            ) ;
+        store("gsf74_caloEnergy"                    , gsfiterold->caloEnergy()                    ) ; 
+        store("gsf74_hadronicOverEm"                , gsfiterold->hadronicOverEm()                ) ;
+        store("gsf74_hcalDepth1OverEcal"            , gsfiterold->hcalDepth1OverEcal()            ) ;
+        store("gsf74_hcalDepth2OverEcal"            , gsfiterold->hcalDepth2OverEcal()            ) ;
+        bool isHeepold = false;
+        float ETold = gsfiterold->caloEnergy()*sin(2.*atan(exp(-1.*gsfiterold->eta()))) ;
+        if ( ETold > 35  && fabs(gsfiterold->superCluster()->eta()) < 1.4442  &&
+        gsfiterold->ecalDrivenSeed()                                            &&
+        fabs(gsfiterold->deltaEtaSeedClusterTrackAtVtx()) < 0.004                    &&
+        fabs(gsfiterold->deltaPhiSuperClusterTrackAtVtx()) < 0.06                     &&
+        gsfiterold->hadronicOverEm() < 0.05 + 1/ gsfiterold->superCluster()->energy()          &&
+        (gsfiterold->full5x5_e1x5()/gsfiterold->full5x5_e5x5() > 0.83 || gsfiterold->full5x5_e2x5Max()/gsfiterold->full5x5_e5x5() > 0.94) &&
+        gsf_nLostInnerHits < 2                                               &&
+        fabs(gsfiterold->gsfTrack()->dxy(firstpvertex->position())) < 0.02                       &&
+        gsfiterold->dr03EcalRecHitSumEt() + gsfiterold->dr03HcalDepth1TowerSumEt() < 2 + 0.03 * ETold + 0.28 * rho   &&
+        (*eleTrkPtIsoHandle_).get(gsfref) < 5) isHeepold = true;
+        if ( ETold > 35  && (fabs(gsfiterold->superCluster()->eta()) > 1.566  && (abs(gsfiterold->superCluster()->eta()) < 2.5) )&&
+        gsfiterold->ecalDrivenSeed()                                            &&
+        fabs(gsfiterold->deltaEtaSeedClusterTrackAtVtx()) < 0.006                    &&
+        fabs(gsfiterold->deltaPhiSuperClusterTrackAtVtx()) < 0.06                     &&
+        gsfiterold->hadronicOverEm() < 0.05 + 5/ gsfiterold->superCluster()->energy()          &&
+        gsfiterold->full5x5_sigmaIetaIeta() <0.03                                         &&
+        gsf_nLostInnerHits < 2                                               &&
+        fabs(gsfiterold->gsfTrack()->dxy(firstpvertex->position())) < 0.05                       &&
+        (( ETold < 50 && gsfiterold->dr03EcalRecHitSumEt() + gsfiterold->dr03HcalDepth1TowerSumEt() < 2.5 + 0.28 * rho) ||
+        ( ETold > 50 && gsfiterold->dr03EcalRecHitSumEt() + gsfiterold->dr03HcalDepth1TowerSumEt() < 2.5 + 0.03 * (ETold-50) + 0.28 * rho)) &&
+        (*eleTrkPtIsoHandle_).get(gsfref) < 5) isHeepold = true;
+        store("gsf74_isHeepV7", isHeepold);
+    }
+
+  }
+
+
+
  }
   store("gsf_n", gsf_n) ;
 
