@@ -75,6 +75,15 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf74_hadronicOverEm") ;
   addBranch("gsf74_hcalDepth1OverEcal") ;
   addBranch("gsf74_hcalDepth2OverEcal") ;
+  
+  addBranch("gsf_eta") ;
+  addBranch("gsf74_full5x5_e5x5") ;
+  addBranch("gsf74_full5x5_e1x5") ;
+  addBranch("gsf74_full5x5_e2x5Max") ;
+  addBranch("gsf74_full5x5_sigmaIetaIeta") ;
+  addBranch("gsf74_deltaEtaSuperClusterTrackAtVtx") ;
+  addBranch("gsf74_deltaPhiSuperClusterTrackAtVtx") ;
+
 
   setBranchType(kVectorBool) ;
   addBranch("gsf74_isHeepV7");
@@ -573,6 +582,15 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
         store("gsf74_hadronicOverEm"                , gsfiterold->hadronicOverEm()                ) ;
         store("gsf74_hcalDepth1OverEcal"            , gsfiterold->hcalDepth1OverEcal()            ) ;
         store("gsf74_hcalDepth2OverEcal"            , gsfiterold->hcalDepth2OverEcal()            ) ;
+
+        store("gsf_eta", gsfiterold->eta()) ;
+        store("gsf74_full5x5_e5x5", gsfiterold->full5x5_e5x5()) ;
+        store("gsf74_full5x5_e1x5", gsfiterold->full5x5_e1x5()) ;
+        store("gsf74_full5x5_e2x5Max", gsfiterold->full5x5_e2x5Max()) ;
+        store("gsf74_full5x5_sigmaIetaIeta", gsfiterold->full5x5_sigmaIetaIeta()) ;
+        store("gsf74_deltaEtaSuperClusterTrackAtVtx", gsfiterold->deltaEtaSeedClusterTrackAtVtx()) ;
+        store("gsf74_deltaPhiSuperClusterTrackAtVtx", gsfiterold->deltaPhiSuperClusterTrackAtVtx()) ;
+
         bool isHeepold = false;
         float ETold = gsfiterold->caloEnergy()*sin(2.*atan(exp(-1.*gsfiterold->eta()))) ;
         if ( ETold > 35  && fabs(gsfiterold->superCluster()->eta()) < 1.4442  &&

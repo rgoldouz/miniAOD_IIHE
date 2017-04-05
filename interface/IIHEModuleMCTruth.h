@@ -7,12 +7,14 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
-
+#include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "Math/Vector4D.h"
+#include "Math/Vector4Dfwd.h"
 
 // class decleration
 class IIHEModuleMCTruth : public IIHEModule {
@@ -47,6 +49,7 @@ private:
   
   edm::InputTag puInfoSrc_ ;
   edm::EDGetTokenT<GenEventInfoProduct> generatorLabel_;
+  edm::EDGetTokenT<LHEEventProduct> lheEventLabel_;
   edm::EDGetTokenT<vector<PileupSummaryInfo> > puCollection_;
   edm::EDGetTokenT<vector<reco::GenParticle> > genParticlesCollection_;
   float nEventsWeighted_ ;

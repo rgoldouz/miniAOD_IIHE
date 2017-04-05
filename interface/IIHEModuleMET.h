@@ -55,14 +55,12 @@ public:
   void fill(pat::MET) ;
   void store(IIHEAnalysis*) ;
 
-  // Taken from DataFormats/MuonReco/interface/Muon.h
-  enum METType {None, InnerTrack, OuterTrack, CombinedTrack, TPFMS, Picky, DYT} ;
   private:
   int type_ ;
   std::string prefix_ ;
-  IIHEMETVariableInt*   et_        ;
-  IIHEMETVariableInt*   phi_        ;
-  IIHEMETVariableInt*   significance_        ;
+  IIHEMETVariableFloat*   et_        ;
+  IIHEMETVariableFloat*   phi_        ;
+  IIHEMETVariableFloat*   significance_        ;
   std::vector<IIHEMETVariableBase*> variables_ ;
 };
 
@@ -88,9 +86,32 @@ public:
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
 
 private:
- edm::EDGetTokenT<edm::View<pat::MET> > pfMETToken_;
- edm::EDGetTokenT<edm::View<pat::MET> >patPFMetTxyToken_;
-  IIHEMETWrapper* metWrapper_ ;
 
+ edm::EDGetTokenT<edm::View<pat::MET> > pfMETToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetCollectionToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1CollectionToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1JetEnDownCollectionToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1JetEnUpCollectionToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1SmearJetEnDownCollectionToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1SmearJetEnUpCollectionToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1SmearJetResDownCollectionToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1SmearJetResUpCollectionToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetTxyToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetFinalCollectionToken_;
+
+
+  IIHEMETWrapper* metnominalWrapper_;
+  IIHEMETWrapper* metWrapper_ ;
+  IIHEMETWrapper* metT1Wrapper_;
+  IIHEMETWrapper* metT1JetEnDownWrapper_;
+  IIHEMETWrapper* metT1JetEnUpWrapper_;
+  IIHEMETWrapper* metT1SmearJetEnDownWrapper_;
+  IIHEMETWrapper* metT1SmearJetEnUpWrapper_;
+  IIHEMETWrapper* metT1SmearJetResDownWrapper_;
+  IIHEMETWrapper* metT1SmearJetResUpWrapper_;
+  IIHEMETWrapper* metTxyWrapper_;
+  IIHEMETWrapper* metFinalWrapper_;
+
+ bool isMC_;
 };
 #endif

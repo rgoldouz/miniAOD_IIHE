@@ -4,7 +4,66 @@
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
+class IIHEJetVariableBase{
+public:
+  IIHEJetVariableBase(std::string, std::string, int) ;
+  ~IIHEJetVariableBase(){} ;
+
+  const std::string       Name(){ return       name_ ; }
+  const std::string BranchName(){ return branchName_ ; }
+  const int         branchType(){ return branchType_ ; }
+
+  virtual void reset(){} ;
+  virtual void store(IIHEAnalysis*){} ;
+  bool addBranch(IIHEAnalysis*) ;
+
+private:
+  std::string       name_ ;
+  std::string branchName_ ;
+  int         branchType_ ;
+};
+
+class IIHEJetVariableInt: IIHEJetVariableBase{
+public:
+  IIHEJetVariableInt(std::string, std::string) ;
+  ~IIHEJetVariableInt(){} ;
+  void reset(){ value_ = -999 ; }
+  void fill(int value){ value_ = value ; }
+  void store(IIHEAnalysis*) ;
+private:
+  int value_ ;
+};
+
+class IIHEJetVariableFloat: IIHEJetVariableBase{
+public:
+  IIHEJetVariableFloat(std::string, std::string) ;
+  ~IIHEJetVariableFloat(){} ;
+  void reset(){ value_ = -999.0 ; }
+  void fill(float value){ value_ = value ; }
+  void store(IIHEAnalysis*) ;
+private:
+  float value_ ;
+};
+
+class IIHEJetWrapper{
+public:
+  explicit IIHEJetWrapper(std::string);
+  ~IIHEJetWrapper(){};
+
+  void addBranches(IIHEAnalysis*) ;
+  void reset() ;
+  void fill(pat::Jet) ;
+  void store(IIHEAnalysis*) ;
+
+  private:
+  int type_ ;
+  std::string prefix_ ;
+  IIHEJetVariableFloat*   et_        ;
+  IIHEJetVariableFloat*   phi_        ;
+  std::vector<IIHEJetVariableBase*> variables_ ;
+};
 // class decleration
+
 class IIHEModuleJet : public IIHEModule {
 public:
   explicit IIHEModuleJet(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
@@ -26,7 +85,25 @@ public:
 private:
   edm::InputTag pfJetLabel_;
   edm::EDGetTokenT<edm::View<pat::Jet> > pfJetToken_;
-  float ETThreshold_ ;
+  edm::InputTag pfJetLabelSmeared_;
+  edm::EDGetTokenT<edm::View<pat::Jet> > pfJetTokenSmeared_;
+  edm::InputTag pfJetLabelEnUp_;
+  edm::EDGetTokenT<edm::View<pat::Jet> > pfJetTokenEnUp_;
+  edm::InputTag pfJetLabelEnDown_;
+  edm::EDGetTokenT<edm::View<pat::Jet> > pfJetTokenEnDown_;
+  edm::InputTag pfJetLabelSmearedJetResUp_;
+  edm::EDGetTokenT<edm::View<pat::Jet> > pfJetTokenSmearedJetResUp_;
+  edm::InputTag pfJetLabelSmearedJetResDown_;
+  edm::EDGetTokenT<edm::View<pat::Jet> > pfJetTokenSmearedJetResDown_;
 
+  IIHEJetWrapper*  jetEnUpWrapper_;
+  IIHEJetWrapper*  jetEnDownWrapper_;
+  IIHEJetWrapper*  jetSmearedWrapper_;
+  IIHEJetWrapper*  jetSmearedJetResUpWrapper_;
+  IIHEJetWrapper*  jetSmearedJetResDownWrapper_;
+
+
+  float ETThreshold_ ;
+  bool isMC_;
 };
 #endif

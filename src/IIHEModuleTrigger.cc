@@ -36,7 +36,10 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig, edm::Cons
   
   std::string triggersIn = iConfig.getUntrackedParameter<std::string>("triggers") ;
   triggerNamesFromPSet_ = splitString(triggersIn, ",") ;
-  
+ 
+  BadChCandFilterToken_ = iC.consumes<bool>(InputTag("BadChargedCandidateFilter"));
+  BadPFMuonFilterToken_ = iC.consumes<bool>(InputTag("BadPFMuonFilter"));
+ 
   std::cout << triggersIn << std::endl ;
   includeSingleElectronTriggers_ = (triggersIn.find("singleElectron")!=std::string::npos) ;
   includeDoubleElectronTriggers_ = (triggersIn.find("doubleElectron")!=std::string::npos) ;
@@ -64,6 +67,9 @@ IIHEModuleTrigger::~IIHEModuleTrigger(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleTrigger::beginJob(){
+  setBranchType(kBool);
+  addBranch("trig_Flag_BadPFMuonFilter_accept");
+  addBranch("trig_Flag_BadChargedCandidateFilter_accept");
 }
 
 bool IIHEModuleTrigger::addHLTrigger(HLTrigger* hlt){
@@ -111,7 +117,17 @@ int IIHEModuleTrigger::addBranches(){
 // ------------ method called to for each event  ------------
 void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   // Trigger information
-  
+  //MET filter 
+  edm::Handle<bool> ifilterbadChCand;
+  iEvent.getByToken(BadChCandFilterToken_, ifilterbadChCand);
+  bool  filterbadChCandidate = *ifilterbadChCand;
+  store("trig_Flag_BadChargedCandidateFilter_accept"    , filterbadChCandidate) ;
+
+  edm::Handle<bool> ifilterbadPFMuon;
+  iEvent.getByToken(BadPFMuonFilterToken_, ifilterbadPFMuon);
+  bool filterbadPFMuon = *ifilterbadPFMuon;
+  store("trig_Flag_BadPFMuonFilter_accept"    , filterbadPFMuon) ;
+ 
   // get hold of TriggerResults
   edm::Handle<TriggerResults> HLTR ;
   edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;

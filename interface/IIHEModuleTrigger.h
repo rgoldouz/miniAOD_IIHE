@@ -55,6 +55,9 @@ private:
 
   edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
   edm::InputTag triggerResultsLabel_;
+
+  edm::EDGetTokenT<bool> BadChCandFilterToken_;
+  edm::EDGetTokenT<bool> BadPFMuonFilterToken_;
  
   bool isSingleElectonTriggerName(std::string) ;
   bool isDoubleElectonTriggerName(std::string) ;

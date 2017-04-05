@@ -14,6 +14,7 @@ IIHEModuleMCTruth::IIHEModuleMCTruth(const edm::ParameterSet& iConfig, edm::Cons
   DeltaROverlapThreshold_  = iConfig.getUntrackedParameter<double>("MCTruth_DeltaROverlapThreshold" ) ;
   puInfoSrc_               = iConfig.getParameter<edm::InputTag>("PileUpSummaryInfo") ;
   generatorLabel_ = iC.consumes<GenEventInfoProduct> (iConfig.getParameter<InputTag>("generatorLabel"));
+  lheEventLabel_ = iC.consumes<LHEEventProduct> (iConfig.getParameter<InputTag>("LHELabel"));
   puCollection_ = iC.consumes<vector<PileupSummaryInfo> > (puInfoSrc_);
   genParticlesCollection_ = iC.consumes<vector<reco::GenParticle> > (iConfig.getParameter<InputTag>("genParticleSrc"));
 }
@@ -44,6 +45,13 @@ void IIHEModuleMCTruth::beginJob(){
   MCPdgIdsToSave.push_back(34) ; // W'  boson
   addToMCTruthWhitelist(MCPdgIdsToSave) ;
 
+  setBranchType(kVectorInt) ;
+  addBranch("LHE_Pt");
+  addBranch("LHE_Eta");
+  addBranch("LHE_Phi");
+  addBranch("LHE_E");
+  addBranch("LHE_pdgid");
+  addBranch("LHE_status");
 
   addBranch("mc_n", kUInt) ;
   addBranch("mc_weight", kFloat) ;
@@ -98,6 +106,23 @@ void IIHEModuleMCTruth::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+
+  edm::Handle<LHEEventProduct> lhe_handle;
+  iEvent.getByToken(lheEventLabel_, lhe_handle);
+  if (lhe_handle.isValid()){
+    std::vector<lhef::HEPEUP::FiveVector> lheParticles = lhe_handle->hepeup().PUP;
+    ROOT::Math::PxPyPzEVector cand_;
+    for (unsigned i = 0; i < lheParticles.size(); ++i) {
+      cand_ = ROOT::Math::PxPyPzEVector(lheParticles[i][0],lheParticles[i][1],lheParticles[i][2],lheParticles[i][3]);
+      store("LHE_Pt",(cand_).Pt());
+      store("LHE_Eta",(cand_).Eta());
+      store("LHE_Phi",(cand_).Phi());
+      store("LHE_E",(cand_).E());
+      store("LHE_pdgid",lhe_handle->hepeup().IDUP[i]);
+      store("LHE_status",lhe_handle->hepeup().ISTUP[i]);
+    }
+  }
+
   edm::Handle<GenEventInfoProduct> genEventInfoHandle;
   iEvent.getByToken(generatorLabel_, genEventInfoHandle);
   float weight = genEventInfoHandle->weight() ;
