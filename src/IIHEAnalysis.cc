@@ -81,7 +81,7 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   if(includeJetModule_            ) childModules_.push_back(new IIHEModuleJet(iConfig ,consumesCollector())            ) ;
   if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig ,consumesCollector())            ) ;
   if(includeTauModule_            ) childModules_.push_back(new IIHEModuleTau(iConfig ,consumesCollector())            ) ;
-  if(includeDataModule_            ) childModules_.push_back(new IIHEModuleData(iConfig ,consumesCollector())            ) ;
+  if(includeDataModule_           ) childModules_.push_back(new IIHEModuleData(iConfig ,consumesCollector())            ) ;
   if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig ,consumesCollector())         ) ;  
   if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig ,consumesCollector())) ;  
 }

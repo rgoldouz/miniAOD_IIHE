@@ -126,8 +126,6 @@ IIHEModuleMET::~IIHEModuleMET(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleMET::beginJob(){
-  setBranchType(kFloat) ;
-  addBranch("MET_gen"   ) ;
   setBranchType(kVectorFloat) ;
   addBranch("MET_Type1Unc") ;
   addBranch("MET_Type1SmearUnc") ;
@@ -138,6 +136,9 @@ void IIHEModuleMET::beginJob(){
   metWrapper_->addBranches(analysis) ;
   metT1Wrapper_->addBranches(analysis) ;
   if(isMC_){
+    setBranchType(kFloat) ;
+    addBranch("MET_gen_pt"   ) ;
+    addBranch("MET_gen_phi"   ) ;
     setBranchType(kVectorFloat) ;
     addBranch("MET_Type1Unc_Px") ;
     addBranch("MET_Type1SmearUnc_Px") ;
@@ -216,7 +217,6 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   IIHEAnalysis* analysis = parent_ ;  
   Ptr<pat::MET> pfMET = pfMETHandle_->ptrAt( 0 );
-  store("MET_gen"   , pfMET->genMET()     ) ;
 
   metnominalWrapper_->fill(pfMETHandle_->front()) ;
   metnominalWrapper_->store(analysis) ;
@@ -228,6 +228,9 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   metT1Wrapper_->store(analysis) ;
 
   if (isMC_){
+
+    store("MET_gen_pt"    , pfMET->genMET()->pt()     ) ;
+    store("MET_gen_phi"   , pfMET->genMET()->phi()     ) ;
     metT1JetEnDownWrapper_->fill(patPFMetT1JetEnDownCollectionHandle_->front()) ;
     metT1JetEnDownWrapper_->store(analysis) ;
 
@@ -236,7 +239,7 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
     metT1SmearWrapper_->fill(patPFMetT1SmearCollectionHandle_->front()) ;
     metT1SmearWrapper_->store(analysis) ;
-
+/*
     for ( unsigned int unc = 0; unc < 19; ++unc ) {
       store("MET_Type1Unc_Px",pfMETHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))) ;
       store("MET_Type1SmearUnc_Px",patPFMetT1SmearCollectionHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
@@ -250,7 +253,7 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       store("MET_Type1SmearUnc_Pt",patPFMetT1SmearCollectionHandle_->front().shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
 //      store("MET_Type1SmearXY_Pt",patMET.shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(8))) ;
     }
-
+*/
     metT1SmearJetEnDownWrapper_->fill(patPFMetT1SmearJetEnDownCollectionHandle_->front()) ;
     metT1SmearJetEnDownWrapper_->store(analysis) ;
 

@@ -58,7 +58,6 @@ void IIHEModuleJet::beginJob(){
   addBranch("jet_hadronFlavour");
 
   setBranchType(kVectorFloat);
-  addBranch("jet_CSV");
   addBranch("jet_CSVv2");
   addBranch("jet_CvsL");
   addBranch("jet_CvsB");
@@ -67,7 +66,6 @@ void IIHEModuleJet::beginJob(){
   addBranch("jet_isJetIDTight");
   addBranch("jet_isJetIDTightLepVeto");
 
-  IIHEAnalysis* analysis = parent_ ;
   if (isMC_){
 
   setBranchType(kVectorFloat);
@@ -106,12 +104,11 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<edm::View<pat::Jet> > pfJetHandleSmearedJetResDown_;
   iEvent.getByToken(pfJetTokenSmearedJetResDown_, pfJetHandleSmearedJetResDown_);
 
-  IIHEAnalysis* analysis = parent_ ;
+
   store("jet_n", (unsigned int) pfJetHandle_ -> size() );
   for ( unsigned int i = 0; i <pfJetHandle_->size(); ++i) {
     Ptr<pat::Jet> pfjet = pfJetHandle_->ptrAt( i );
 
-//cout<<i<<"  "<<pfjet->pt()<<" Smeared   "<<pfjetSmeared->pt()<<"  JES UP  "<<(pfjetEnUp->pt()- pfjet->pt())/pfjet->pt()<<"  JES DOWN  "<<(pfjetEnDown->pt() - pfjet->pt())/pfjet->pt()<<endl;
     if(pfjet->pt() < ETThreshold_) continue ;
 
     store("jet_px"    , pfjet->px()) ;
@@ -133,7 +130,6 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     store("jet_partonFlavour"                       ,pfjet->partonFlavour());
     store("jet_hadronFlavour"                       ,pfjet->hadronFlavour());
 
-    store("jet_CSV",pfjet->bDiscriminator("combinedSecondaryVertexBJetTags"));
     store("jet_CSVv2",pfjet->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags"));
     store("jet_CvsL",pfjet->bDiscriminator("pfCombinedCvsLJetTags"));
     store("jet_CvsB",pfjet->bDiscriminator("pfCombinedCvsBJetTags"));
@@ -181,10 +177,9 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       store("jet_EnUp_energy",pfJetHandleEnUp_->at(i).energy());
       store("jet_EnDown_pt",pfJetHandleEnDown_->at(i).pt());
       store("jet_EnDown_energy",pfJetHandleEnDown_->at(i).energy());
-    }
+   }
 
   }
-
 }
 void IIHEModuleJet::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
 void IIHEModuleJet::beginEvent(){}

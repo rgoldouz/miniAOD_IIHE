@@ -85,10 +85,9 @@ process.source = cms.Source("PoolSource",
 
 )
 
-#process.source.fileNames.append( "file:jetteat.root")
-process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
+#process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
 #process.source.fileNames.append("file:pickevents_1.root" )
-#process.source.fileNames.append( "file:03Feb2017data.root" )
+process.source.fileNames.append( "file:03Feb2017data.root" )
 ###
 filename_out = "outfile.root"
 if options.DataProcessing == "mc":
@@ -162,13 +161,13 @@ process.IIHEAnalysis.isMC    = cms.untracked.bool("mc" in options.DataProcessing
 #****Collections added before the analysis
 # VID output
 process.IIHEAnalysis.eleTrkPtIsoLabel                            = cms.InputTag("heepIDVarValueMaps"    ,"eleTrkPtIso"       ,"IIHEAnalysis" )
-process.IIHEAnalysis.VIDVeto                                     = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto"  )
-process.IIHEAnalysis.VIDLoose                                    = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose" )
-process.IIHEAnalysis.VIDMedium                                   = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium")
-process.IIHEAnalysis.VIDTight                                    = cms.InputTag("egmPatElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight" )
-process.IIHEAnalysis.VIDmvaEleIDwp90                             = cms.InputTag("egmPatElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90" )
-process.IIHEAnalysis.VIDmvaEleIDwp80                             = cms.InputTag("egmPatElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80" )
-process.IIHEAnalysis.VIDHEEP7                                    = cms.InputTag("egmPatElectronIDs:heepElectronID-HEEPV70"                   )
+process.IIHEAnalysis.VIDVeto                                     = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto"  )
+process.IIHEAnalysis.VIDLoose                                    = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose" )
+process.IIHEAnalysis.VIDMedium                                   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium")
+process.IIHEAnalysis.VIDTight                                    = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight" )
+process.IIHEAnalysis.VIDmvaEleIDwp90                             = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90" )
+process.IIHEAnalysis.VIDmvaEleIDwp80                             = cms.InputTag("egmGsfElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80" )
+process.IIHEAnalysis.VIDHEEP7                                    = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV70"                   )
 # Collections for DATA only.
 process.IIHEAnalysis.particleFlowEGammaGSFixedCollection         = cms.InputTag("particleFlowEGammaGSFixed", "dupECALClusters"              )
 process.IIHEAnalysis.ecalMultiAndGSGlobalRecHitEBCollection      = cms.InputTag("ecalMultiAndGSGlobalRecHitEB","dupESClusters"        ,"PAT")
@@ -179,7 +178,7 @@ process.IIHEAnalysis.discardedMuonCollection                     = cms.InputTag(
 process.IIHEAnalysis.electronCollection80    = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
 
 #jet smeared collection
-process.IIHEAnalysis.JetCollection                   = cms.InputTag("patJetsReapplyJEC"            ,"","IIHEAnalysis")
+process.IIHEAnalysis.JetCollection                   = cms.InputTag("basicJetsForMet" ,"","IIHEAnalysis")
 process.IIHEAnalysis.JetCollectionSmeared            = cms.InputTag("patSmearedJets"               ,"","IIHEAnalysis")
 process.IIHEAnalysis.JetCollectionEnUp               = cms.InputTag("shiftedPatJetEnUp"            ,"","IIHEAnalysis")
 process.IIHEAnalysis.JetCollectionEnDown             = cms.InputTag("shiftedPatJetEnDown"          ,"","IIHEAnalysis")
@@ -206,7 +205,7 @@ process.IIHEAnalysis.includeVertexModule         = cms.untracked.bool(True)
 process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
-#process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
+process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
@@ -221,7 +220,6 @@ process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in
 #    )
 
 process.p1 = cms.Path(
-    process.fullPatMetSequence        *
     process.regressionApplication     *
     process.calibratedPatElectrons    *
     process.selectedElectrons80       *
@@ -229,6 +227,7 @@ process.p1 = cms.Path(
     process.heepIDVarValueMaps        *
     process.BadPFMuonFilter           *
     process.BadChargedCandidateFilter *
+    process.fullPatMetSequence        *
     process.IIHEAnalysis 
     )
 
