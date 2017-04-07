@@ -414,7 +414,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_numberOfValidMuonHits"             , numberOfValidMuonHits   ) ;
 
     if (innerTrack.isNonnull())    store("mu_innerTrack_validFraction",muIt->innerTrack()->validFraction()        ) ;
-    else store("mu_innerTrack_validFraction", -999        ) ;
+    else store("mu_innerTrack_validFraction", -999.0        ) ;
     store("mu_combinedQuality_trkKink" ,muIt->combinedQuality().trkKink        ) ;
     store("mu_combinedQuality_chi2LocalPosition",muIt->combinedQuality().chi2LocalPosition        ) ;
     store("mu_segmentCompatibility" ,muon::segmentCompatibility(*muIt)       ) ;

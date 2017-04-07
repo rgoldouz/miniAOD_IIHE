@@ -239,8 +239,10 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
     metT1SmearWrapper_->fill(patPFMetT1SmearCollectionHandle_->front()) ;
     metT1SmearWrapper_->store(analysis) ;
-/*
+
     for ( unsigned int unc = 0; unc < 19; ++unc ) {
+
+cout<<pfMETHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))<<endl;
       store("MET_Type1Unc_Px",pfMETHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))) ;
       store("MET_Type1SmearUnc_Px",patPFMetT1SmearCollectionHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
 //      store("MET_Type1SmearXY_Px",patMET.shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(8))) ;
@@ -253,7 +255,7 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       store("MET_Type1SmearUnc_Pt",patPFMetT1SmearCollectionHandle_->front().shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
 //      store("MET_Type1SmearXY_Pt",patMET.shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(8))) ;
     }
-*/
+
     metT1SmearJetEnDownWrapper_->fill(patPFMetT1SmearJetEnDownCollectionHandle_->front()) ;
     metT1SmearJetEnDownWrapper_->store(analysis) ;
 

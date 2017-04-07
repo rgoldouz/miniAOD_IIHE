@@ -85,9 +85,9 @@ process.source = cms.Source("PoolSource",
 
 )
 
-#process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
+process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
 #process.source.fileNames.append("file:pickevents_1.root" )
-process.source.fileNames.append( "file:03Feb2017data.root" )
+#process.source.fileNames.append( "file:03Feb2017data.root" )
 ###
 filename_out = "outfile.root"
 if options.DataProcessing == "mc":

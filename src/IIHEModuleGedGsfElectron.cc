@@ -381,9 +381,9 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_hcalDepth2OverEcal"            , gsfiter->hcalDepth2OverEcal()            ) ;
     store("gsf_dr03TkSumPt"                   , gsfiter->dr03TkSumPt()                   ) ;
     store("gsf_dr03TkSumPtHEEP7"              , (*eleTrkPtIsoHandle_).get(gsfref)        ) ;
-    store("gsf_Loose"                         , electronHelper.PassElectron80XId(electronCollection_->at(i),electronID::electron80XCutBasedL)        ) ;
-    store("gsf_Medium"                        , electronHelper.PassElectron80XId(electronCollection_->at(i),electronID::electron80XCutBasedM)        ) ;
-    store("gsf_Tight"                         , electronHelper.PassElectron80XId(electronCollection_->at(i),electronID::electron80XCutBasedT)        ) ;
+    store("gsf_Loose"                         , (electronHelper.PassElectron80XId(electronCollection_->at(i),electronID::electron80XCutBasedL)) && abs(gsfiter->superCluster()->eta())<2.5       ) ;
+    store("gsf_Medium"                        , (electronHelper.PassElectron80XId(electronCollection_->at(i),electronID::electron80XCutBasedM)) && abs(gsfiter->superCluster()->eta())<2.5     ) ;
+    store("gsf_Tight"                         , (electronHelper.PassElectron80XId(electronCollection_->at(i),electronID::electron80XCutBasedT)) && abs(gsfiter->superCluster()->eta())<2.5      ) ;
     store("gsf_VIDVeto"                       , (*VIDVetoHandle_).get(gsfref)        ) ;  
     store("gsf_VIDLoose"                      , (*VIDLooseHandle_).get(gsfref)        ) ;
     store("gsf_VIDMedium"                     , (*VIDMediumHandle_).get(gsfref)        ) ;
@@ -573,8 +573,7 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_isHeepV7", isHeep);
 
 
-    for( unsigned int j = 0 ; j < electronCollection80_->size() ; j++ ) {
-      Ptr<pat::Electron> gsfiter80 = electronCollection80_->ptrAt( j );
+      Ptr<pat::Electron> gsfiter80 = electronCollection80_->ptrAt( i );
       if (abs(gsfiter80->eta() - gsfiter->eta())<0.0001){
         store("gsf80_energy"                     , gsfiter80->energy()                        ) ;
         store("gsf80_p"                          , gsfiter80->p()                             ) ;
@@ -586,9 +585,9 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
         store("gsf80_hcalDepth2OverEcal"         , gsfiter80->hcalDepth2OverEcal()            ) ;
         store("gsf80_dr03EcalRecHitSumEt"        , gsfiter80->dr03EcalRecHitSumEt()           ) ;
         store("gsf80_dr03HcalDepth1TowerSumEt"   , gsfiter80->dr03HcalDepth1TowerSumEt()      ) ;
-        store("gsf80_Loose"                      , electronHelper.PassElectron80XId(electronCollection80_->at(j),electronID::electron80XCutBasedL)        ) ;
-        store("gsf80_Medium"                     , electronHelper.PassElectron80XId(electronCollection80_->at(j),electronID::electron80XCutBasedM)        ) ;
-        store("gsf80_Tight"                      , electronHelper.PassElectron80XId(electronCollection80_->at(j),electronID::electron80XCutBasedT)        ) ;
+        store("gsf80_Loose"                      , electronHelper.PassElectron80XId(electronCollection80_->at(i),electronID::electron80XCutBasedL)        ) ;
+        store("gsf80_Medium"                     , electronHelper.PassElectron80XId(electronCollection80_->at(i),electronID::electron80XCutBasedM)        ) ;
+        store("gsf80_Tight"                      , electronHelper.PassElectron80XId(electronCollection80_->at(i),electronID::electron80XCutBasedT)        ) ;
 
 
         bool isHeep80 = false;
@@ -617,7 +616,6 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
         store("gsf74_isHeepV7", isHeep80);
     }
 
-  }
 
 
 
