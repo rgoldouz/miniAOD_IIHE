@@ -85,9 +85,8 @@ process.source = cms.Source("PoolSource",
 
 )
 
-process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
-#process.source.fileNames.append("file:pickevents_1.root" )
-#process.source.fileNames.append( "file:03Feb2017data.root" )
+#process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
+process.source.fileNames.append( "file:03Feb2017data.root" )
 ###
 filename_out = "outfile.root"
 if options.DataProcessing == "mc":
@@ -175,7 +174,7 @@ process.IIHEAnalysis.METsMuEGCleanCollection                     = cms.InputTag(
 process.IIHEAnalysis.discardedMuonCollection                     = cms.InputTag("packedPFCandidatesDiscarded"                               )
 
 #use 80 regression + scale/smearing for electron
-process.IIHEAnalysis.electronCollection80    = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
+process.IIHEAnalysis.electronCollection80    = cms.InputTag("calibratedPatElectrons","","IIHEAnalysis")
 
 #jet smeared collection
 process.IIHEAnalysis.JetCollection                   = cms.InputTag("basicJetsForMet" ,"","IIHEAnalysis")
