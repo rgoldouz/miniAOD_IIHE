@@ -50,21 +50,21 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   
   MCTruthModule_ = 0 ;
   
-  includeLeptonsAcceptModule_   = iConfig.getUntrackedParameter<bool>("includeLeptonsAcceptModule"  , true ) ;
-  includeTriggerModule_         = iConfig.getUntrackedParameter<bool>("includeTriggerModule"        , true ) ;
-  includeEventModule_           = iConfig.getUntrackedParameter<bool>("includeEventModule"          , true ) ;
-  includeVertexModule_          = iConfig.getUntrackedParameter<bool>("includeVertexModule"         , true ) ;
-  includeSuperClusterModule_    = iConfig.getUntrackedParameter<bool>("includeSuperClusterModule"   , true ) ;
-  includePhotonModule_          = iConfig.getUntrackedParameter<bool>("includePhotonModule"         , true ) ;
-  includeElectronModule_        = iConfig.getUntrackedParameter<bool>("includeElectronModule"       , true ) ;
-  includeMuonModule_            = iConfig.getUntrackedParameter<bool>("includeMuonModule"           , true ) ;
-  includeMETModule_             = iConfig.getUntrackedParameter<bool>("includeMETModule"            , true ) ;
-  includeMETModule_             = iConfig.getUntrackedParameter<bool>("includeJetModule"            , true ) ;
-  includeTauModule_             = iConfig.getUntrackedParameter<bool>("includeTauModule"            , true ) ;
-  includeDataModule_             = iConfig.getUntrackedParameter<bool>("includeDataModule"            , true ) ;
-  includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"        , true ) ;
-  includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"         , true ) ;
-  includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule", true ) ;
+  includeLeptonsAcceptModule_   = iConfig.getUntrackedParameter<bool>("includeLeptonsAcceptModule" ) ;
+  includeTriggerModule_         = iConfig.getUntrackedParameter<bool>("includeTriggerModule"       ) ;
+  includeEventModule_           = iConfig.getUntrackedParameter<bool>("includeEventModule"         ) ;
+  includeVertexModule_          = iConfig.getUntrackedParameter<bool>("includeVertexModule"        ) ;
+  includeSuperClusterModule_    = iConfig.getUntrackedParameter<bool>("includeSuperClusterModule"  ) ;
+  includePhotonModule_          = iConfig.getUntrackedParameter<bool>("includePhotonModule"        ) ;
+  includeElectronModule_        = iConfig.getUntrackedParameter<bool>("includeElectronModule"      ) ;
+  includeMuonModule_            = iConfig.getUntrackedParameter<bool>("includeMuonModule"          ) ;
+  includeMETModule_             = iConfig.getUntrackedParameter<bool>("includeMETModule"           ) ;
+  includeJetModule_             = iConfig.getUntrackedParameter<bool>("includeJetModule"           ) ;
+  includeTauModule_             = iConfig.getUntrackedParameter<bool>("includeTauModule"           ) ;
+  includeDataModule_             = iConfig.getUntrackedParameter<bool>("includeDataModule"         ) ;
+  includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"       ) ;
+  includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"        ) ;
+  includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule") ;
   
   if(includeLeptonsAcceptModule_  ) childModules_.push_back(new IIHEModuleLeptonsAccept(iConfig ,consumesCollector())  ) ;   
   if(includeTriggerModule_        ) childModules_.push_back(new IIHEModuleTrigger(iConfig,consumesCollector())        ) ;
@@ -78,8 +78,8 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   if(includePhotonModule_         ) childModules_.push_back(new IIHEModulePhoton(iConfig ,consumesCollector())         ) ;
   if(includeElectronModule_       ) childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig ,consumesCollector()) ) ;
   if(includeMuonModule_           ) childModules_.push_back(new IIHEModuleMuon(iConfig ,consumesCollector())           ) ;
-  if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig ,consumesCollector())            ) ;
   if(includeJetModule_            ) childModules_.push_back(new IIHEModuleJet(iConfig ,consumesCollector())            ) ;
+  if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig ,consumesCollector())            ) ;
   if(includeTauModule_            ) childModules_.push_back(new IIHEModuleTau(iConfig ,consumesCollector())            ) ;
   if(includeDataModule_            ) childModules_.push_back(new IIHEModuleData(iConfig ,consumesCollector())            ) ;
   if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig ,consumesCollector())         ) ;  

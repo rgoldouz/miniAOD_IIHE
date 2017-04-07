@@ -4,64 +4,6 @@
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
-class IIHEJetVariableBase{
-public:
-  IIHEJetVariableBase(std::string, std::string, int) ;
-  ~IIHEJetVariableBase(){} ;
-
-  const std::string       Name(){ return       name_ ; }
-  const std::string BranchName(){ return branchName_ ; }
-  const int         branchType(){ return branchType_ ; }
-
-  virtual void reset(){} ;
-  virtual void store(IIHEAnalysis*){} ;
-  bool addBranch(IIHEAnalysis*) ;
-
-private:
-  std::string       name_ ;
-  std::string branchName_ ;
-  int         branchType_ ;
-};
-
-class IIHEJetVariableInt: IIHEJetVariableBase{
-public:
-  IIHEJetVariableInt(std::string, std::string) ;
-  ~IIHEJetVariableInt(){} ;
-  void reset(){ value_ = -999 ; }
-  void fill(int value){ value_ = value ; }
-  void store(IIHEAnalysis*) ;
-private:
-  int value_ ;
-};
-
-class IIHEJetVariableFloat: IIHEJetVariableBase{
-public:
-  IIHEJetVariableFloat(std::string, std::string) ;
-  ~IIHEJetVariableFloat(){} ;
-  void reset(){ value_ = -999.0 ; }
-  void fill(float value){ value_ = value ; }
-  void store(IIHEAnalysis*) ;
-private:
-  float value_ ;
-};
-
-class IIHEJetWrapper{
-public:
-  explicit IIHEJetWrapper(std::string);
-  ~IIHEJetWrapper(){};
-
-  void addBranches(IIHEAnalysis*) ;
-  void reset() ;
-  void fill(pat::Jet) ;
-  void store(IIHEAnalysis*) ;
-
-  private:
-  int type_ ;
-  std::string prefix_ ;
-  IIHEJetVariableFloat*   pt_        ;
-  IIHEJetVariableFloat*   energy_        ;
-  std::vector<IIHEJetVariableBase*> variables_ ;
-};
 // class decleration
 
 class IIHEModuleJet : public IIHEModule {
@@ -95,13 +37,6 @@ private:
   edm::EDGetTokenT<edm::View<pat::Jet> > pfJetTokenSmearedJetResUp_;
   edm::InputTag pfJetLabelSmearedJetResDown_;
   edm::EDGetTokenT<edm::View<pat::Jet> > pfJetTokenSmearedJetResDown_;
-
-  IIHEJetWrapper*  jetEnUpWrapper_;
-  IIHEJetWrapper*  jetEnDownWrapper_;
-  IIHEJetWrapper*  jetSmearedWrapper_;
-  IIHEJetWrapper*  jetSmearedJetResUpWrapper_;
-  IIHEJetWrapper*  jetSmearedJetResDownWrapper_;
-
 
   float ETThreshold_ ;
   bool isMC_;

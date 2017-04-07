@@ -9,80 +9,11 @@
 using namespace std ;
 using namespace reco;
 using namespace edm ;
-
-//////////////////////////////////////////////////////////////////////////////////////////
-////                             IIHEJetVariable classes
-//////////////////////////////////////////////////////////////////////////////////////////
-IIHEJetVariableBase::IIHEJetVariableBase(std::string prefix, std::string name, int type){
-  name_       = name ;
-  branchName_ = prefix + "_" + name_ ;
-  branchType_ = type ;
-}
-bool IIHEJetVariableBase::addBranch(IIHEAnalysis* analysis){
-  return analysis->addBranch(branchName_, branchType_) ;
-}
-
-IIHEJetVariableInt::IIHEJetVariableInt(std::string prefix, std::string name):
-IIHEJetVariableBase(prefix, name, kVectorInt){
-  reset() ;
-}
-void IIHEJetVariableInt::store(IIHEAnalysis* analysis){
-  analysis->store(BranchName(), value_) ;
-}
-
-IIHEJetVariableFloat::IIHEJetVariableFloat(std::string prefix, std::string name):
-IIHEJetVariableBase(prefix, name, kVectorFloat){
-  reset() ;
-}
-void IIHEJetVariableFloat::store(IIHEAnalysis* analysis){
-  analysis->store(BranchName(), value_ ) ;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-////                                  IIHEJet class
-//////////////////////////////////////////////////////////////////////////////////////////
-IIHEJetWrapper::IIHEJetWrapper(std::string prefix){
-  prefix_ = prefix ;
-
-  pt_               = new IIHEJetVariableFloat  (prefix_, "pt"                 ) ;
-  energy_              = new IIHEJetVariableFloat  (prefix_, "energy"                ) ;
-
-  variables_.push_back((IIHEJetVariableBase*) pt_                   ) ;
-  variables_.push_back((IIHEJetVariableBase*) energy_                  ) ;
-}
-
-void IIHEJetWrapper::addBranches(IIHEAnalysis* analysis){
-  for(unsigned int i=0 ; i<variables_.size() ; ++i){
-    variables_.at(i)->addBranch(analysis) ;
-  }
-}
-void IIHEJetWrapper::reset(){
-  for(unsigned int i=0 ; i<variables_.size() ; ++i){
-    variables_.at(i)->reset() ;
-  }
-}
-
-void IIHEJetWrapper::fill(pat::Jet Jet){
-  pt_        ->fill(Jet.et()                ) ;
-  energy_       ->fill(Jet.energy()               ) ;
-}
-void IIHEJetWrapper::store(IIHEAnalysis* analysis){
-  for(unsigned int i=0 ; i<variables_.size() ; ++i){
-    variables_.at(i)->store(analysis) ;
-  }
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 ////                                  Main IIHEJetModule
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-IIHEModuleJet::IIHEModuleJet(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC): 
-  IIHEModule(iConfig),
-  jetEnUpWrapper_(new IIHEJetWrapper("jet_EnUp")),
-  jetEnDownWrapper_(new IIHEJetWrapper("jet_EnDown")),
-  jetSmearedWrapper_(new IIHEJetWrapper("jet_Smeared")),
-  jetSmearedJetResUpWrapper_(new IIHEJetWrapper("jet_SmearedJetResUp")),
-  jetSmearedJetResDownWrapper_(new IIHEJetWrapper("jet_SmearedJetResDown")){
+IIHEModuleJet::IIHEModuleJet(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC):IIHEModule(iConfig){
   pfJetLabel_                  =  iConfig.getParameter<edm::InputTag>("JetCollection");
   pfJetToken_                  =  iC.consumes<View<pat::Jet> > (pfJetLabel_);
   pfJetLabelSmeared_           =  iConfig.getParameter<edm::InputTag>("JetCollectionSmeared");
@@ -138,16 +69,24 @@ void IIHEModuleJet::beginJob(){
 
   IIHEAnalysis* analysis = parent_ ;
   if (isMC_){
-    jetEnUpWrapper_->addBranches(analysis) ;
-    jetEnDownWrapper_->addBranches(analysis) ;
-    jetSmearedWrapper_->addBranches(analysis) ;
-    jetSmearedJetResUpWrapper_->addBranches(analysis) ;
-    jetSmearedJetResDownWrapper_->addBranches(analysis) ;
+
+  setBranchType(kVectorFloat);
+  addBranch("jet_Smeared_pt");
+  addBranch("jet_Smeared_energy");
+  addBranch("jet_SmearedJetResUp_pt");
+  addBranch("jet_SmearedJetResUp_energy");
+  addBranch("jet_SmearedJetResDown_pt");
+  addBranch("jet_SmearedJetResDown_energy");
+  addBranch("jet_EnUp_pt");
+  addBranch("jet_EnUp_energy");
+  addBranch("jet_EnDown_pt");
+  addBranch("jet_EnDown_energy");
   }
 }
 
 // ------------ method called to for each event  ------------
 void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+
 
   edm::Handle<edm::View<pat::Jet> > pfJetHandle_;
   iEvent.getByToken(pfJetToken_, pfJetHandle_);
@@ -167,14 +106,7 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<edm::View<pat::Jet> > pfJetHandleSmearedJetResDown_;
   iEvent.getByToken(pfJetTokenSmearedJetResDown_, pfJetHandleSmearedJetResDown_);
 
-  jetEnUpWrapper_->reset();
-  jetEnDownWrapper_->reset();
-  jetSmearedWrapper_->reset();
-  jetSmearedJetResUpWrapper_->reset();
-  jetSmearedJetResDownWrapper_->reset();
-
   IIHEAnalysis* analysis = parent_ ;
-
   store("jet_n", (unsigned int) pfJetHandle_ -> size() );
   for ( unsigned int i = 0; i <pfJetHandle_->size(); ++i) {
     Ptr<pat::Jet> pfjet = pfJetHandle_->ptrAt( i );
@@ -238,27 +170,20 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     store("jet_isJetIDLoose"                 ,isJetIDLoose);
     store("jet_isJetIDTight"                 ,isJetIDTight);
     store("jet_isJetIDTightLepVeto"          ,isJetIDTightLepVeto);
-
     if (isMC_){
-      Ptr<pat::Jet> pfjetEnUp = pfJetHandleEnUp_->ptrAt( i );
-      Ptr<pat::Jet> pfjetEnDown = pfJetHandleEnDown_->ptrAt( i );
-      Ptr<pat::Jet> pfjetSmeared = pfJetHandleSmeared_->ptrAt( i );
-      Ptr<pat::Jet> pfjetSmearedJetResUp = pfJetHandleSmearedJetResUp_->ptrAt( i );
-      Ptr<pat::Jet> pfjetSmearedJetResDown = pfJetHandleSmearedJetResDown_->ptrAt( i );
-      jetEnUpWrapper_->fill(pfJetHandleEnUp_->at(i)) ;
-      jetEnUpWrapper_ ->store(analysis) ;
-      jetEnDownWrapper_->fill(pfJetHandleEnDown_->at(i)) ;
-      jetEnDownWrapper_ ->store(analysis) ;
-      jetSmearedWrapper_->fill(pfJetHandleSmeared_->at(i));
-      jetSmearedWrapper_->store(analysis) ;
-      jetSmearedJetResUpWrapper_->fill(pfJetHandleSmearedJetResUp_->at(i));
-      jetSmearedJetResUpWrapper_->store(analysis) ;
-      jetSmearedJetResDownWrapper_->fill(pfJetHandleSmearedJetResDown_->at(i));
-      jetSmearedJetResDownWrapper_->store(analysis) ;
+      store("jet_Smeared_pt",pfJetHandleSmeared_->at(i).pt());
+      store("jet_Smeared_energy",pfJetHandleSmeared_->at(i).energy());
+      store("jet_SmearedJetResUp_pt",pfJetHandleSmearedJetResUp_->at(i).pt());
+      store("jet_SmearedJetResUp_energy",pfJetHandleSmearedJetResUp_->at(i).energy());
+      store("jet_SmearedJetResDown_pt",pfJetHandleSmearedJetResDown_->at(i).pt());
+      store("jet_SmearedJetResDown_energy",pfJetHandleSmearedJetResDown_->at(i).energy());
+      store("jet_EnUp_pt",pfJetHandleEnUp_->at(i).pt());
+      store("jet_EnUp_energy",pfJetHandleEnUp_->at(i).energy());
+      store("jet_EnDown_pt",pfJetHandleEnDown_->at(i).pt());
+      store("jet_EnDown_energy",pfJetHandleEnDown_->at(i).energy());
     }
 
   }
-
 
 }
 void IIHEModuleJet::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

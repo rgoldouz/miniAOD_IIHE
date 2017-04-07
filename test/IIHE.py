@@ -158,7 +158,7 @@ process.load("UserCode.IIHETree.IIHETree_cfi")
 process.IIHEAnalysis.globalTag = cms.string(globalTag)
 process.IIHEAnalysis.isData  = cms.untracked.bool("data" in options.DataProcessing)
 process.IIHEAnalysis.isMC    = cms.untracked.bool("mc" in options.DataProcessing)
-
+#process.IIHEAnalysis.isMC    = cms.untracked.bool(False)
 #****Collections added before the analysis
 # VID output
 process.IIHEAnalysis.eleTrkPtIsoLabel                            = cms.InputTag("heepIDVarValueMaps"    ,"eleTrkPtIso"       ,"IIHEAnalysis" )
@@ -179,7 +179,7 @@ process.IIHEAnalysis.discardedMuonCollection                     = cms.InputTag(
 process.IIHEAnalysis.electronCollection80    = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
 
 #jet smeared collection
-process.IIHEAnalysis.JetCollection                   = cms.InputTag("jetSelectorForMet"            ,"","IIHEAnalysis")
+process.IIHEAnalysis.JetCollection                   = cms.InputTag("patJetsReapplyJEC"            ,"","IIHEAnalysis")
 process.IIHEAnalysis.JetCollectionSmeared            = cms.InputTag("patSmearedJets"               ,"","IIHEAnalysis")
 process.IIHEAnalysis.JetCollectionEnUp               = cms.InputTag("shiftedPatJetEnUp"            ,"","IIHEAnalysis")
 process.IIHEAnalysis.JetCollectionEnDown             = cms.InputTag("shiftedPatJetEnDown"          ,"","IIHEAnalysis")
@@ -203,15 +203,11 @@ process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)
 process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(True)
 process.IIHEAnalysis.includeVertexModule         = cms.untracked.bool(True)
-process.IIHEAnalysis.includePhotonModule         = cms.untracked.bool(False)
 process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
-process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
+#process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
-process.IIHEAnalysis.includeZBosonModule         = cms.untracked.bool(False)
-process.IIHEAnalysis.includeSuperClusterModule   = cms.untracked.bool(False)
-process.IIHEAnalysis.includeTracksModule         = cms.untracked.bool(False)
 process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
