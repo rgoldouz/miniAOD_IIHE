@@ -1,16 +1,14 @@
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/PluginManager"/>
 <use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/MessageLogger"/>
+<use   name="FWCore/Utilities"/>
+<use   name="DataFormats/BeamSpot"/>
 <use   name="DataFormats/L1CaloTrigger"/>
 <use   name="DataFormats/L1GlobalCaloTrigger"/>
 <use   name="DataFormats/L1GlobalMuonTrigger"/>
 <use   name="DataFormats/L1GlobalTrigger"/>
 <use   name="DataFormats/L1Trigger"/>
-<use   name="HLTrigger/HLTcore"/>
-<use   name="L1Trigger/RegionalCaloTrigger"/>
-<use   name="FWCore/Utilities"/>
-<use   name="clhep"/>
-<use   name="MagneticField/Engine"/>
 <use   name="DataFormats/DetId"/>
 <use   name="DataFormats/EcalDetId"/>
 <use   name="DataFormats/TrackCandidate"/>
@@ -26,6 +24,18 @@
 <use   name="DataFormats/EgammaCandidates"/>
 <use   name="DataFormats/HepMCCandidate"/>
 <use   name="DataFormats/Math"/>
+<use   name="DataFormats/TauReco"/>
+<use   name="DataFormats/HcalRecHit"/>
+<use   name="DataFormats/Common"/>
+<use   name="DataFormats/Luminosity"/>
+<use   name="DataFormats/PatCandidates"/>
+<use   name="DataFormats/RecoCandidate"/>
+<use   name="HLTrigger/HLTcore"/>
+<use   name="L1Trigger/RegionalCaloTrigger"/>
+<use   name="clhep"/>
+<use   name="root"/>
+<use   name="roottmva"/>
+<use   name="MagneticField/Engine"/>
 <use   name="SimDataFormats/GeneratorProducts"/>
 <use   name="SimG4Core/Generators"/>
 <use   name="Geometry/CommonDetUnit"/>
@@ -39,7 +49,6 @@
 <use   name="RecoTracker/TrackProducer"/>
 <use   name="Geometry/CaloGeometry"/>
 <use   name="Geometry/CaloTopology"/>
-<use   name="DataFormats/HcalRecHit"/>
 <use   name="RecoCaloTools/Selectors"/>
 <use   name="RecoEgamma/EgammaTools"/>
 <use   name="RecoEcal/EgammaCoreTools"/>
@@ -47,10 +56,13 @@
 <use   name="RecoEgamma/EgammaElectronAlgos"/>
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="PhysicsTools/IsolationAlgos"/>
-<use   name="DataFormats/Common"/>
 <use   name="hepmc"/>
 <use   name="root"/>
-<use   name="DataFormats/Luminosity"/>
+<use   name="MiniAOD/MiniAODHelper"/>
+<use   name="MiniAOD/BoostedObjects"/>
+<use   name="JetMETCorrections/Objects"/>
+<use   name="CondFormats/JetMETObjects"/>
+
 
 <flags   EDM_PLUGIN="1"/>
 

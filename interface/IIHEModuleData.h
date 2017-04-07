@@ -26,9 +26,6 @@ public:
 
 private:
 
-  edm::EDGetTokenT<edm::View<pat::Electron>> electronCollectionToken_;
-  edm::InputTag      electronCollectionLabel_ ;
-
   edm::EDGetTokenT<edm::View<pat::MET> > METCollectionToken_;
   edm::InputTag      METCollectionLabel_ ;
 
@@ -41,6 +38,5 @@ private:
   edm::EDGetTokenT<edm::EDCollection<DetId>> ecalMultiAndGSGlobalRecHitEBToken_;
   edm::InputTag   ecalMultiAndGSGlobalRecHitEBLabel_ ;
 
-  float ETThreshold_ ;
 };
 #endif

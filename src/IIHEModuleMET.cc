@@ -38,7 +38,7 @@ void IIHEMETVariableInt::store(IIHEAnalysis* analysis){
 }
 
 IIHEMETVariableFloat::IIHEMETVariableFloat(std::string prefix, std::string name):
-IIHEMETVariableBase(prefix, name, kVectorFloat){
+IIHEMETVariableBase(prefix, name, kFloat){
   reset() ;
 }
 void IIHEMETVariableFloat::store(IIHEAnalysis* analysis){
@@ -51,11 +51,15 @@ void IIHEMETVariableFloat::store(IIHEAnalysis* analysis){
 IIHEMETWrapper::IIHEMETWrapper(std::string prefix){
   prefix_ = prefix ;
 
-  et_               = new IIHEMETVariableFloat  (prefix_, "et"                 ) ;
+  Pt_               = new IIHEMETVariableFloat  (prefix_, "Pt"                 ) ;
+  Px_               = new IIHEMETVariableFloat  (prefix_, "Px"                 ) ;
+  Py_               = new IIHEMETVariableFloat  (prefix_, "Py"                 ) ;
   phi_              = new IIHEMETVariableFloat  (prefix_, "phi"                ) ;
   significance_     = new IIHEMETVariableFloat  (prefix_, "significance"       ) ;
 
-  variables_.push_back((IIHEMETVariableBase*) et_                   ) ;
+  variables_.push_back((IIHEMETVariableBase*) Pt_                   ) ;
+  variables_.push_back((IIHEMETVariableBase*) Px_                   ) ;
+  variables_.push_back((IIHEMETVariableBase*) Py_                   ) ;
   variables_.push_back((IIHEMETVariableBase*) phi_                  ) ;
   variables_.push_back((IIHEMETVariableBase*) significance_         ) ;
 }
@@ -72,7 +76,9 @@ void IIHEMETWrapper::reset(){
 }
 
 void IIHEMETWrapper::fill(pat::MET MET){
-  et_        ->fill(MET.et()                ) ;
+  Pt_        ->fill(MET.pt()                ) ;
+  Px_        ->fill(MET.px()                ) ;
+  Py_        ->fill(MET.py()                ) ;
   phi_       ->fill(MET.phi()               ) ;
   significance_   ->fill(MET.metSignificance()   ) ;
 }
@@ -94,11 +100,12 @@ IIHEModuleMET::IIHEModuleMET(const edm::ParameterSet& iConfig, edm::ConsumesColl
   metT1Wrapper_(new IIHEMETWrapper("MET_T1")),
   metT1JetEnDownWrapper_(new IIHEMETWrapper("MET_T1JetEnDown")),
   metT1JetEnUpWrapper_(new IIHEMETWrapper("MET_T1JetEnUp")),
+  metT1SmearWrapper_(new IIHEMETWrapper("MET_T1Smear")),
   metT1SmearJetEnDownWrapper_(new IIHEMETWrapper("MET_T1SmearJetEnDown")),
   metT1SmearJetEnUpWrapper_(new IIHEMETWrapper("MET_T1SmearJetEnUp")),
   metT1SmearJetResDownWrapper_(new IIHEMETWrapper("MET_T1SmearJetResDown")),
   metT1SmearJetResUpWrapper_(new IIHEMETWrapper("MET_T1SmearJetResUp")),
-  metTxyWrapper_(new IIHEMETWrapper("MET_Txy")),
+  metT1TxyWrapper_(new IIHEMETWrapper("MET_T1Txy")),
   metFinalWrapper_(new IIHEMETWrapper("MET_FinalCollection"))
 {
   pfMETToken_                               =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("METCollection"));
@@ -106,11 +113,12 @@ IIHEModuleMET::IIHEModuleMET(const edm::ParameterSet& iConfig, edm::ConsumesColl
   patPFMetT1CollectionToken_                =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetT1Collection"));
   patPFMetT1JetEnDownCollectionToken_       =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetT1JetEnDownCollection"));
   patPFMetT1JetEnUpCollectionToken_         =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetT1JetEnUpCollection"));
+  patPFMetT1SmearCollectionToken_           =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetT1SmearCollection"));
   patPFMetT1SmearJetEnDownCollectionToken_  =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetT1SmearJetEnDownCollection"));
   patPFMetT1SmearJetEnUpCollectionToken_    =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetT1SmearJetEnUpCollection"));
   patPFMetT1SmearJetResDownCollectionToken_ =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetT1SmearJetResDownCollection"));
   patPFMetT1SmearJetResUpCollectionToken_   =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetT1SmearJetResUpCollection"));
-  patPFMetTxyToken_                         =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetTxyCollection"));
+  patPFMetT1TxyToken_                       =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetT1TxyCollection"));
   patPFMetFinalCollectionToken_             =  iC.consumes<View<pat::MET> > (iConfig.getParameter<edm::InputTag>("patPFMetFinalCollection"));
   isMC_ = iConfig.getUntrackedParameter<bool>("isMC") ;
 }
@@ -119,18 +127,37 @@ IIHEModuleMET::~IIHEModuleMET(){}
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleMET::beginJob(){
   setBranchType(kFloat) ;
-  IIHEAnalysis* analysis = parent_ ;
   addBranch("MET_gen"   ) ;
+  setBranchType(kVectorFloat) ;
+  addBranch("MET_Type1Unc") ;
+  addBranch("MET_Type1SmearUnc") ;
+  addBranch("MET_Type1SmearXY") ;
+
+  IIHEAnalysis* analysis = parent_ ;
   metnominalWrapper_->addBranches(analysis) ;
   metWrapper_->addBranches(analysis) ;
   metT1Wrapper_->addBranches(analysis) ;
-  metT1JetEnDownWrapper_->addBranches(analysis) ;
-  metT1JetEnUpWrapper_->addBranches(analysis) ;
-  metT1SmearJetEnDownWrapper_->addBranches(analysis) ;
-  metT1SmearJetEnUpWrapper_->addBranches(analysis) ;
-  metT1SmearJetResDownWrapper_->addBranches(analysis) ;
-  metT1SmearJetResUpWrapper_->addBranches(analysis) ;
-  metTxyWrapper_->addBranches(analysis) ;
+  if(isMC_){
+    setBranchType(kVectorFloat) ;
+    addBranch("MET_Type1Unc_Px") ;
+    addBranch("MET_Type1SmearUnc_Px") ;
+//    addBranch("MET_Type1SmearXY_Px") ;
+    addBranch("MET_Type1Unc_Py") ;
+    addBranch("MET_Type1SmearUnc_Py") ;
+//    addBranch("MET_Type1SmearXY_Py") ;
+    addBranch("MET_Type1Unc_Pt") ;
+    addBranch("MET_Type1SmearUnc_Pt") ;
+//    addBranch("MET_Type1SmearXY_Pt") ;
+
+    metT1JetEnDownWrapper_->addBranches(analysis) ;
+    metT1JetEnUpWrapper_->addBranches(analysis) ;
+    metT1SmearWrapper_->addBranches(analysis) ;
+    metT1SmearJetEnDownWrapper_->addBranches(analysis) ;
+    metT1SmearJetEnUpWrapper_->addBranches(analysis) ;
+    metT1SmearJetResDownWrapper_->addBranches(analysis) ;
+    metT1SmearJetResUpWrapper_->addBranches(analysis) ;
+  }
+  metT1TxyWrapper_->addBranches(analysis) ;
   metFinalWrapper_->addBranches(analysis) ;
 }
 
@@ -152,6 +179,9 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<edm::View<pat::MET> > patPFMetT1JetEnUpCollectionHandle_;
   iEvent.getByToken(patPFMetT1JetEnUpCollectionToken_, patPFMetT1JetEnUpCollectionHandle_);
 
+  edm::Handle<edm::View<pat::MET> > patPFMetT1SmearCollectionHandle_;
+  iEvent.getByToken(patPFMetT1SmearCollectionToken_, patPFMetT1SmearCollectionHandle_);
+
   edm::Handle<edm::View<pat::MET> > patPFMetT1SmearJetEnDownCollectionHandle_;
   iEvent.getByToken(patPFMetT1SmearJetEnDownCollectionToken_, patPFMetT1SmearJetEnDownCollectionHandle_);
 
@@ -164,8 +194,8 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<edm::View<pat::MET> > patPFMetT1SmearJetResDownCollectionHandle_;
   iEvent.getByToken(patPFMetT1SmearJetResDownCollectionToken_, patPFMetT1SmearJetResDownCollectionHandle_);
 
-  edm::Handle<edm::View<pat::MET> > patPFMetTxyHandle_;
-  iEvent.getByToken(patPFMetTxyToken_, patPFMetTxyHandle_);
+  edm::Handle<edm::View<pat::MET> > patPFMetT1TxyHandle_;
+  iEvent.getByToken(patPFMetT1TxyToken_, patPFMetT1TxyHandle_);
 
   edm::Handle<edm::View<pat::MET> > patPFMetFinalCollectionHandle_;
   iEvent.getByToken(patPFMetFinalCollectionToken_, patPFMetFinalCollectionHandle_);
@@ -176,11 +206,12 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   metT1Wrapper_->reset() ;
   metT1JetEnDownWrapper_->reset() ;
   metT1JetEnUpWrapper_->reset() ;
+  metT1SmearWrapper_->reset() ;
   metT1SmearJetEnDownWrapper_->reset() ;
   metT1SmearJetEnUpWrapper_->reset() ;
   metT1SmearJetResDownWrapper_->reset() ;
   metT1SmearJetResUpWrapper_->reset() ;
-  metTxyWrapper_->reset() ;
+  metT1TxyWrapper_->reset() ;
   metFinalWrapper_->reset() ;
 
   IIHEAnalysis* analysis = parent_ ;  
@@ -196,26 +227,44 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   metT1Wrapper_->fill(patPFMetT1CollectionHandle_->front()) ;
   metT1Wrapper_->store(analysis) ;
 
-  metT1JetEnDownWrapper_->fill(patPFMetT1JetEnDownCollectionHandle_->front()) ;
-  metT1JetEnDownWrapper_->store(analysis) ;
+  if (isMC_){
+    metT1JetEnDownWrapper_->fill(patPFMetT1JetEnDownCollectionHandle_->front()) ;
+    metT1JetEnDownWrapper_->store(analysis) ;
 
-  metT1JetEnUpWrapper_->fill(patPFMetT1JetEnUpCollectionHandle_->front()) ;
-  metT1JetEnUpWrapper_->store(analysis) ;
+    metT1JetEnUpWrapper_->fill(patPFMetT1JetEnUpCollectionHandle_->front()) ;
+    metT1JetEnUpWrapper_->store(analysis) ;
 
-  metT1SmearJetEnDownWrapper_->fill(patPFMetT1SmearJetEnDownCollectionHandle_->front()) ;
-  metT1SmearJetEnDownWrapper_->store(analysis) ;
+    metT1SmearWrapper_->fill(patPFMetT1SmearCollectionHandle_->front()) ;
+    metT1SmearWrapper_->store(analysis) ;
 
-  metT1SmearJetEnUpWrapper_->fill(patPFMetT1SmearJetEnUpCollectionHandle_->front()) ;
-  metT1SmearJetEnUpWrapper_->store(analysis) ;
+    for ( unsigned int unc = 0; unc < 19; ++unc ) {
+      store("MET_Type1Unc_Px",pfMETHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))) ;
+      store("MET_Type1SmearUnc_Px",patPFMetT1SmearCollectionHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
+//      store("MET_Type1SmearXY_Px",patMET.shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(8))) ;
 
-  metT1SmearJetResDownWrapper_->fill(patPFMetT1SmearJetResDownCollectionHandle_->front()) ;
-  metT1SmearJetResDownWrapper_->store(analysis) ;
+      store("MET_Type1Unc_Py",pfMETHandle_->front().shiftedPy(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))) ;
+      store("MET_Type1SmearUnc_Py",patPFMetT1SmearCollectionHandle_->front().shiftedPy(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
+//      store("MET_Type1SmearXY_Py",patMET.shiftedPy(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(8))) ;
 
-  metT1SmearJetResUpWrapper_->fill(patPFMetT1SmearJetResUpCollectionHandle_->front()) ;
-  metT1SmearJetResUpWrapper_->store(analysis) ;
+      store("MET_Type1Unc_Pt",pfMETHandle_->front().shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))) ;
+      store("MET_Type1SmearUnc_Pt",patPFMetT1SmearCollectionHandle_->front().shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
+//      store("MET_Type1SmearXY_Pt",patMET.shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(8))) ;
+    }
 
-  metTxyWrapper_->fill(patPFMetTxyHandle_->front()) ;
-  metTxyWrapper_->store(analysis) ;
+    metT1SmearJetEnDownWrapper_->fill(patPFMetT1SmearJetEnDownCollectionHandle_->front()) ;
+    metT1SmearJetEnDownWrapper_->store(analysis) ;
+
+    metT1SmearJetEnUpWrapper_->fill(patPFMetT1SmearJetEnUpCollectionHandle_->front()) ;
+    metT1SmearJetEnUpWrapper_->store(analysis) ;
+
+    metT1SmearJetResDownWrapper_->fill(patPFMetT1SmearJetResDownCollectionHandle_->front()) ;
+    metT1SmearJetResDownWrapper_->store(analysis) ;
+
+    metT1SmearJetResUpWrapper_->fill(patPFMetT1SmearJetResUpCollectionHandle_->front()) ;
+    metT1SmearJetResUpWrapper_->store(analysis) ;
+  }
+  metT1TxyWrapper_->fill(patPFMetT1TxyHandle_->front()) ;
+  metT1TxyWrapper_->store(analysis) ;
 
   metFinalWrapper_->fill(patPFMetFinalCollectionHandle_->front()) ;
   metFinalWrapper_->store(analysis) ;

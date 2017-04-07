@@ -58,7 +58,9 @@ public:
   private:
   int type_ ;
   std::string prefix_ ;
-  IIHEMETVariableFloat*   et_        ;
+  IIHEMETVariableFloat*   Pt_        ;
+  IIHEMETVariableFloat*   Px_        ;
+  IIHEMETVariableFloat*   Py_        ;
   IIHEMETVariableFloat*   phi_        ;
   IIHEMETVariableFloat*   significance_        ;
   std::vector<IIHEMETVariableBase*> variables_ ;
@@ -92,11 +94,12 @@ private:
  edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1CollectionToken_;
  edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1JetEnDownCollectionToken_;
  edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1JetEnUpCollectionToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1SmearCollectionToken_;
  edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1SmearJetEnDownCollectionToken_;
  edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1SmearJetEnUpCollectionToken_;
  edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1SmearJetResDownCollectionToken_;
  edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1SmearJetResUpCollectionToken_;
- edm::EDGetTokenT<edm::View<pat::MET> > patPFMetTxyToken_;
+ edm::EDGetTokenT<edm::View<pat::MET> > patPFMetT1TxyToken_;
  edm::EDGetTokenT<edm::View<pat::MET> > patPFMetFinalCollectionToken_;
 
 
@@ -105,11 +108,12 @@ private:
   IIHEMETWrapper* metT1Wrapper_;
   IIHEMETWrapper* metT1JetEnDownWrapper_;
   IIHEMETWrapper* metT1JetEnUpWrapper_;
+  IIHEMETWrapper* metT1SmearWrapper_;
   IIHEMETWrapper* metT1SmearJetEnDownWrapper_;
   IIHEMETWrapper* metT1SmearJetEnUpWrapper_;
   IIHEMETWrapper* metT1SmearJetResDownWrapper_;
   IIHEMETWrapper* metT1SmearJetResUpWrapper_;
-  IIHEMETWrapper* metTxyWrapper_;
+  IIHEMETWrapper* metT1TxyWrapper_;
   IIHEMETWrapper* metFinalWrapper_;
 
  bool isMC_;

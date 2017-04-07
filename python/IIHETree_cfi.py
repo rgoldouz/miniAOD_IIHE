@@ -22,7 +22,9 @@ IIHEAnalysis = cms.EDAnalyzer("IIHEAnalysis",
     PileUpSummaryInfo                           = cms.InputTag("slimmedAddPileupInfo"                                       ),
     primaryVertex                               = cms.InputTag('offlineSlimmedPrimaryVertices'                              ),
     beamSpot                                    = cms.InputTag("offlineBeamSpot"                                            ),
-    
+    generatorLabel                              = cms.InputTag("generator"                                                  ),
+    genParticleSrc                              = cms.InputTag("prunedGenParticles"                                         ),
+    LHELabel                                    = cms.InputTag("externalLHEProducer"                                        ),
     #*******************************************************************************************************************************************
     #Trigger paths that we want to save
     triggers                                    = cms.untracked.string("singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon;doubleMuon"),

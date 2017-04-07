@@ -58,8 +58,8 @@ public:
   private:
   int type_ ;
   std::string prefix_ ;
-  IIHEJetVariableFloat*   et_        ;
-  IIHEJetVariableFloat*   phi_        ;
+  IIHEJetVariableFloat*   pt_        ;
+  IIHEJetVariableFloat*   energy_        ;
   std::vector<IIHEJetVariableBase*> variables_ ;
 };
 // class decleration

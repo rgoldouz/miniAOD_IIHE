@@ -44,11 +44,11 @@ void IIHEJetVariableFloat::store(IIHEAnalysis* analysis){
 IIHEJetWrapper::IIHEJetWrapper(std::string prefix){
   prefix_ = prefix ;
 
-  et_               = new IIHEJetVariableFloat  (prefix_, "et"                 ) ;
-  phi_              = new IIHEJetVariableFloat  (prefix_, "phi"                ) ;
+  pt_               = new IIHEJetVariableFloat  (prefix_, "pt"                 ) ;
+  energy_              = new IIHEJetVariableFloat  (prefix_, "energy"                ) ;
 
-  variables_.push_back((IIHEJetVariableBase*) et_                   ) ;
-  variables_.push_back((IIHEJetVariableBase*) phi_                  ) ;
+  variables_.push_back((IIHEJetVariableBase*) pt_                   ) ;
+  variables_.push_back((IIHEJetVariableBase*) energy_                  ) ;
 }
 
 void IIHEJetWrapper::addBranches(IIHEAnalysis* analysis){
@@ -63,8 +63,8 @@ void IIHEJetWrapper::reset(){
 }
 
 void IIHEJetWrapper::fill(pat::Jet Jet){
-  et_        ->fill(Jet.et()                ) ;
-  phi_       ->fill(Jet.phi()               ) ;
+  pt_        ->fill(Jet.et()                ) ;
+  energy_       ->fill(Jet.energy()               ) ;
 }
 void IIHEJetWrapper::store(IIHEAnalysis* analysis){
   for(unsigned int i=0 ; i<variables_.size() ; ++i){
@@ -137,9 +137,9 @@ void IIHEModuleJet::beginJob(){
   addBranch("jet_isJetIDTightLepVeto");
 
   IIHEAnalysis* analysis = parent_ ;
-  jetEnUpWrapper_->addBranches(analysis) ;
-  jetEnDownWrapper_->addBranches(analysis) ;
   if (isMC_){
+    jetEnUpWrapper_->addBranches(analysis) ;
+    jetEnDownWrapper_->addBranches(analysis) ;
     jetSmearedWrapper_->addBranches(analysis) ;
     jetSmearedJetResUpWrapper_->addBranches(analysis) ;
     jetSmearedJetResDownWrapper_->addBranches(analysis) ;
@@ -166,6 +166,12 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   edm::Handle<edm::View<pat::Jet> > pfJetHandleSmearedJetResDown_;
   iEvent.getByToken(pfJetTokenSmearedJetResDown_, pfJetHandleSmearedJetResDown_);
+
+  jetEnUpWrapper_->reset();
+  jetEnDownWrapper_->reset();
+  jetSmearedWrapper_->reset();
+  jetSmearedJetResUpWrapper_->reset();
+  jetSmearedJetResDownWrapper_->reset();
 
   IIHEAnalysis* analysis = parent_ ;
 
@@ -233,24 +239,24 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     store("jet_isJetIDTight"                 ,isJetIDTight);
     store("jet_isJetIDTightLepVeto"          ,isJetIDTightLepVeto);
 
-    Ptr<pat::Jet> pfjetEnUp = pfJetHandleEnUp_->ptrAt( i );
-    Ptr<pat::Jet> pfjetEnDown = pfJetHandleEnDown_->ptrAt( i );
-    jetEnUpWrapper_->fill(pfjetEnUp) ;
-    jetEnUpWrapper_ ->store(analysis) ;    
-    jetEnDownWrapper_->fill(pfjetEnDown) ;
-    jetEnDownWrapper_ ->store(analysis) ;
-
     if (isMC_){
+      Ptr<pat::Jet> pfjetEnUp = pfJetHandleEnUp_->ptrAt( i );
+      Ptr<pat::Jet> pfjetEnDown = pfJetHandleEnDown_->ptrAt( i );
       Ptr<pat::Jet> pfjetSmeared = pfJetHandleSmeared_->ptrAt( i );
       Ptr<pat::Jet> pfjetSmearedJetResUp = pfJetHandleSmearedJetResUp_->ptrAt( i );
       Ptr<pat::Jet> pfjetSmearedJetResDown = pfJetHandleSmearedJetResDown_->ptrAt( i );
-      jetSmearedWrapper_->fill(pfjetSmeared);
+      jetEnUpWrapper_->fill(pfJetHandleEnUp_->at(i)) ;
+      jetEnUpWrapper_ ->store(analysis) ;
+      jetEnDownWrapper_->fill(pfJetHandleEnDown_->at(i)) ;
+      jetEnDownWrapper_ ->store(analysis) ;
+      jetSmearedWrapper_->fill(pfJetHandleSmeared_->at(i));
       jetSmearedWrapper_->store(analysis) ;
-      jetSmearedJetResUpWrapper_->fill(pfjetSmearedJetResUp);
+      jetSmearedJetResUpWrapper_->fill(pfJetHandleSmearedJetResUp_->at(i));
       jetSmearedJetResUpWrapper_->store(analysis) ;
-      jetSmearedJetResDownWrapper_->fill(pfjetSmearedJetResDown);
+      jetSmearedJetResDownWrapper_->fill(pfJetHandleSmearedJetResDown_->at(i));
       jetSmearedJetResDownWrapper_->store(analysis) ;
     }
+
   }
 
 

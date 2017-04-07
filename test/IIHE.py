@@ -42,10 +42,9 @@ options.parseArguments()
 ##########################################################################################
 #                                      Global tags                                       #
 ##########################################################################################
-globalTag = "80X_mcRun2_asymptotic_2016_TrancheIV_v6"
+globalTag = "80"
 if options.DataProcessing == "mc2016":
-  globalTag = "80X_mcRun2_asymptotic_2016_TrancheIV_v6"
-#  globalTag = "80X_mcRun2_asymptotic_2016_miniAODv2_v1"
+  globalTag = "80X_mcRun2_asymptotic_2016_TrancheIV_v8"
 if options.DataProcessing == "rerecodata":
   globalTag = "80X_dataRun2_2016SeptRepro_v7"
 if options.DataProcessing == "promptdata":
@@ -67,7 +66,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 
 process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -143,13 +142,6 @@ process.selectedElectrons80 = cms.EDFilter("PATElectronSelector",
     cut = cms.string("pt>5 && abs(eta)")
 )
 
-process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
-process.egmGsfElectronIDs.physicsObjectSrc            = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
-process.electronIDValueMapProducer.srcMiniAOD         = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
-process.electronRegressionValueMapProducer.srcMiniAOD = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
-process.electronMVAValueMapProducer.srcMiniAOD        = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
-
-
 # Bad Charged Hadron and Bad Muon Filters from MiniAOD
 process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
 process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
@@ -177,19 +169,14 @@ process.IIHEAnalysis.VIDTight                                    = cms.InputTag(
 process.IIHEAnalysis.VIDmvaEleIDwp90                             = cms.InputTag("egmPatElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp90" )
 process.IIHEAnalysis.VIDmvaEleIDwp80                             = cms.InputTag("egmPatElectronIDs:mvaEleID-Spring16-GeneralPurpose-V1-wp80" )
 process.IIHEAnalysis.VIDHEEP7                                    = cms.InputTag("egmPatElectronIDs:heepElectronID-HEEPV70"                   )
-# Collections for MC only.
-process.IIHEAnalysis.generatorLabel                              = cms.InputTag("generator"                                                 )
-process.IIHEAnalysis.genParticleSrc                              = cms.InputTag("prunedGenParticles"                                        )
 # Collections for DATA only.
-process.IIHEAnalysis.electronsBeforeGSFixCollection              = cms.InputTag("slimmedElectronsBeforeGSFix"                               )
 process.IIHEAnalysis.particleFlowEGammaGSFixedCollection         = cms.InputTag("particleFlowEGammaGSFixed", "dupECALClusters"              )
 process.IIHEAnalysis.ecalMultiAndGSGlobalRecHitEBCollection      = cms.InputTag("ecalMultiAndGSGlobalRecHitEB","dupESClusters"        ,"PAT")
 process.IIHEAnalysis.METsMuEGCleanCollection                     = cms.InputTag("slimmedMETsMuEGClean"                                      )
 process.IIHEAnalysis.discardedMuonCollection                     = cms.InputTag("packedPFCandidatesDiscarded"                               )
 
 #use 80 regression + scale/smearing for electron
-process.IIHEAnalysis.electronCollection    = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
-process.IIHEAnalysis.electronCollectionold = cms.InputTag("slimmedElectrons","","PAT")
+process.IIHEAnalysis.electronCollection80    = cms.InputTag("selectedElectrons80","","IIHEAnalysis")
 
 #jet smeared collection
 process.IIHEAnalysis.JetCollection                   = cms.InputTag("jetSelectorForMet"            ,"","IIHEAnalysis")
@@ -197,18 +184,19 @@ process.IIHEAnalysis.JetCollectionSmeared            = cms.InputTag("patSmearedJ
 process.IIHEAnalysis.JetCollectionEnUp               = cms.InputTag("shiftedPatJetEnUp"            ,"","IIHEAnalysis")
 process.IIHEAnalysis.JetCollectionEnDown             = cms.InputTag("shiftedPatJetEnDown"          ,"","IIHEAnalysis")
 process.IIHEAnalysis.JetCollectionSmearedJetResUp    = cms.InputTag("shiftedPatSmearedJetResUp"    ,"","IIHEAnalysis")
-process.IIHEAnalysis.JetCollectionSmearedJetResDown   = cms.InputTag("shiftedPatSmearedJetResDown" ,"","IIHEAnalysis")
+process.IIHEAnalysis.JetCollectionSmearedJetResDown  = cms.InputTag("shiftedPatSmearedJetResDown"  ,"","IIHEAnalysis")
 
 #MET collections
 process.IIHEAnalysis.patPFMetCollection                        = cms.InputTag("patPFMet"                  , ""                ,"IIHEAnalysis"  )
 process.IIHEAnalysis.patPFMetT1Collection                      = cms.InputTag("patPFMetT1"                , ""                ,"IIHEAnalysis"  )
 process.IIHEAnalysis.patPFMetT1JetEnDownCollection             = cms.InputTag("patPFMetT1JetEnDown"       , ""                ,"IIHEAnalysis"  )
 process.IIHEAnalysis.patPFMetT1JetEnUpCollection               = cms.InputTag("patPFMetT1JetEnUp"         , ""                ,"IIHEAnalysis"  )
+process.IIHEAnalysis.patPFMetT1SmearCollection                 = cms.InputTag("patPFMetT1Smear"           , ""                ,"IIHEAnalysis"  )
 process.IIHEAnalysis.patPFMetT1SmearJetEnDownCollection        = cms.InputTag("patPFMetT1SmearJetEnDown"  , ""                ,"IIHEAnalysis"  )
 process.IIHEAnalysis.patPFMetT1SmearJetEnUpCollection          = cms.InputTag("patPFMetT1SmearJetEnUp"    , ""                ,"IIHEAnalysis"  )
-process.IIHEAnalysis.patPFMetT1SmearJetResDownCollection       = cms.InputTag("patPFMetT1SmearJetResDown", ""                ,"IIHEAnalysis"  )
+process.IIHEAnalysis.patPFMetT1SmearJetResDownCollection       = cms.InputTag("patPFMetT1SmearJetResDown" , ""                ,"IIHEAnalysis"  )
 process.IIHEAnalysis.patPFMetT1SmearJetResUpCollection         = cms.InputTag("patPFMetT1SmearJetResUp"   , ""                ,"IIHEAnalysis"  )
-process.IIHEAnalysis.patPFMetTxyCollection                     = cms.InputTag("patPFMetTxy"               , ""                ,"IIHEAnalysis"  )
+process.IIHEAnalysis.patPFMetT1TxyCollection                   = cms.InputTag("patPFMetT1Txy"             , ""                ,"IIHEAnalysis"  )
 process.IIHEAnalysis.patPFMetFinalCollection                   = cms.InputTag("slimmedMETs"               , ""                ,"IIHEAnalysis"  )
 
 process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
@@ -231,22 +219,22 @@ process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in
 #                            Woohoo!  We"re ready to start!                              #
 ##########################################################################################
 #process.p1 = cms.Path(process.kt6PFJetsForIsolation+process.IIHEAnalysis)
-process.out = cms.OutputModule(
-    "PoolOutputModule",
-    fileName = cms.untracked.string("test.root")
-    )
+#process.out = cms.OutputModule(
+#    "PoolOutputModule",
+#    fileName = cms.untracked.string("test.root")
+#    )
 
 process.p1 = cms.Path(
-    process.fullPatMetSequence       *
-    process.regressionApplication    *
-    process.calibratedPatElectrons   *
-    process.selectedElectrons80      *
-    process.egmGsfElectronIDSequence * 
-    process.heepIDVarValueMaps       *
-    process.BadPFMuonFilter *
+    process.fullPatMetSequence        *
+    process.regressionApplication     *
+    process.calibratedPatElectrons    *
+    process.selectedElectrons80       *
+    process.egmGsfElectronIDSequence  * 
+    process.heepIDVarValueMaps        *
+    process.BadPFMuonFilter           *
     process.BadChargedCandidateFilter *
     process.IIHEAnalysis 
     )
 
-process.outpath = cms.EndPath(process.out)
+#process.outpath = cms.EndPath(process.out)
 

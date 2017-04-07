@@ -2,7 +2,7 @@
 #define UserCode_IIHETree_IIHEModuleGedGsfElectron_h
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
-
+#include "MiniAOD/MiniAODHelper//interface/MiniAODHelper.h"
 // class decleration
 class IIHEModuleGedGsfElectron : public IIHEModule {
 private:
@@ -23,7 +23,7 @@ private:
   edm::EDGetTokenT<edm::ValueMap<bool> > VIDHEEP7_;
 
   edm::EDGetTokenT<edm::View<pat::Electron>> electronCollectionToken_;
-  edm::EDGetTokenT<edm::View<pat::Electron>> electronCollectionTokenold_;
+  edm::EDGetTokenT<edm::View<pat::Electron>> electronCollectionToken80_;
   edm::InputTag      electronCollectionLabel_ ;
   edm::EDGetTokenT<View<reco::Vertex>> vtxToken_;
   edm::InputTag           primaryVertexLabel_ ;

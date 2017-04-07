@@ -45,11 +45,12 @@ void IIHEModuleMCTruth::beginJob(){
   MCPdgIdsToSave.push_back(34) ; // W'  boson
   addToMCTruthWhitelist(MCPdgIdsToSave) ;
 
-  setBranchType(kVectorInt) ;
+  setBranchType(kVectorFloat) ;
   addBranch("LHE_Pt");
   addBranch("LHE_Eta");
   addBranch("LHE_Phi");
   addBranch("LHE_E");
+  setBranchType(kVectorInt) ;
   addBranch("LHE_pdgid");
   addBranch("LHE_status");
 
