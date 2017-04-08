@@ -126,11 +126,6 @@ IIHEModuleMET::~IIHEModuleMET(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleMET::beginJob(){
-  setBranchType(kVectorFloat) ;
-  addBranch("MET_Type1Unc") ;
-  addBranch("MET_Type1SmearUnc") ;
-  addBranch("MET_Type1SmearXY") ;
-
   IIHEAnalysis* analysis = parent_ ;
   metnominalWrapper_->addBranches(analysis) ;
   metWrapper_->addBranches(analysis) ;
@@ -141,14 +136,8 @@ void IIHEModuleMET::beginJob(){
     addBranch("MET_gen_phi"   ) ;
     setBranchType(kVectorFloat) ;
     addBranch("MET_Type1Unc_Px") ;
-    addBranch("MET_Type1SmearUnc_Px") ;
-//    addBranch("MET_Type1SmearXY_Px") ;
     addBranch("MET_Type1Unc_Py") ;
-    addBranch("MET_Type1SmearUnc_Py") ;
-//    addBranch("MET_Type1SmearXY_Py") ;
     addBranch("MET_Type1Unc_Pt") ;
-    addBranch("MET_Type1SmearUnc_Pt") ;
-//    addBranch("MET_Type1SmearXY_Pt") ;
 
     metT1JetEnDownWrapper_->addBranches(analysis) ;
     metT1JetEnUpWrapper_->addBranches(analysis) ;
@@ -240,20 +229,15 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     metT1SmearWrapper_->fill(patPFMetT1SmearCollectionHandle_->front()) ;
     metT1SmearWrapper_->store(analysis) ;
 
-    for ( unsigned int unc = 0; unc < 19; ++unc ) {
-
-cout<<pfMETHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))<<endl;
-      store("MET_Type1Unc_Px",pfMETHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))) ;
-      store("MET_Type1SmearUnc_Px",patPFMetT1SmearCollectionHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
-//      store("MET_Type1SmearXY_Px",patMET.shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(8))) ;
-
-      store("MET_Type1Unc_Py",pfMETHandle_->front().shiftedPy(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))) ;
-      store("MET_Type1SmearUnc_Py",patPFMetT1SmearCollectionHandle_->front().shiftedPy(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
-//      store("MET_Type1SmearXY_Py",patMET.shiftedPy(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(8))) ;
-
-      store("MET_Type1Unc_Pt",pfMETHandle_->front().shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(1))) ;
-      store("MET_Type1SmearUnc_Pt",patPFMetT1SmearCollectionHandle_->front().shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(6))) ;
-//      store("MET_Type1SmearXY_Pt",patMET.shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel(8))) ;
+    for ( unsigned int unc = 0; unc < 15; ++unc ) {
+     //METUncertainty {JetResUp=0, JetResDown=1, JetEnUp=2, JetEnDown=3,
+     //MuonEnUp=4, MuonEnDown=5, ElectronEnUp=6, ElectronEnDown=7,
+     //TauEnUp=8, TauEnDown=9, UnclusteredEnUp=10, UnclusteredEnDown=11,
+     //PhotonEnUp=12, PhotonEnDown=13, NoShift=14, METUncertaintySize=15,
+     //JetResUpSmear=16, JetResDownSmear=17, METFullUncertaintySize=18};
+      store("MET_Type1Unc_Px",pfMETHandle_->front().shiftedPx(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel::Type1)) ;
+      store("MET_Type1Unc_Py",pfMETHandle_->front().shiftedPy(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel::Type1)) ;
+      store("MET_Type1Unc_Pt",pfMETHandle_->front().shiftedPt(pat::MET::METUncertainty(unc),pat::MET::METCorrectionLevel::Type1)) ;
     }
 
     metT1SmearJetEnDownWrapper_->fill(patPFMetT1SmearJetEnDownCollectionHandle_->front()) ;
