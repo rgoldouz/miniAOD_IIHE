@@ -639,7 +639,7 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
         (( ET80 < 50 && gsfiter80->dr03EcalRecHitSumEt() + gsfiter80->dr03HcalDepth1TowerSumEt() < 2.5 + 0.28 * rho) ||
         ( ET80 > 50 && gsfiter80->dr03EcalRecHitSumEt() + gsfiter80->dr03HcalDepth1TowerSumEt() < 2.5 + 0.03 * (ET80-50) + 0.28 * rho)) &&
         (*eleTrkPtIsoHandle_).get(gsfref) < 5) isHeep80 = true;
-        store("gsf74_isHeepV7", isHeep80);
+        store("gsf80_isHeepV7", isHeep80);
  }
   store("gsf_n", gsf_n) ;
 
