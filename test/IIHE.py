@@ -209,6 +209,7 @@ process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
+process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked.bool(False)
 ##########################################################################################
 #                            Woohoo!  We"re ready to start!                              #
 ##########################################################################################
