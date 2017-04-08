@@ -173,6 +173,12 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_deltaPhiSeedClusterTrackAtCalo") ;
   addBranch("gsf_deltaEtaSeedClusterTrackAtCalo") ;
   addBranch("gsf_deltaEtaSeedClusterTrackAtVtx") ;
+  addBranch("gsf_relIso") ;
+  addBranch("gsf_effArea") ;
+  addBranch("gsf_sumChargedHadronPt") ;
+  addBranch("gsf_sumNeutralHadronEt") ;
+  addBranch("gsf_sumPhotonEt") ;
+
   addBranch("gsf_hitsinfo", kVectorVectorInt) ;
 
   setBranchType(kVectorFloat) ;
@@ -349,6 +355,9 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
   MiniAODHelper electronHelper;
   electronHelper.SetRho(rho);
   electronHelper.SetVertex(pvCollection_->at(0));
+
+  double EffArea = 9999.;
+
   for( unsigned int i = 0 ; i < electronCollection_->size() ; i++ ) {
     Ptr<pat::Electron> gsfiter = electronCollection_->ptrAt( i );
 
@@ -356,6 +365,18 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     float ET = gsfiter->caloEnergy()*sin(2.*atan(exp(-1.*gsfiter->eta()))) ;
     if(ET<ETThreshold_ && gsfiter->pt()<ETThreshold_) continue ;
     gsf_n++ ;
+
+    float sc_energy = gsfiter->superCluster()->energy();
+    float sc_et     = sc_energy*sin(2.*atan(exp(-1.*gsfiter->superCluster()->eta()))) ;
+    float etaCorr = etacorr( gsfiter->superCluster()->eta(), pv_z, gsfiter->superCluster()->position().z()) ;
+    double Eta = abs(gsfiter->superCluster()->eta());
+    if (Eta >= 0. && Eta < 1.0) EffArea = 0.1703;
+    else if (Eta >= 1.0 && Eta < 1.479) EffArea = 0.1715;
+    else if (Eta >= 1.479 && Eta < 2.0) EffArea = 0.1213;
+    else if (Eta >= 2.0 && Eta < 2.2) EffArea = 0.1230;
+    else if (Eta >= 2.2 && Eta < 2.3) EffArea = 0.1635;
+    else if (Eta >= 2.3 && Eta < 2.4) EffArea = 0.1937;
+    else if (Eta >= 2.4 && Eta < 5) EffArea = 0.2393;
 
     int gsf_nLostInnerHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS) ;
     int gsf_nLostOuterHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_OUTER_HITS) ;
@@ -381,14 +402,16 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_hcalDepth2OverEcal"            , gsfiter->hcalDepth2OverEcal()            ) ;
     store("gsf_dr03TkSumPt"                   , gsfiter->dr03TkSumPt()                   ) ;
     store("gsf_dr03TkSumPtHEEP7"              , (*eleTrkPtIsoHandle_).get(gsfref)        ) ;
+    store("gsf_relIso"                        , electronHelper.GetElectronRelIso(electronCollection_->at(i), coneSize::R03, corrType::rhoEA, effAreaType::spring16)) ;
+    store("gsf_effArea"                       , EffArea                                  ) ;
     store("gsf_Loose"                         , electronHelper.isGoodElectron(electronCollection_->at(i),0,25,electronID::electron80XCutBasedL) && abs(gsfiter->superCluster()->eta()) < 2.5);
     store("gsf_Medium"                        , electronHelper.isGoodElectron(electronCollection_->at(i),0,25,electronID::electron80XCutBasedM) && abs(gsfiter->superCluster()->eta()) < 2.5) ;
     store("gsf_Tight"                         , electronHelper.isGoodElectron(electronCollection_->at(i),0,25,electronID::electron80XCutBasedT) && abs(gsfiter->superCluster()->eta()) < 2.5);
-    store("gsf_VIDVeto"                       , (*VIDVetoHandle_).get(gsfref)        ) ;  
-    store("gsf_VIDLoose"                      , (*VIDLooseHandle_).get(gsfref)        ) ;
-    store("gsf_VIDMedium"                     , (*VIDMediumHandle_).get(gsfref)        ) ;
-    store("gsf_VIDTight"                      , (*VIDTightHandle_).get(gsfref)        ) ;
-    store("gsf_VIDHEEP7"                      , (*VIDHEEP7Handle_).get(gsfref)        ) ;
+    store("gsf_VIDVeto"                       , (*VIDVetoHandle_).get(gsfref)            ) ;  
+    store("gsf_VIDLoose"                      , (*VIDLooseHandle_).get(gsfref)           ) ;
+    store("gsf_VIDMedium"                     , (*VIDMediumHandle_).get(gsfref)          ) ;
+    store("gsf_VIDTight"                      , (*VIDTightHandle_).get(gsfref)           ) ;
+    store("gsf_VIDHEEP7"                      , (*VIDHEEP7Handle_).get(gsfref)           ) ;
 //    store("gsf_VIDmvaEleIDwp90"               , (*VIDmvaEleIDwp90Handle_).get(gsfref)        ) ;
 //    store("gsf_VIDmvaEleIDwp80"               , (*VIDmvaEleIDwp80Handle_).get(gsfref)        ) ;
     store("gsf_dr03EcalRecHitSumEt"           , gsfiter->dr03EcalRecHitSumEt()           ) ;
@@ -433,13 +456,10 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_full5x5_e1x5"                  ,gsfiter->full5x5_e1x5()) ;
     store("gsf_full5x5_e2x5Max"               ,gsfiter->full5x5_e2x5Max()) ;
     store("gsf_full5x5_sigmaIetaIeta"         ,gsfiter->full5x5_sigmaIetaIeta()) ;
-
-    store("gsf_full5x5_hcalOverEcal"         ,gsfiter->full5x5_hcalOverEcal());
-
-//    float sc_energy = gsfiter->superCluster()->rawEnergy()+gsfiter->superCluster()->preshowerEnergy() ;
-    float sc_energy = gsfiter->superCluster()->energy();
-    float sc_et     = sc_energy*sin(2.*atan(exp(-1.*gsfiter->superCluster()->eta()))) ;
-    float etaCorr = etacorr( gsfiter->superCluster()->eta(), pv_z, gsfiter->superCluster()->position().z()) ;
+    store("gsf_full5x5_hcalOverEcal"          ,gsfiter->full5x5_hcalOverEcal());
+    store("gsf_sumChargedHadronPt"            ,gsfiter->pfIsolationVariables().sumChargedHadronPt) ;
+    store("gsf_sumNeutralHadronEt"            ,gsfiter->pfIsolationVariables().sumNeutralHadronEt) ;
+    store("gsf_sumPhotonEt"                   ,gsfiter->pfIsolationVariables().sumPhotonEt) ;
 
     store("gsf_sc_eta"        , gsfiter->superCluster()->eta()                    ) ;
     store("gsf_sc_etacorr"    , etaCorr                                           ) ;

@@ -135,10 +135,10 @@ process.calibratedPatElectrons.isMC = cms.bool("mc" in options.DataProcessing)
 process.calibratedPatElectrons.electrons = cms.InputTag("slimmedElectrons80","","IIHEAnalysis")
 process.calibratedPatElectrons.isSynchronization = cms.bool(False)
 # Compatibility with VID 
-process.selectedElectrons80 = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("calibratedPatElectrons","","IIHEAnalysis"),
-    cut = cms.string("pt>5 && abs(eta)")
-)
+#process.selectedElectrons80 = cms.EDFilter("PATElectronSelector",
+#    src = cms.InputTag("calibratedPatElectrons","","IIHEAnalysis"),
+#    cut = cms.string("pt>5 && abs(eta)")
+#)
 
 # Bad Charged Hadron and Bad Muon Filters from MiniAOD
 process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
@@ -221,7 +221,7 @@ process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in
 process.p1 = cms.Path(
     process.regressionApplication     *
     process.calibratedPatElectrons    *
-    process.selectedElectrons80       *
+#    process.selectedElectrons80       *
     process.egmGsfElectronIDSequence  * 
     process.heepIDVarValueMaps        *
     process.BadPFMuonFilter           *
