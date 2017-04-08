@@ -77,6 +77,8 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf80_hcalDepth2OverEcal") ;
   addBranch("gsf80_dr03EcalRecHitSumEt") ;
   addBranch("gsf80_dr03HcalDepth1TowerSumEt") ;
+  addBranch("gsf80_ooEmooP") ;
+  addBranch("gsf80_eSuperClusterOverP") ;
   setBranchType(kVectorBool) ;
   addBranch("gsf80_Loose");
   addBranch("gsf80_Medium");
@@ -178,6 +180,8 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_sumChargedHadronPt") ;
   addBranch("gsf_sumNeutralHadronEt") ;
   addBranch("gsf_sumPhotonEt") ;
+  addBranch("gsf_ooEmooP") ;
+  addBranch("gsf_eSuperClusterOverP") ;
 
   addBranch("gsf_hitsinfo", kVectorVectorInt) ;
 
@@ -460,6 +464,8 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_sumChargedHadronPt"            ,gsfiter->pfIsolationVariables().sumChargedHadronPt) ;
     store("gsf_sumNeutralHadronEt"            ,gsfiter->pfIsolationVariables().sumNeutralHadronEt) ;
     store("gsf_sumPhotonEt"                   ,gsfiter->pfIsolationVariables().sumPhotonEt) ;
+    store("gsf_ooEmooP"                       ,fabs(1.0/gsfiter->ecalEnergy() - gsfiter->eSuperClusterOverP()/gsfiter->ecalEnergy() )) ;
+    store("gsf_eSuperClusterOverP"            ,gsfiter->eSuperClusterOverP()) ;
 
     store("gsf_sc_eta"        , gsfiter->superCluster()->eta()                    ) ;
     store("gsf_sc_etacorr"    , etaCorr                                           ) ;
@@ -594,7 +600,6 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
 
 
     Ptr<pat::Electron> gsfiter80 = electronCollection80_->ptrAt( i );
-    if (abs(gsfiter80->eta() - gsfiter->eta())<0.0001){
       store("gsf80_energy"                     , gsfiter80->energy()                        ) ;
       store("gsf80_p"                          , gsfiter80->p()                             ) ;
       store("gsf80_pt"                         , gsfiter80->pt()                            ) ;
@@ -608,7 +613,8 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
       store("gsf80_Loose"                      , electronHelper.isGoodElectron(electronCollection80_->at(i),0,25,electronID::electron80XCutBasedL) && abs(gsfiter80->superCluster()->eta()) < 2.5);
       store("gsf80_Medium"                     , electronHelper.isGoodElectron(electronCollection80_->at(i),0,25,electronID::electron80XCutBasedM) && abs(gsfiter80->superCluster()->eta()) < 2.5) ;
       store("gsf80_Tight"                      , electronHelper.isGoodElectron(electronCollection80_->at(i),0,25,electronID::electron80XCutBasedT) && abs(gsfiter80->superCluster()->eta()) < 2.5);
-
+      store("gsf80_ooEmooP"                       ,fabs(1.0/gsfiter80->ecalEnergy() - gsfiter80->eSuperClusterOverP()/gsfiter80->ecalEnergy() )) ;
+      store("gsf80_eSuperClusterOverP"            ,gsfiter80->eSuperClusterOverP()) ;
 
         bool isHeep80 = false;
         float ET80 = gsfiter80->caloEnergy()*sin(2.*atan(exp(-1.*gsfiter80->eta()))) ;
@@ -634,11 +640,6 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
         ( ET80 > 50 && gsfiter80->dr03EcalRecHitSumEt() + gsfiter80->dr03HcalDepth1TowerSumEt() < 2.5 + 0.03 * (ET80-50) + 0.28 * rho)) &&
         (*eleTrkPtIsoHandle_).get(gsfref) < 5) isHeep80 = true;
         store("gsf74_isHeepV7", isHeep80);
-    }
-
-
-
-
  }
   store("gsf_n", gsf_n) ;
 
