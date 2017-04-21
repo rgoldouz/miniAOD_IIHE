@@ -153,6 +153,7 @@ private:
   bool includeMETModule_             ;
   bool includeJetModule_             ;
   bool includeTauModule_             ;
+  bool includeL1Module_             ;
   bool includeDataModule_             ;
   bool includeMCTruthModule_         ;
   bool includeTriggerModule_         ;

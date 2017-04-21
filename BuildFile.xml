@@ -57,12 +57,10 @@
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="PhysicsTools/IsolationAlgos"/>
 <use   name="hepmc"/>
-<use   name="root"/>
 <use   name="MiniAOD/MiniAODHelper"/>
 <use   name="MiniAOD/BoostedObjects"/>
 <use   name="JetMETCorrections/Objects"/>
 <use   name="CondFormats/JetMETObjects"/>
-
 
 <flags   EDM_PLUGIN="1"/>
 

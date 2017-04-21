@@ -21,6 +21,7 @@
 #include "UserCode/IIHETree/interface/IIHEModuleMET.h"
 #include "UserCode/IIHETree/interface/IIHEModuleJet.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTau.h"
+#include "UserCode/IIHETree/interface/IIHEModuleL1.h"
 #include "UserCode/IIHETree/interface/IIHEModuleData.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTrigger.h"
 #include "UserCode/IIHETree/interface/IIHEModuleZBoson.h"
@@ -61,7 +62,8 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   includeMETModule_             = iConfig.getUntrackedParameter<bool>("includeMETModule"           ) ;
   includeJetModule_             = iConfig.getUntrackedParameter<bool>("includeJetModule"           ) ;
   includeTauModule_             = iConfig.getUntrackedParameter<bool>("includeTauModule"           ) ;
-  includeDataModule_             = iConfig.getUntrackedParameter<bool>("includeDataModule"         ) ;
+  includeL1Module_              = iConfig.getUntrackedParameter<bool>("includeL1Module"            ) ;
+  includeDataModule_            = iConfig.getUntrackedParameter<bool>("includeDataModule"          ) ;
   includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"       ) ;
   includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"        ) ;
   includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule") ;
@@ -81,7 +83,8 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   if(includeJetModule_            ) childModules_.push_back(new IIHEModuleJet(iConfig ,consumesCollector())            ) ;
   if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig ,consumesCollector())            ) ;
   if(includeTauModule_            ) childModules_.push_back(new IIHEModuleTau(iConfig ,consumesCollector())            ) ;
-  if(includeDataModule_           ) childModules_.push_back(new IIHEModuleData(iConfig ,consumesCollector())            ) ;
+  if(includeL1Module_             ) childModules_.push_back(new IIHEModuleL1(iConfig ,consumesCollector())             ) ;
+  if(includeDataModule_           ) childModules_.push_back(new IIHEModuleData(iConfig ,consumesCollector())           ) ;
   if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig ,consumesCollector())         ) ;  
   if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig ,consumesCollector())) ;  
 }

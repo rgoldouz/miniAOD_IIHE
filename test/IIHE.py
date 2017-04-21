@@ -58,7 +58,6 @@ process = cms.Process("IIHEAnalysis")
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.Geometry.GeometryIdeal_cff")
-process.load("Configuration.EventContent.EventContent_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -85,8 +84,8 @@ process.source = cms.Source("PoolSource",
 
 )
 
-process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
-#process.source.fileNames.append( "file:03Feb2017data.root" )
+#process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
+process.source.fileNames.append( "file:03Feb2017data.root" )
 ###
 filename_out = "outfile.root"
 if options.DataProcessing == "mc":
@@ -141,6 +140,7 @@ process.calibratedPatElectrons.isSynchronization = cms.bool(False)
 #)
 
 # Bad Charged Hadron and Bad Muon Filters from MiniAOD
+#process.load('RecoMET.METFilters.metFilters_cff')
 process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
 process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
 process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
@@ -206,6 +206,7 @@ process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
+#process.IIHEAnalysis.includeL1Module           = cms.untracked.bool("data" in options.DataProcessing)
 process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
@@ -227,6 +228,7 @@ process.p1 = cms.Path(
     process.heepIDVarValueMaps        *
     process.BadPFMuonFilter           *
     process.BadChargedCandidateFilter *
+#    process.metFilters                *
     process.fullPatMetSequence        *
     process.IIHEAnalysis 
     )
