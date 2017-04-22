@@ -1,9 +1,9 @@
-# In order to run the code for MC on lxplus
-#[cmsRun IIHE.py DataProcessing="mc" dataset="RunIIFall15MiniAODv2" sample="TT_TuneCUETP8M1_13TeV-powheg-pythia8" address="MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/00000" file="F8D2CEAA-C5D1-E511-9895-001E675A6C2A.root"  ]
-#root://eoscms//cms/store/mc/RunIIFall15MiniAODv2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/00000/F8D2CEAA-C5D1-E511-9895-001E675A6C2A.root
+# In order to run the code for MC/DATA on lxplus
+#[cmsRun IIHE.py grid=False DataProcessing="mc2016" DataFormat="mc" dataset="RunIISummer16MiniAODv2" sample="ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1" address="MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000" file="0E4CD60A-0FC3-E611-BCB5-0CC47A7C3420.root"  ]
+#root://eoscms//cms/store/mc/RunIISummer16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/36CDAE89-B3BE-E611-B022-0025905B8604.root
 
 # In order to run the code for DATA on lxplus
-#[cmsRun IIHE.py DataProcessing="data" dataset="Run2015D" sample="SingleElectron" address="MINIAOD/16Dec2015-v1/20000" file="001E76A5-D3A6-E511-BC32-008CFA05E874.root"  ]
+#[cmsRun IIHE.py grid=False DataProcessing="rerecodata" DataFormat="data" dataset="Run2016D" sample="DoubleEG" address="MINIAOD/03Feb2017-v1/100000" file="CC7F39AC-F5EA-E611-A125-0CC47A13CDB0.root"  ]
 #root://eoscms//cms/store/data/Run2015D/DoubleEG/MINIAOD/16Dec2015-v2/00000/F6E918C9-87A6-E511-B3D3-0CC47A4D76B2.root
 
 import sys
@@ -14,30 +14,40 @@ import os
 
 options = opts.VarParsing ("analysis")
 options.register("sample",
-                 "", 
+                 "ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1", 
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  "Sample to analyze")
 options.register("address",
-                 "",
+                 "MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
-                 "address of sample in eos like: MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/00000")
+                 "address of sample in eos like: MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000")
 options.register("file",
-                 "",
+                 "0E4CD60A-0FC3-E611-BCB5-0CC47A7C3420.root",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  "file to analyze")
 options.register("DataProcessing",
-                 "data",
+                 "mc2016",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
-                 "Data processing types. Options are:mc,rerecodata,promptdata")
+                 "Data processing types. Options are:mc2016,rerecodata,promptdata")
 options.register("dataset",
-                 "",
+                 "RunIISummer16MiniAODv2",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
-                 "datasets to analyze: SingleElectron, DoubleEG")
+                 "datasets to analyze: RunIISummer16MiniAODv2, Run2016B-H")
+options.register("DataFormat",
+                 "mc",
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.string,
+                 "Data format. Options are:mc,data")
+options.register('grid',
+                 True,
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.bool,
+                 'If you run on grid or localy on eos')
 options.parseArguments()
 ##########################################################################################
 #                                      Global tags                                       #
@@ -72,27 +82,25 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ##########################################################################################
 #                                         Files                                          #
 ##########################################################################################
-if options.DataProcessing == "mc":
-  path = "root://eoscms//eos/cms/store/"+ options.DataProcessing + "/" + options.dataset  + "/" + options.sample + "/" + options.address + "/" + options.file
+if options.DataFormat == "mc":
+  path = "root://eoscms//eos/cms/store/"+ options.DataFormat + "/" + options.dataset  + "/" + options.sample + "/" + options.address + "/" + options.file
 
-if options.DataProcessing == "data":
-  path = "root://eoscms//eos/cms/store/"+ options.DataProcessing + "/" + options.dataset  + "/" + options.sample + "/" + options.address + "/" + options.file
+if options.DataFormat == "data":
+  path = "root://eoscms//eos/cms/store/"+ options.DataFormat + "/" + options.dataset  + "/" + options.sample + "/" + options.address + "/" + options.file
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(),
 #    eventsToProcess = cms.untracked.VEventRange('1:26459:5269847')
-
 )
-
-#process.source.fileNames.append( "file:36CDAE89-B3BE-E611-B022-0025905B8604.root" )
-process.source.fileNames.append( "file:03Feb2017data.root" )
+process.source.fileNames.append( path )
+#process.source.fileNames.append( "file:03Feb2017data.root" )
 ###
 filename_out = "outfile.root"
-if options.DataProcessing == "mc":
+if options.DataFormat == "mc" and not options.grid:
 #  filename_out = "file:/tmp/output_%s" % (options.sample + "_" + options.file)
-  filename_out = "outfile.root"
-if options.DataProcessing == "data":
-  filename_out = "outfile.root"
+  filename_out = "outfile_MC.root"
+if options.DataFormat == "data" and not options.grid:
+  filename_out = "outfile_Data.root"
 
 #filename_out = "outfile.root"
 process.out = cms.OutputModule("PoolOutputModule", fileName = cms.untracked.string(filename_out) )
