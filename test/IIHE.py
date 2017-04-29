@@ -92,8 +92,9 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(),
 #    eventsToProcess = cms.untracked.VEventRange('1:26459:5269847')
 )
-process.source.fileNames.append( path )
+#process.source.fileNames.append( path )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
+process.source.fileNames.append( "file:TW_80_miniAOD.root" )
 ###
 filename_out = "outfile.root"
 if options.DataFormat == "mc" and not options.grid:
