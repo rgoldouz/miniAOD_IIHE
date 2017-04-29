@@ -1,5 +1,4 @@
 #include "UserCode/IIHETree/interface/IIHEModuleJet.h"
-
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 
 #include <iostream>
@@ -79,6 +78,24 @@ void IIHEModuleJet::beginJob(){
   addBranch("jet_EnUp_energy");
   addBranch("jet_EnDown_pt");
   addBranch("jet_EnDown_energy");
+
+  addBranch("jet_BtagSF_loose");
+  addBranch("jet_BtagSFbcUp_loose");
+  addBranch("jet_BtagSFbcDown_loose");
+  addBranch("jet_BtagSFudsgUp_loose");
+  addBranch("jet_BtagSFudsgDown_loose");
+
+  addBranch("jet_BtagSF_medium");
+  addBranch("jet_BtagSFbcUp_medium");
+  addBranch("jet_BtagSFbcDown_medium");
+  addBranch("jet_BtagSFudsgUp_medium");
+  addBranch("jet_BtagSFudsgDown_medium");
+
+  addBranch("jet_BtagSF_tight");
+  addBranch("jet_BtagSFbcUp_tight");
+  addBranch("jet_BtagSFbcDown_tight");
+  addBranch("jet_BtagSFudsgUp_tight");
+  addBranch("jet_BtagSFudsgDown_tight");
   }
 }
 
@@ -104,6 +121,14 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<edm::View<pat::Jet> > pfJetHandleSmearedJetResDown_;
   iEvent.getByToken(pfJetTokenSmearedJetResDown_, pfJetHandleSmearedJetResDown_);
 
+  string proc = "tt";
+  BTagWeighter btw(proc, false, false);
+  const string ctr = "central";
+  const string vup = "up";
+  const string vdown = "down";
+  const auto op_loose = BTagEntry::OP_LOOSE;
+  const auto op_med = BTagEntry::OP_MEDIUM;
+  const auto op_tight = BTagEntry::OP_TIGHT;
 
   store("jet_n", (unsigned int) pfJetHandle_ -> size() );
   for ( unsigned int i = 0; i <pfJetHandle_->size(); ++i) {
@@ -177,6 +202,25 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       store("jet_EnUp_energy",pfJetHandleEnUp_->at(i).energy());
       store("jet_EnDown_pt",pfJetHandleEnDown_->at(i).pt());
       store("jet_EnDown_energy",pfJetHandleEnDown_->at(i).energy());
+
+//JetBTagWeight( edm::View<pat::Jet>&b, size_t ijet, const vector<BTagEntry::OperatingPoinconst string &bc_full_syst, const string &udsg_full_syst,const string &bc_full_syst, const string &udsg_full_syst,const string &bc_fast_syst, const string &udsg_fast_syst,bool do_deep_csv, bool do_by_proc, Runs runs)
+      store("jet_BtagSF_loose"         ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcUp_loose"     ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcDown_loose"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgUp_loose"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgDown_loose" ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
+
+      store("jet_BtagSF_medium"        ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcUp_medium"    ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcDown_medium"  ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgUp_medium"  ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgDown_medium",btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
+
+      store("jet_BtagSF_tight"         ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcUp_tight"     ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcDown_tight"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgUp_tight"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgDown_tight" ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
    }
 
   }
