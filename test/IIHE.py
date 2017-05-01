@@ -158,6 +158,10 @@ process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
 process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
 process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
 
+
+#For fiducial study we need object at particle level
+process.load("UserCode.IIHETree.SingleTopFiducialModules_cff")
+
 ##########################################################################################
 #                            MY analysis input!                              #
 ##########################################################################################
@@ -206,6 +210,15 @@ process.IIHEAnalysis.patPFMetT1SmearJetResUpCollection         = cms.InputTag("p
 process.IIHEAnalysis.patPFMetT1TxyCollection                   = cms.InputTag("patPFMetT1Txy"             , ""                ,"IIHEAnalysis"  )
 process.IIHEAnalysis.patPFMetFinalCollection                   = cms.InputTag("slimmedMETs"               , ""                ,"IIHEAnalysis"  )
 
+#particle level fiducial collections
+process.IIHEAnalysis.particleLevelJetsCollection               = cms.InputTag("genParticlesForFiducial"       , "particleLevelJets"     ,"IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelBJetsCollection              = cms.InputTag("genParticlesForFiducial"       , "particleLevelBJets"    ,"IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelak1DressedMuonsCollection    = cms.InputTag("ak1DressedMuons"               , ""                      ,"IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelak1DressedElectronsCollection= cms.InputTag("ak1DressedElectrons"           , ""                      ,"IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelNeutrinosCollection          = cms.InputTag("genParticlesForFiducial"       , "particleLevelNeutrinos","IIHEAnalysis"  )
+
+
+
 process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)
 process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(True)
@@ -219,6 +232,7 @@ process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
+
 process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked.bool(False)
 ##########################################################################################
 #                            Woohoo!  We"re ready to start!                              #
@@ -226,21 +240,35 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #process.p1 = cms.Path(process.kt6PFJetsForIsolation+process.IIHEAnalysis)
 #process.out = cms.OutputModule(
 #    "PoolOutputModule",
-#    fileName = cms.untracked.string("test.root")
+#    fileName = cms.untracked.string("EDM.root")
 #    )
 
-process.p1 = cms.Path(
-    process.regressionApplication     *
-    process.calibratedPatElectrons    *
-#    process.selectedElectrons80       *
-    process.egmGsfElectronIDSequence  * 
-    process.heepIDVarValueMaps        *
-    process.BadPFMuonFilter           *
-    process.BadChargedCandidateFilter *
-#    process.metFilters                *
-    process.fullPatMetSequence        *
-    process.IIHEAnalysis 
-    )
+fiducialStudy = True
+
+if fiducialStudy:
+    process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
+    process.p1 = cms.Path(
+        process.regressionApplication     *
+        process.calibratedPatElectrons    *
+        process.egmGsfElectronIDSequence  * 
+        process.heepIDVarValueMaps        *
+        process.BadPFMuonFilter           *
+        process.BadChargedCandidateFilter *
+        process.fullPatMetSequence        *
+        process.FiducialSeq                *
+        process.IIHEAnalysis 
+        )
+else:
+    process.p1 = cms.Path(
+        process.regressionApplication     *
+        process.calibratedPatElectrons    *
+        process.egmGsfElectronIDSequence  *
+        process.heepIDVarValueMaps        *
+        process.BadPFMuonFilter           *
+        process.BadChargedCandidateFilter *
+        process.fullPatMetSequence        *
+        process.IIHEAnalysis
+        )
 
 #process.outpath = cms.EndPath(process.out)
 

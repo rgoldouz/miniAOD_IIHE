@@ -157,6 +157,20 @@ void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup&
 }
 
 void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
+  IIHEAnalysis* analysis = parent_ ;
+  if(changed_){
+    hltConfigPAT_.init(iRun, iSetup, triggerResultsLabel_.process(), changed_);
+    HLTNamesFromConfigPAT_ = hltConfigPAT_.triggerNames() ;
+    for(unsigned int i=0 ; i<HLTNamesFromConfigPAT_.size() ; ++i){
+      std::string namePAT = HLTNamesFromConfigPAT_.at(i) ;
+      HLTrigger* hltPAT = new HLTrigger(namePAT, hltConfigPAT_) ;
+      HLTriggersPAT_.push_back(hltPAT) ;
+      hltPAT->createBranches(analysis) ;
+    }
+  parent_->configureBranches() ;
+  changed_ = false ;
+  }
+
   bool changed = true ;
   if(hltConfig_.init(iRun, iSetup, triggerBitsLabel_.process(), changed)){
     if(changed){
@@ -204,6 +218,7 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
       
       // Attempt to add branches
       addBranches() ;
+      parent_->configureBranches() ;
       // Now reset things to 0
       nEvents_ = 0 ;
       nWasRun_ = 0 ;
@@ -214,22 +229,6 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
   else{
     std::cout << "Failed to init hltConfig" << std::endl ;
   }
-
-  if(changed_){
-    IIHEAnalysis* analysis = parent_ ;
-    hltConfigPAT_.init(iRun, iSetup, triggerResultsLabel_.process(), changed_);
-    HLTNamesFromConfigPAT_ = hltConfigPAT_.triggerNames() ;
-    for(unsigned int i=0 ; i<HLTNamesFromConfigPAT_.size() ; ++i){
-      std::string namePAT = HLTNamesFromConfigPAT_.at(i) ;
-      HLTrigger* hltPAT = new HLTrigger(namePAT, hltConfigPAT_) ;
-      HLTriggersPAT_.push_back(hltPAT) ;
-      hltPAT->createBranches(analysis) ;
-    }
-  parent_->configureBranches() ;
-  changed_ = false ;
-  }
-
-
 
 }
 

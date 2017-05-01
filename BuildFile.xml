@@ -4,6 +4,7 @@
 <use   name="FWCore/MessageLogger"/>
 <use   name="FWCore/Utilities"/>
 <use   name="FWCore/Common"/>
+<use   name="FWCore/ServiceRegistry"/>
 <use   name="DataFormats/StdDictionaries"/>
 <use   name="DataFormats/BeamSpot"/>
 <use   name="DataFormats/L1CaloTrigger"/>
@@ -58,7 +59,9 @@
 <use   name="RecoEgamma/EgammaElectronAlgos"/>
 <use   name="CommonTools/UtilAlgos"/>
 <use   name="PhysicsTools/IsolationAlgos"/>
+<use   name="PhysicsTools/PatAlgos"/>
 <use   name="hepmc"/>
+<use   name="fastjet"/>
 <use   name="MiniAOD/MiniAODHelper"/>
 <use   name="MiniAOD/BoostedObjects"/>
 <use   name="JetMETCorrections/Objects"/>

@@ -154,6 +154,7 @@ private:
   bool includeJetModule_             ;
   bool includeTauModule_             ;
   bool includeL1Module_             ;
+  bool includeParticleLevelObjectsModule_;
   bool includeDataModule_             ;
   bool includeMCTruthModule_         ;
   bool includeTriggerModule_         ;

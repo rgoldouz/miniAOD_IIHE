@@ -22,6 +22,7 @@
 #include "UserCode/IIHETree/interface/IIHEModuleJet.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTau.h"
 #include "UserCode/IIHETree/interface/IIHEModuleL1.h"
+#include "UserCode/IIHETree/interface/IIHEModuleParticleLevelObjects.h"
 #include "UserCode/IIHETree/interface/IIHEModuleData.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTrigger.h"
 #include "UserCode/IIHETree/interface/IIHEModuleZBoson.h"
@@ -63,18 +64,19 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   includeJetModule_             = iConfig.getUntrackedParameter<bool>("includeJetModule"           ) ;
   includeTauModule_             = iConfig.getUntrackedParameter<bool>("includeTauModule"           ) ;
   includeL1Module_              = iConfig.getUntrackedParameter<bool>("includeL1Module"            ) ;
+  includeParticleLevelObjectsModule_  = iConfig.getUntrackedParameter<bool>("includeParticleLevelObjectsModule"            ) ;
   includeDataModule_            = iConfig.getUntrackedParameter<bool>("includeDataModule"          ) ;
   includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"       ) ;
   includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"        ) ;
   includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule") ;
   
   if(includeLeptonsAcceptModule_  ) childModules_.push_back(new IIHEModuleLeptonsAccept(iConfig ,consumesCollector())  ) ;   
-  if(includeTriggerModule_        ) childModules_.push_back(new IIHEModuleTrigger(iConfig,consumesCollector())        ) ;
   if(includeEventModule_          ) childModules_.push_back(new IIHEModuleEvent(iConfig   ,consumesCollector()       )) ;
   if(includeMCTruthModule_        ){
     MCTruthModule_ = new IIHEModuleMCTruth(iConfig ,consumesCollector()) ;
     childModules_.push_back(MCTruthModule_) ;
   }
+  if(includeParticleLevelObjectsModule_             ) childModules_.push_back(new IIHEModuleParticleLevelObjects(iConfig ,consumesCollector())             ) ;
   if(includeVertexModule_         ) childModules_.push_back(new IIHEModuleVertex(iConfig ,consumesCollector())         ) ;
   if(includeSuperClusterModule_   ) childModules_.push_back(new IIHEModuleSuperCluster(iConfig ,consumesCollector())   ) ;
   if(includePhotonModule_         ) childModules_.push_back(new IIHEModulePhoton(iConfig ,consumesCollector())         ) ;
@@ -86,7 +88,8 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   if(includeL1Module_             ) childModules_.push_back(new IIHEModuleL1(iConfig ,consumesCollector())             ) ;
   if(includeDataModule_           ) childModules_.push_back(new IIHEModuleData(iConfig ,consumesCollector())           ) ;
   if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig ,consumesCollector())         ) ;  
-  if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig ,consumesCollector())) ;  
+  if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig ,consumesCollector())) ; 
+  if(includeTriggerModule_        ) childModules_.push_back(new IIHEModuleTrigger(iConfig,consumesCollector())        ) ; 
 }
 
 IIHEAnalysis::~IIHEAnalysis(){}
