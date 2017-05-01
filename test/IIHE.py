@@ -243,7 +243,7 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #    fileName = cms.untracked.string("EDM.root")
 #    )
 
-fiducialStudy = True
+fiducialStudy = False
 
 if fiducialStudy:
     process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
