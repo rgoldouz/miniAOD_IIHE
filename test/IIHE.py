@@ -49,6 +49,14 @@ options.register('grid',
                  opts.VarParsing.varType.bool,
                  'If you run on grid or localy on eos')
 options.parseArguments()
+
+##########################################################################################
+#                             Get needed files from github if you run on crab            #
+##########################################################################################
+os.system('wget https://github.com/rgoldouz/miniAOD_IIHE/archive/CMSSW_8_0_26_patch1.zip')
+os.system("unzip -a " + "CMSSW_8_0_26_patch1.zip" )
+os.system("mv " + "miniAOD_IIHE-CMSSW_8_0_26_patch1/data" + " ..")
+os.system("rm -rf CMSSW_8_0_26_patch1.zip miniAOD_IIHE-CMSSW_8_0_26_patch1")
 ##########################################################################################
 #                                      Global tags                                       #
 ##########################################################################################
