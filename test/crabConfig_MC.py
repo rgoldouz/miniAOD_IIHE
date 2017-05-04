@@ -1,6 +1,6 @@
 from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
-
+import os
 #General section: In this section, the user specifies generic parameters about the request (e.g. request name). 
 #config.section_('General')
 config.General.requestName ='ZToEE_NNPDF30_13TeV-powheg_M_50_120'
@@ -14,6 +14,7 @@ config.General.transferLogs = False
 #config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'IIHE.py'
+config.JobType.inputFiles   = [ os.environ['CMSSW_BASE'] + '/src/'+ 'UserCode/IIHETree/data' ]
 #if it is not reHLT use
 #config.JobType.pyCfgParams = ['DataProcessing=mc']
 #if you are running on reHLT use
