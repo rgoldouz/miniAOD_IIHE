@@ -14,7 +14,7 @@ config.General.transferLogs = False
 #config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'IIHE.py'
-config.JobType.inputFiles   = [ os.environ['CMSSW_BASE'] + '/src/'+ 'UserCode/IIHETree/data' ]
+config.JobType.inputFiles   = [ os.environ['CMSSW_BASE'] '/data' ]
 #if it is not reHLT use
 #config.JobType.pyCfgParams = ['DataProcessing=mc']
 #if you are running on reHLT use

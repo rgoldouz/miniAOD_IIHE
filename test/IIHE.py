@@ -82,7 +82,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-process.MessageLogger.cerr.FwkReport.reportEvery = 10000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 ##########################################################################################
@@ -272,7 +272,7 @@ else:
         process.heepIDVarValueMaps        *
         process.BadPFMuonFilter           *
         process.BadChargedCandidateFilter *
-        process.fullPatMetSequence        *
+        process.fullPatMetSequence        * 
         process.IIHEAnalysis
         )
 

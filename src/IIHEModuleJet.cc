@@ -204,6 +204,7 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       store("jet_EnDown_energy",pfJetHandleEnDown_->at(i).energy());
 
 //JetBTagWeight( edm::View<pat::Jet>&b, size_t ijet, const vector<BTagEntry::OperatingPoinconst string &bc_full_syst, const string &udsg_full_syst,const string &bc_full_syst, const string &udsg_full_syst,const string &bc_fast_syst, const string &udsg_fast_syst,bool do_deep_csv, bool do_by_proc, Runs runs)
+
       store("jet_BtagSF_loose"         ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
       store("jet_BtagSFbcUp_loose"     ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
       store("jet_BtagSFbcDown_loose"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
@@ -221,6 +222,7 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       store("jet_BtagSFbcDown_tight"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
       store("jet_BtagSFudsgUp_tight"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
       store("jet_BtagSFudsgDown_tight" ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
+
    }
 
   }
