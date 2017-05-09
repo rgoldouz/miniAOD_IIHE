@@ -166,7 +166,7 @@ process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidate
 
 
 #For fiducial study we need object at particle level
-process.load("UserCode.IIHETree.SingleTopFiducialModules_cff")
+process.load("UserCode.IIHETree.IIHEFiducialModules_cff")
 
 ##########################################################################################
 #                            MY analysis input!                              #

@@ -203,7 +203,7 @@ IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig, edm::ConsumesCo
   muonCollectionLabel_         = iConfig.getParameter<edm::InputTag>("muonCollection"          ) ;
   muonCollectionToken_ =  iC.consumes<View<pat::Muon> > (muonCollectionLabel_);
   isMC_ = iConfig.getUntrackedParameter<bool>("isMC") ;
-  rc_  = new RoccoR("data/rcdata.2016.v3");
+  rc_  = new RoccoR("rcdata.2016.v3");
 }
 IIHEModuleMuon::~IIHEModuleMuon(){}
 
