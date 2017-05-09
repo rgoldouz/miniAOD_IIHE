@@ -96,7 +96,7 @@ if options.DataFormat == "data":
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(),
-#    eventsToProcess = cms.untracked.VEventRange('1:26459:5269847')
+    eventsToProcess = cms.untracked.VEventRange('1:19792:3958249')
 )
 #process.source.fileNames.append( path )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
@@ -249,20 +249,20 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #    fileName = cms.untracked.string("EDM.root")
 #    )
 
-fiducialStudy = False
+fiducialStudy = True
 
 if fiducialStudy:
     process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
     process.p1 = cms.Path(
-        process.regressionApplication     *
-        process.calibratedPatElectrons    *
-        process.egmGsfElectronIDSequence  * 
-        process.heepIDVarValueMaps        *
-        process.BadPFMuonFilter           *
-        process.BadChargedCandidateFilter *
-        process.fullPatMetSequence        *
-        process.FiducialSeq                *
-        process.IIHEAnalysis 
+#        process.regressionApplication     *
+#        process.calibratedPatElectrons    *
+#        process.egmGsfElectronIDSequence  * 
+#        process.heepIDVarValueMaps        *
+#        process.BadPFMuonFilter           *
+#        process.BadChargedCandidateFilter *
+#        process.fullPatMetSequence        *
+        process.FiducialSeq                
+#        process.IIHEAnalysis 
         )
 else:
     process.p1 = cms.Path(
