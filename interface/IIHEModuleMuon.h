@@ -2,6 +2,7 @@
 #define UserCode_IIHETree_IIHEModuleMuon_h
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
+#include "UserCode/IIHETree/interface/RoccoR.h"
 
 // class declerations
 class IIHEMuonTrackVariableBase{
@@ -137,5 +138,7 @@ private:
   bool storeInnerTrackMuons_  ;
   bool storeImprovedMuonBestTrackMuons_  ;
   float ETThreshold_ ;
+  bool isMC_;
+  RoccoR  *rc_;
 };
 #endif

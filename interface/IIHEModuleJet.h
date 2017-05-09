@@ -40,5 +40,6 @@ private:
 
   float ETThreshold_ ;
   bool isMC_;
+  BTagWeighter *btw;
 };
 #endif

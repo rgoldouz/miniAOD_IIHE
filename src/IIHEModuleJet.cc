@@ -28,6 +28,8 @@ IIHEModuleJet::IIHEModuleJet(const edm::ParameterSet& iConfig, edm::ConsumesColl
 
   ETThreshold_ = iConfig.getUntrackedParameter<double>("jetPtThreshold") ;
   isMC_ = iConfig.getUntrackedParameter<bool>("isMC") ;
+  btw = new BTagWeighter("tt");
+
 }
 IIHEModuleJet::~IIHEModuleJet(){}
 
@@ -97,6 +99,7 @@ void IIHEModuleJet::beginJob(){
   addBranch("jet_BtagSFudsgUp_tight");
   addBranch("jet_BtagSFudsgDown_tight");
   }
+
 }
 
 // ------------ method called to for each event  ------------
@@ -121,8 +124,6 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<edm::View<pat::Jet> > pfJetHandleSmearedJetResDown_;
   iEvent.getByToken(pfJetTokenSmearedJetResDown_, pfJetHandleSmearedJetResDown_);
 
-  string proc = "tt";
-  BTagWeighter btw(proc, false, false);
   const string ctr = "central";
   const string vup = "up";
   const string vdown = "down";
@@ -205,23 +206,23 @@ void IIHEModuleJet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 //JetBTagWeight( edm::View<pat::Jet>&b, size_t ijet, const vector<BTagEntry::OperatingPoinconst string &bc_full_syst, const string &udsg_full_syst,const string &bc_full_syst, const string &udsg_full_syst,const string &bc_fast_syst, const string &udsg_fast_syst,bool do_deep_csv, bool do_by_proc, Runs runs)
 
-      store("jet_BtagSF_loose"         ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFbcUp_loose"     ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFbcDown_loose"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFudsgUp_loose"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFudsgDown_loose" ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSF_loose"         ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcUp_loose"     ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcDown_loose"   ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgUp_loose"   ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgDown_loose" ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_loose, ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
 
-      store("jet_BtagSF_medium"        ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFbcUp_medium"    ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFbcDown_medium"  ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFudsgUp_medium"  ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFudsgDown_medium",btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSF_medium"        ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcUp_medium"    ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcDown_medium"  ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgUp_medium"  ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgDown_medium",btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_med  , ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
 
-      store("jet_BtagSF_tight"         ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFbcUp_tight"     ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFbcDown_tight"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFudsgUp_tight"   ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
-      store("jet_BtagSFudsgDown_tight" ,btw.JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSF_tight"         ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcUp_tight"     ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, vup  , ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFbcDown_tight"   ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, vdown, ctr  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgUp_tight"   ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , vup  ,  ctr, ctr, false, false, BTagWeighter::Runs::all));
+      store("jet_BtagSFudsgDown_tight" ,btw->JetBTagWeight(pfJetHandleSmeared_->at(i), op_tight, ctr  , vdown, ctr, ctr, false, false, BTagWeighter::Runs::all));
 
    }
 
@@ -233,6 +234,7 @@ void IIHEModuleJet::endEvent(){}
 
 
 // ------------ method called once each job just after ending the event loop  ------------
-void IIHEModuleJet::endJob(){}
+void IIHEModuleJet::endJob(){
+}
 
 DEFINE_FWK_MODULE(IIHEModuleJet);

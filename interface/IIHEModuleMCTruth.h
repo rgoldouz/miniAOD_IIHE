@@ -13,6 +13,7 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "Math/Vector4D.h"
 #include "Math/Vector4Dfwd.h"
 
@@ -52,6 +53,7 @@ private:
   edm::EDGetTokenT<LHEEventProduct> lheEventLabel_;
   edm::EDGetTokenT<vector<PileupSummaryInfo> > puCollection_;
   edm::EDGetTokenT<vector<reco::GenParticle> > genParticlesCollection_;
+  edm::EDGetTokenT<std::vector<reco::GenJet> > genJetsSrc_;
   float nEventsWeighted_ ;
 };
 #endif

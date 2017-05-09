@@ -3,7 +3,7 @@ config = config()
 import os
 #General section: In this section, the user specifies generic parameters about the request (e.g. request name). 
 #config.section_('General')
-config.General.requestName ='ZToEE_NNPDF30_13TeV-powheg_M_50_120'
+config.General.requestName ='ZToEE_NNPDF30_13TeV-powheg'
 
 
 config.General.workArea = 'crab_projects'
@@ -14,7 +14,7 @@ config.General.transferLogs = False
 #config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'IIHE.py'
-config.JobType.inputFiles   = [ os.environ['CMSSW_BASE'] '/data' ]
+config.JobType.inputFiles   = [ os.environ['CMSSW_BASE'] +'/src/UserCode/IIHETree/test/data' ]
 #if it is not reHLT use
 #config.JobType.pyCfgParams = ['DataProcessing=mc']
 #if you are running on reHLT use
@@ -23,7 +23,7 @@ config.JobType.pyCfgParams = ['DataProcessing=mc2016']
 
 #Data section: This section contains all the parameters related to the data to be analyzed, including the splitting parameters. 
 #config.section_('Data')
-#config.Data.inputDataset = '/ZToEE_NNPDF30_13TeV-powheg_M_50_120/RunIISpring16reHLT80-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/AODSIM'
+config.Data.inputDataset = '/DYJetsToLL_M-2000to3000_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM'
 
 config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased'

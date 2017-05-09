@@ -26,9 +26,11 @@ IIHEAnalysis = cms.EDAnalyzer("IIHEAnalysis",
     generatorLabel                              = cms.InputTag("generator"                                                  ),
     genParticleSrc                              = cms.InputTag("prunedGenParticles"                                         ),
     LHELabel                                    = cms.InputTag("externalLHEProducer"                                        ),
+    genJetsCollection                           = cms.InputTag("slimmedGenJets"),
     #*******************************************************************************************************************************************
     #Trigger paths that we want to save
-    triggers                                    = cms.untracked.string("singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon;doubleMuon"),
+#    triggers                                    = cms.untracked.string("singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon;doubleMuon"),
+    triggers                                    = cms.untracked.string("singleElectron;doubleElectron;singleMuon;singlePhoton;singleElectronSingleMuon;doubleMuon;MET"),
     globalTag                                   = cms.string(""),
     
     # Trigger matching stuff.  0.5 should be sufficient.

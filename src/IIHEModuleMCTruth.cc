@@ -17,6 +17,7 @@ IIHEModuleMCTruth::IIHEModuleMCTruth(const edm::ParameterSet& iConfig, edm::Cons
   lheEventLabel_ = iC.consumes<LHEEventProduct> (iConfig.getParameter<InputTag>("LHELabel"));
   puCollection_ = iC.consumes<vector<PileupSummaryInfo> > (puInfoSrc_);
   genParticlesCollection_ = iC.consumes<vector<reco::GenParticle> > (iConfig.getParameter<InputTag>("genParticleSrc"));
+  genJetsSrc_ = iC.consumes<std::vector<reco::GenJet>>(iConfig.getParameter<edm::InputTag>( "genJetsCollection" ));
 }
 IIHEModuleMCTruth::~IIHEModuleMCTruth(){}
 
@@ -102,11 +103,29 @@ void IIHEModuleMCTruth::beginJob(){
   addValueToMetaTree("MCTruth_mThreshold"            , m_threshold_           ) ;
   addValueToMetaTree("MCTruth_DeltaROverlapThreshold", DeltaROverlapThreshold_) ;
 
+  setBranchType(kVectorFloat) ;
+  addBranch("genjet_pt") ;
+  addBranch("genjet_eta") ;
+  addBranch("genjet_phi") ;
+  addBranch("genjet_energy") ;
+
+
   nEventsWeighted_ = 0.0 ;
 }
 
 // ------------ method called to for each event  ------------
 void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+
+  edm::Handle<std::vector<reco::GenJet> > genJets;
+  iEvent.getByToken(genJetsSrc_, genJets);
+
+    for (size_t j = 0; j < genJets->size();++j){
+      store("genjet_pt", genJets->at(j).pt()) ;
+      store("genjet_eta", genJets->at(j).eta()) ;
+      store("genjet_phi", genJets->at(j).phi()) ;
+      store("genjet_energy", genJets->at(j).energy()) ;
+    }
+
 
   edm::Handle<LHEEventProduct> lhe_handle;
   iEvent.getByToken(lheEventLabel_, lhe_handle);

@@ -20,13 +20,13 @@ namespace{
 }
 
 BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
-  calib_full_(new BTagCalibration("csvv2", "../../../../data/CSVv2_Moriond17_B_H.csv")),
-  calib_full_bf_(new BTagCalibration("csvv2", "../../../../data/CSVv2_Moriond17_B_F.csv")),
-  calib_full_gh_(new BTagCalibration("csvv2", "../../../../data/CSVv2_Moriond17_G_H.csv")),
-  calib_full_b_(new BTagCalibration("csvv2", "../../../../data/RunB.csv")),
-  calib_full_cd_(new BTagCalibration("csvv2", "../../../../data/RunCD.csv")),
-  calib_full_ef_(new BTagCalibration("csvv2", "../../../../data/RunEF.csv")),
-  calib_fast_(new BTagCalibration("csvv2_deep", "../../../../data/fastsim_csvv2_ttbar_26_1_2017.csv")),
+  calib_full_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_B_H.csv")),
+  calib_full_bf_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_B_F.csv")),
+  calib_full_gh_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_G_H.csv")),
+  calib_full_b_(new BTagCalibration("csvv2", "data/RunB.csv")),
+  calib_full_cd_(new BTagCalibration("csvv2", "data/RunCD.csv")),
+  calib_full_ef_(new BTagCalibration("csvv2", "data/RunEF.csv")),
+  calib_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_csvv2_ttbar_26_1_2017.csv")),
   readers_full_(),
   readers_full_bf_(),
   readers_full_gh_(),
@@ -36,10 +36,10 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
   readers_fast_(),
   btag_efficiencies_(op_pts_.size()),
   btag_efficiencies_proc_(op_pts_.size()),
-  calib_deep_full_(new BTagCalibration("csvv2_deep", "../../../../data/DeepCSV_Moriond17_B_H.csv")),
-  calib_deep_full_bf_(new BTagCalibration("csvv2_deep", "../../../../data/DeepCSV_Moriond17_B_F.csv")),
-  calib_deep_full_gh_(new BTagCalibration("csvv2_deep", "../../../../data/DeepCSV_Moriond17_G_H.csv")),
-  calib_deep_fast_(new BTagCalibration("csvv2_deep", "../../../../data/fastsim_deepcsv_ttbar_26_1_2017.csv")),
+  calib_deep_full_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_H.csv")),
+  calib_deep_full_bf_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_F.csv")),
+  calib_deep_full_gh_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_G_H.csv")),
+  calib_deep_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv")),
   readers_deep_full_(),
   readers_deep_full_bf_(),
   readers_deep_full_gh_(),
@@ -56,10 +56,10 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
   if(proc != "tt" && proc != "qcd" && proc != "wjets"){
     ERROR("Process "+proc+" not found. Valid processes are tt, qcd, and wjets.");
   }
-  TFile file_eff("../../../../data/btagEfficiency.root", "read");
-  TFile file_deep("../../../../data/btagEfficiency_deep.root", "read");
-  TFile file_proc(("../../../../data/btagEfficiency_"+proc+".root").c_str(), "read");
-  TFile file_deep_proc(("../../../../data/btagEfficiency_deep_"+proc+".root").c_str(), "read");
+  TFile file_eff("data/btagEfficiency.root", "read");
+  TFile file_deep("data/btagEfficiency_deep.root", "read");
+  TFile file_proc(("data/btagEfficiency_"+proc+".root").c_str(), "read");
+  TFile file_deep_proc(("data/btagEfficiency_deep_"+proc+".root").c_str(), "read");
 
   for(size_t i = 0; i < op_pts_.size(); ++i){
     const auto op = op_pts_.at(i);
