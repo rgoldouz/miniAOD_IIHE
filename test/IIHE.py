@@ -96,11 +96,11 @@ if options.DataFormat == "data":
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(),
-    eventsToProcess = cms.untracked.VEventRange('1:19792:3958249')
+#    eventsToProcess = cms.untracked.VEventRange('1:19792:3958249')
 )
 #process.source.fileNames.append( path )
-#process.source.fileNames.append( "file:03Feb2017data.root" )
-process.source.fileNames.append( "file:TW_80_miniAOD.root" )
+process.source.fileNames.append( "file:03Feb2017data.root" )
+#process.source.fileNames.append( "file:TW_80_miniAOD.root" )
 ###
 filename_out = "outfile.root"
 if options.DataFormat == "mc" and not options.grid:
@@ -249,7 +249,7 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #    fileName = cms.untracked.string("EDM.root")
 #    )
 
-fiducialStudy = True
+fiducialStudy = False
 
 if fiducialStudy:
     process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)

@@ -530,7 +530,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
         store("mu_mc_ERatio", 999.0) ;
       }
     }
-    else rocsf = rc_->kScaleDT(muIt->globalTrack()->charge(), muIt->globalTrack()->pt(), muIt->globalTrack()->eta(), muIt->globalTrack()->phi(), 0, 0);  
+    else if(!isMC_ && isTrackerMuon && isGlobalMuon) rocsf = rc_->kScaleDT(muIt->globalTrack()->charge(), muIt->globalTrack()->pt(), muIt->globalTrack()->eta(), muIt->globalTrack()->phi(), 0, 0);  
 
     store("mu_rochester_sf", rocsf) ;  
   }
