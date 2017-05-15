@@ -149,6 +149,18 @@ class BranchWrapperIV : public BranchWrapperBase{
     void endEvent() ;
 };
 
+class BranchWrapperCV : public BranchWrapperBase{
+  private:
+    std::vector<char> values_;
+  public:
+    BranchWrapperCV(std::string) ;
+    ~BranchWrapperCV() ;
+    void push(char) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
+};
+
 class BranchWrapperUV : public BranchWrapperBase{
   private:
     std::vector<unsigned int> values_;

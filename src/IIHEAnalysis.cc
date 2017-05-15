@@ -18,6 +18,7 @@
 #include "UserCode/IIHETree/interface/IIHEModuleGedGsfElectron.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMuon.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMCTruth.h"
+#include "UserCode/IIHETree/interface/IIHEModuleLHEWeight.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMET.h"
 #include "UserCode/IIHETree/interface/IIHEModuleJet.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTau.h"
@@ -67,11 +68,13 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig)
   includeParticleLevelObjectsModule_  = iConfig.getUntrackedParameter<bool>("includeParticleLevelObjectsModule"            ) ;
   includeDataModule_            = iConfig.getUntrackedParameter<bool>("includeDataModule"          ) ;
   includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"       ) ;
+  includeLHEWeightModule_         = iConfig.getUntrackedParameter<bool>("includeLHEWeightModule"       ) ;
   includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"        ) ;
   includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule") ;
   
   if(includeLeptonsAcceptModule_  ) childModules_.push_back(new IIHEModuleLeptonsAccept(iConfig ,consumesCollector())  ) ;   
   if(includeEventModule_          ) childModules_.push_back(new IIHEModuleEvent(iConfig   ,consumesCollector()       )) ;
+  if(includeLHEWeightModule_         ) childModules_.push_back(new IIHEModuleLHEWeight(iConfig ,consumesCollector())         ) ;
   if(includeMCTruthModule_        ){
     MCTruthModule_ = new IIHEModuleMCTruth(iConfig ,consumesCollector()) ;
     childModules_.push_back(MCTruthModule_) ;
@@ -206,6 +209,12 @@ bool IIHEAnalysis::addBranch(std::string name, int type){
     case kVectorInt:{
       BranchWrapperIV* bw = new BranchWrapperIV(name) ;
       vars_IV_ .push_back(bw) ;
+      allVars_.push_back((BranchWrapperBase*)bw) ;
+      break ;
+    }
+    case kVectorChar:{
+      BranchWrapperCV* bw = new BranchWrapperCV(name) ;
+      vars_CV_ .push_back(bw) ;
       allVars_.push_back((BranchWrapperBase*)bw) ;
       break ;
     }
@@ -462,6 +471,18 @@ bool IIHEAnalysis::store(std::string name, int value){
   for(unsigned int i=0 ; i<vars_UV_.size() ; ++i){
     if(vars_UV_.at(i)->name()==name){
       vars_UV_ .at(i)->push(value) ;
+      return true ;
+    }
+  }
+  if(debug_) std::cout << "Could not find a (int) branch named " << name << std::endl ;
+  return false ;
+}
+
+
+bool IIHEAnalysis::store(std::string name, char value){
+  for(unsigned int i=0 ; i<vars_CV_.size() ; ++i){
+    if(vars_CV_.at(i)->name()==name){
+      vars_CV_ .at(i)->push(value) ;
       return true ;
     }
   }

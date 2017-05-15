@@ -215,6 +215,26 @@ void BranchWrapperIV::beginEvent(){
 }
 void BranchWrapperIV::endEvent(){}
 
+// Vector of char
+BranchWrapperCV::BranchWrapperCV(std::string name): BranchWrapperBase(name){}
+BranchWrapperCV::~BranchWrapperCV(){}
+int BranchWrapperCV::config(TTree* tree){
+  if(!tree) return 1 ;
+  if(tree->GetBranch(name().c_str())) return 2 ;
+  tree->Branch(name().c_str(), &values_) ;
+  return 0 ;
+}
+void BranchWrapperCV::push(char value){
+  values_.push_back(value) ;
+  fill() ;
+}
+void BranchWrapperCV::beginEvent(){
+  unfill() ;
+  values_.clear() ;
+}
+void BranchWrapperCV::endEvent(){}
+
+
 // Vector of unsigned long ints
 BranchWrapperULV::BranchWrapperULV(std::string name): BranchWrapperBase(name){}
 BranchWrapperULV::~BranchWrapperULV(){}

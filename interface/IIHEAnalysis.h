@@ -75,6 +75,7 @@ public:
   bool store(std::string, double  );
   bool store(std::string, float   );
   bool store(std::string, int     );
+  bool store(std::string, char     );
   bool store(std::string, unsigned int);
   bool store(std::string, unsigned long int);
   bool store(std::string, std::vector<bool        >);
@@ -130,6 +131,7 @@ private:
   std::vector<BranchWrapperDV*  > vars_DV_ ;
   std::vector<BranchWrapperFV*  > vars_FV_ ;
   std::vector<BranchWrapperIV*  > vars_IV_ ;
+  std::vector<BranchWrapperCV*  > vars_CV_ ;
   std::vector<BranchWrapperUV*  > vars_UV_ ;
   std::vector<BranchWrapperULV* > vars_ULV_ ;
   std::vector<BranchWrapperB*   > vars_B_  ;
@@ -157,6 +159,7 @@ private:
   bool includeParticleLevelObjectsModule_;
   bool includeDataModule_             ;
   bool includeMCTruthModule_         ;
+  bool includeLHEWeightModule_         ;
   bool includeTriggerModule_         ;
   bool includeZBosonModule_          ;
   bool includeLeptonsAcceptModule_   ;

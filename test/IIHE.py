@@ -100,7 +100,8 @@ process.source = cms.Source("PoolSource",
 )
 #process.source.fileNames.append( path )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
-process.source.fileNames.append( "file:TW_80_miniAOD.root" )
+#process.source.fileNames.append( "file:TW_80_miniAOD.root" )
+process.source.fileNames.append( "file:MC_MINIAOD.root" )
 ###
 filename_out = "outfile.root"
 if options.DataFormat == "mc" and not options.grid:
@@ -236,6 +237,7 @@ process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
 #process.IIHEAnalysis.includeL1Module           = cms.untracked.bool("data" in options.DataProcessing)
 process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
+process.IIHEAnalysis.includeLHEWeightModule        = cms.untracked.bool(True)
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
 

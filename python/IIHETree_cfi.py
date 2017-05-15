@@ -100,6 +100,7 @@ IIHEAnalysis = cms.EDAnalyzer("IIHEAnalysis",
     includeSuperClusterModule                   = cms.untracked.bool(False),
     includeTracksModule                         = cms.untracked.bool(False),
     includeMCTruthModule                        = cms.untracked.bool(False),
+    includeLHEWeightModule                        = cms.untracked.bool(False),
     includeDataModule                           = cms.untracked.bool(False),
     
     #change it to true if you want to save all events

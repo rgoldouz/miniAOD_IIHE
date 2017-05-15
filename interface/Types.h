@@ -14,6 +14,7 @@ enum variableTypes{
   kVectorDouble,
   kVectorFloat,
   kVectorInt,
+  kVectorChar,
   kVectorUInt,
   kVectorULInt,
   kVectorVectorBool,
