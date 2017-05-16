@@ -76,6 +76,19 @@ class BranchWrapperI  : public BranchWrapperBase{
     void endEvent() ;
 };
 
+class BranchWrapperC  : public BranchWrapperBase{
+  private:
+    char value_ ;
+  public:
+    BranchWrapperC(std::string) ;
+    ~BranchWrapperC(){} ;
+    void set(char) ;
+    int  config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
+};
+
+
 class BranchWrapperU  : public BranchWrapperBase{
   private:
     unsigned int value_ ;

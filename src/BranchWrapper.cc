@@ -97,6 +97,25 @@ void BranchWrapperI::beginEvent(){
 }
 void BranchWrapperI::endEvent(){}
 
+//char
+BranchWrapperC::BranchWrapperC(std::string name): BranchWrapperBase(name){
+}
+int BranchWrapperC::config(TTree* tree){
+  if(!tree) return 1 ;
+  if(tree->GetBranch(name().c_str())) return 2 ;
+  tree->Branch(name().c_str(),&value_) ;
+  return 0 ;
+}
+void BranchWrapperC::set(char value){
+  value_ = value ;
+  fill() ;
+}
+void BranchWrapperC::beginEvent(){
+  unfill() ;
+}
+void BranchWrapperC::endEvent(){}
+
+
 // unsigned int
 BranchWrapperU::BranchWrapperU(std::string name): BranchWrapperBase(name){
   value_ = 999 ;

@@ -240,18 +240,14 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #    fileName = cms.untracked.string("EDM.root")
 #    )
 
-from RecoJets.JetProducers.ak5GenJets_cfi import *
-process.GenJets = ak5GenJets.clone(
-    src= cms.InputTag("prunedGenParticles"),
-    rParam       = cms.double(0.4)
-    )
 
-process.IIHEAnalysis.genJetsCollection              = cms.InputTag("GenJets", ""                      ,"IIHEAnalysis"  )
+process.IIHEAnalysis.genJetsCollection              = cms.InputTag("ak4GenJets")
 fiducialStudy = False
 
 if fiducialStudy:
     process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
     process.p1 = cms.Path(
+        process.GenJets  *
         process.FiducialSeq                *
         process.IIHEAnalysis 
         )
