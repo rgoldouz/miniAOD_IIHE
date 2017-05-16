@@ -230,7 +230,7 @@ process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in op
 process.IIHEAnalysis.includeLHEWeightModule        = cms.untracked.bool(True)
 
 
-process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked.bool(False)
+process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked.bool(True)
 ##########################################################################################
 #                            Woohoo!  We"re ready to start!                              #
 ##########################################################################################
@@ -241,19 +241,17 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #    )
 
 
-process.IIHEAnalysis.genJetsCollection              = cms.InputTag("ak4GenJets")
+#process.IIHEAnalysis.genJetsCollection              = cms.InputTag("ak4GenJets")
 fiducialStudy = False
 
 if fiducialStudy:
     process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
     process.p1 = cms.Path(
-        process.GenJets  *
         process.FiducialSeq                *
         process.IIHEAnalysis 
         )
 else:
     process.p1 = cms.Path(
-        process.GenJets  *
         process.IIHEAnalysis
         )
 

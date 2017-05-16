@@ -494,11 +494,12 @@ bool IIHEAnalysis::store(std::string name, char value){
   }
   for(unsigned int i=0 ; i<vars_CV_.size() ; ++i){
     if(vars_CV_.at(i)->name()==name){
+cout<<name<<"   "<<value<<endl;
       vars_CV_ .at(i)->push(value) ;
       return true ;
     }
   }
-  if(debug_) std::cout << "Could not find a (int) branch named " << name << std::endl ;
+  if(debug_) std::cout << "Could not find a (char) branch named " << name << std::endl ;
   return false ;
 }
 bool IIHEAnalysis::store(std::string name, unsigned int value){

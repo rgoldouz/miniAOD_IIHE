@@ -2,6 +2,7 @@
 #include <iostream>
 #include <TMath.h>
 #include <vector>
+#include <typeinfo>
 
 using namespace std ;
 using namespace reco;
@@ -18,7 +19,7 @@ void IIHEModuleLHEWeight::beginJob(){
   addBranch("LHE_weight_nominal");
   setBranchType(kVectorFloat) ;
   addBranch("LHE_weight_sys");
-  setBranchType(kVectorChar) ;
+  setBranchType(kVectorInt) ;
   addBranch("LHE_id_sys");
 }
 
@@ -31,7 +32,7 @@ void IIHEModuleLHEWeight::analyze(const edm::Event& iEvent, const edm::EventSetu
     store("LHE_weight_nominal",(float) lhe_handle->weights().at(0).wgt);
     for (unsigned i = 0; i < lhe_handle->weights().size(); ++i) {
     store("LHE_weight_sys",(float) lhe_handle->weights().at(i).wgt);
-    store("LHE_id_sys", lhe_handle->weights().at(i).id.data());
+    store("LHE_id_sys", (int) *lhe_handle->weights().at(i).id.data());
     }
   }
 }
