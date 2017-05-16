@@ -485,7 +485,7 @@ bool IIHEAnalysis::store(std::string name, int value){
 }
 
 
-bool IIHEAnalysis::store(std::string name, char value){
+bool IIHEAnalysis::store(std::string name, std::string value){
   for(unsigned int i=0 ; i<vars_C_.size() ; ++i){
     if(vars_C_.at(i)->name()==name){
       vars_C_ .at(i)->set(value) ;

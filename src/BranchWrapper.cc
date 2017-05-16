@@ -106,7 +106,7 @@ int BranchWrapperC::config(TTree* tree){
   tree->Branch(name().c_str(),&value_) ;
   return 0 ;
 }
-void BranchWrapperC::set(char value){
+void BranchWrapperC::set(std::string value){
   value_ = value ;
   fill() ;
 }
@@ -243,7 +243,7 @@ int BranchWrapperCV::config(TTree* tree){
   tree->Branch(name().c_str(), &values_) ;
   return 0 ;
 }
-void BranchWrapperCV::push(char value){
+void BranchWrapperCV::push(std::string value){
   values_.push_back(value) ;
   fill() ;
 }

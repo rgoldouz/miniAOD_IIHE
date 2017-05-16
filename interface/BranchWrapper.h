@@ -78,11 +78,11 @@ class BranchWrapperI  : public BranchWrapperBase{
 
 class BranchWrapperC  : public BranchWrapperBase{
   private:
-    char value_ ;
+    std::string value_ ;
   public:
     BranchWrapperC(std::string) ;
     ~BranchWrapperC(){} ;
-    void set(char) ;
+    void set(std::string) ;
     int  config(TTree*) ;
     void beginEvent() ;
     void endEvent() ;
@@ -164,11 +164,11 @@ class BranchWrapperIV : public BranchWrapperBase{
 
 class BranchWrapperCV : public BranchWrapperBase{
   private:
-    std::vector<char> values_;
+    std::vector<std::string> values_;
   public:
     BranchWrapperCV(std::string) ;
     ~BranchWrapperCV() ;
-    void push(char) ;
+    void push(std::string) ;
     int config(TTree*) ;
     void beginEvent() ;
     void endEvent() ;

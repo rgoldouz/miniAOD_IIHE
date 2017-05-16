@@ -75,7 +75,7 @@ public:
   bool store(std::string, double  );
   bool store(std::string, float   );
   bool store(std::string, int     );
-  bool store(std::string, char     );
+  bool store(std::string, std::string     );
   bool store(std::string, unsigned int);
   bool store(std::string, unsigned long int);
   bool store(std::string, std::vector<bool        >);

@@ -25,7 +25,7 @@ void IIHEModule::store(std::string name, bool                      value){ paren
 void IIHEModule::store(std::string name, double                    value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, float                     value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, int                       value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, char                       value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, std::string                       value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, unsigned int              value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, unsigned long int         value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, std::vector<bool>         value){ parent_->store(name, value) ; }
