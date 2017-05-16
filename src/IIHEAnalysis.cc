@@ -176,6 +176,12 @@ bool IIHEAnalysis::addBranch(std::string name, int type){
       allVars_.push_back((BranchWrapperBase*)bw) ;
       break ;
     }
+    case kChar:{
+      BranchWrapperC*  bw = new BranchWrapperC(name) ;
+      vars_C_  .push_back(bw) ;
+      allVars_.push_back((BranchWrapperBase*)bw) ;
+      break ;
+    }
     case kUInt:{
       BranchWrapperU*  bw = new BranchWrapperU(name) ;
       vars_U_  .push_back(bw) ;
@@ -480,6 +486,12 @@ bool IIHEAnalysis::store(std::string name, int value){
 
 
 bool IIHEAnalysis::store(std::string name, char value){
+  for(unsigned int i=0 ; i<vars_C_.size() ; ++i){
+    if(vars_C_.at(i)->name()==name){
+      vars_C_ .at(i)->set(value) ;
+      return true ;
+    }
+  }
   for(unsigned int i=0 ; i<vars_CV_.size() ; ++i){
     if(vars_CV_.at(i)->name()==name){
       vars_CV_ .at(i)->push(value) ;

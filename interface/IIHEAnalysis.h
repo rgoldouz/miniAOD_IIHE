@@ -138,6 +138,7 @@ private:
   std::vector<BranchWrapperD*   > vars_D_  ;
   std::vector<BranchWrapperF*   > vars_F_  ;
   std::vector<BranchWrapperI*   > vars_I_  ;
+  std::vector<BranchWrapperC*   > vars_C_  ;
   std::vector<BranchWrapperU*   > vars_U_  ;
   std::vector<BranchWrapperUL*   > vars_UL_  ;
   

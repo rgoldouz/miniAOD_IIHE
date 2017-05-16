@@ -6,6 +6,7 @@ enum variableTypes{
   kDouble,
   kFloat,
   kInt,
+  kChar,
   kUInt,
   kULInt,
   kSize_t,
