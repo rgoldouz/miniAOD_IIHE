@@ -33,11 +33,7 @@ void IIHEModuleLHEWeight::analyze(const edm::Event& iEvent, const edm::EventSetu
   if (lhe_handle.isValid()){
     store("LHE_weight_nominal",(float) lhe_handle->weights().at(0).wgt);
     for (unsigned i = 0; i < lhe_handle->weights().size(); ++i) {
-stringstream ss;
-string target;
-char mychar= *lhe_handle->weights().at(i).id.data();
-ss << mychar;
-ss >> target;
+string target(lhe_handle->weights().at(i).id.data());
     store("LHE_weight_sys",(float) lhe_handle->weights().at(i).wgt);
     store("LHE_id_sys",target );
     }

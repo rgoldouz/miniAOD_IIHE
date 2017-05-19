@@ -101,7 +101,7 @@ process.source = cms.Source("PoolSource",
 #process.source.fileNames.append( path )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
 #process.source.fileNames.append( "file:TW_80_miniAOD.root" )
-process.source.fileNames.append( "file:MC_MINIAOD.root" )
+process.source.fileNames.append( "file:/user/rgoldouz/WtbPhenomenology/CMSSW_7_1_20_patch3/src/Wtb/ST_tW_EFT_Madgraph.root" )
 ###
 filename_out = "outfile_GENonly.root"
 if options.DataFormat == "mc" and not options.grid:
@@ -239,9 +239,8 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #    "PoolOutputModule",
 #    fileName = cms.untracked.string("EDM.root")
 #    )
-
-
-#process.IIHEAnalysis.genJetsCollection              = cms.InputTag("ak4GenJets")
+process.IIHEAnalysis.genJetsCollection              = cms.InputTag("ak4GenJets")
+process.IIHEAnalysis.genParticleSrc                 = cms.InputTag("genParticles")
 fiducialStudy = False
 
 if fiducialStudy:

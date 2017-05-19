@@ -494,7 +494,6 @@ bool IIHEAnalysis::store(std::string name, std::string value){
   }
   for(unsigned int i=0 ; i<vars_CV_.size() ; ++i){
     if(vars_CV_.at(i)->name()==name){
-cout<<name<<"   "<<value<<endl;
       vars_CV_ .at(i)->push(value) ;
       return true ;
     }
