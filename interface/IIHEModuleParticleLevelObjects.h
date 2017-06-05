@@ -25,11 +25,9 @@ class IIHEModuleParticleLevelObjects : public IIHEModule {
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
 
  private:
-    edm::EDGetTokenT<std::vector<reco::GenJet> > particleLevelBJetsToken_;
     edm::EDGetTokenT<std::vector<reco::GenJet> > particleLevelJetsToken_;
-    edm::EDGetTokenT<std::vector<reco::GenJet> > particleLevelak1DressedMuonsToken_;
-    edm::EDGetTokenT<std::vector<reco::GenJet> > particleLevelak1DressedElectronsToken_;
-    edm::EDGetTokenT<std::vector<reco::GenParticle> > particleLevelNeutrinosToken_;
+    edm::EDGetTokenT<std::vector<reco::GenJet> > particleLevelak1DressedLeptonToken_;
+    edm::EDGetTokenT<std::vector<reco::MET> > particleLevelMETToken_;
 
 };
 #endif

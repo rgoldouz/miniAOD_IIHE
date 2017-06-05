@@ -106,7 +106,7 @@ process.source.fileNames.append( "file:MC_MINIAOD.root" )
 filename_out = "outfile.root"
 if options.DataFormat == "mc" and not options.grid:
 #  filename_out = "file:/tmp/output_%s" % (options.sample + "_" + options.file)
-  filename_out = "outfile_MC.root"
+  filename_out = "outfile_MC_"+options.file+".root"
 if options.DataFormat == "data" and not options.grid:
   filename_out = "outfile_Data.root"
 
@@ -167,7 +167,7 @@ process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidate
 
 
 #For fiducial study we need object at particle level
-process.load("UserCode.IIHETree.IIHEFiducialModules_cff")
+#process.load("UserCode.IIHETree.IIHEFiducialModules_cff")
 
 ##########################################################################################
 #                            MY analysis input!                              #
@@ -218,11 +218,9 @@ process.IIHEAnalysis.patPFMetT1TxyCollection                   = cms.InputTag("p
 process.IIHEAnalysis.patPFMetFinalCollection                   = cms.InputTag("slimmedMETs"               , ""                ,"IIHEAnalysis"  )
 
 #particle level fiducial collections
-process.IIHEAnalysis.particleLevelJetsCollection               = cms.InputTag("genParticlesForFiducial"       , "particleLevelJets"     ,"IIHEAnalysis"  )
-process.IIHEAnalysis.particleLevelBJetsCollection              = cms.InputTag("genParticlesForFiducial"       , "particleLevelBJets"    ,"IIHEAnalysis"  )
-process.IIHEAnalysis.particleLevelak1DressedMuonsCollection    = cms.InputTag("ak1DressedMuons"               , ""                      ,"IIHEAnalysis"  )
-process.IIHEAnalysis.particleLevelak1DressedElectronsCollection= cms.InputTag("ak1DressedElectrons"           , ""                      ,"IIHEAnalysis"  )
-process.IIHEAnalysis.particleLevelNeutrinosCollection          = cms.InputTag("genParticlesForFiducial"       , "particleLevelNeutrinos","IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelJetsCollection               = cms.InputTag("pseudoTop"       , "jets"     ,"IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelak1DressedLeptonCollection   = cms.InputTag("pseudoTop"       , "leptons"  ,"IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelMETCollection                = cms.InputTag("pseudoTop"       , "mets","IIHEAnalysis"  )
 
 
 
@@ -235,13 +233,12 @@ process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
-#process.IIHEAnalysis.includeL1Module           = cms.untracked.bool("data" in options.DataProcessing)
 process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
 process.IIHEAnalysis.includeLHEWeightModule        = cms.untracked.bool(True)
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
 
-process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked.bool(False)
+process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked.bool(True)
 ##########################################################################################
 #                            Woohoo!  We"re ready to start!                              #
 ##########################################################################################
@@ -251,25 +248,44 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #    fileName = cms.untracked.string("EDM.root")
 #    )
 
-fiducialStudy = True
+fiducialStudy = False
 
 if fiducialStudy:
+    process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
+    process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
+        inputPruned = cms.InputTag("prunedGenParticles"),
+        inputPacked = cms.InputTag("packedGenParticles"),
+    )
+    process.load('GeneratorInterface.RivetInterface.genParticles2HepMC_cfi')
+    process.genParticles2HepMC.genParticles = cms.InputTag("mergedGenParticles")
+    process.genParticles2HepMC.genEventInfo = cms.InputTag("generator")
+    process.load("TopQuarkAnalysis.TopEventProducers.producers.pseudoTop_cfi")
+    process.pseudoTop.maxEta = cms.double(5.2)
+    process.pseudoTop.minJetPt = cms.double(20)
+    process.pseudoTop.maxJetEta = cms.double(5.2)
+
+    process.options = cms.untracked.PSet(
+        allowUnscheduled = cms.untracked.bool(True),
+        wantSummary      = cms.untracked.bool(True)
+    )
+
     process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
     process.p1 = cms.Path(
-        process.regressionApplication     *
-        process.calibratedPatElectrons    *
-        process.egmGsfElectronIDSequence  * 
-        process.heepIDVarValueMaps        *
-        process.BadPFMuonFilter           *
-        process.BadChargedCandidateFilter *
-        process.fullPatMetSequence        *
-        process.FiducialSeq                *
+#        process.regressionApplication     *
+#        process.calibratedPatElectrons    *
+#        process.egmGsfElectronIDSequence  * 
+#        process.heepIDVarValueMaps        *
+#        process.BadPFMuonFilter           *
+#        process.BadChargedCandidateFilter *
+#        process.fullPatMetSequence        *
+#        process.FiducialSeq                *
+        process.pseudoTop *
         process.IIHEAnalysis 
         )
 else:
     process.p1 = cms.Path(
         process.regressionApplication     *
-        process.calibratedPatElectrons    *
+        process.calibratedPatElectrons   *
         process.egmGsfElectronIDSequence  *
         process.heepIDVarValueMaps        *
         process.BadPFMuonFilter           *
