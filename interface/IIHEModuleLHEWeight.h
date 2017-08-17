@@ -24,7 +24,7 @@ public:
   virtual void endEvent() ;
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void endJob(const edm::Event&, const edm::EventSetup&) ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
 private:
   edm::EDGetTokenT<LHEEventProduct> lheEventLabel_;

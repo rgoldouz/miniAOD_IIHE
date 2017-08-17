@@ -33,9 +33,9 @@ void IIHEModuleLHEWeight::analyze(const edm::Event& iEvent, const edm::EventSetu
   if (lhe_handle.isValid()){
     store("LHE_weight_nominal",(float) lhe_handle->weights().at(0).wgt);
     for (unsigned i = 0; i < lhe_handle->weights().size(); ++i) {
-string target(lhe_handle->weights().at(i).id.data());
+    string target(lhe_handle->weights().at(i).id.data());
     store("LHE_weight_sys",(float) lhe_handle->weights().at(i).wgt);
-    store("LHE_id_sys",target );
+//    store("LHE_id_sys",target );
     }
   }
 }
@@ -43,6 +43,14 @@ string target(lhe_handle->weights().at(i).id.data());
 void IIHEModuleLHEWeight::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
 void IIHEModuleLHEWeight::beginEvent(){}
 void IIHEModuleLHEWeight::endEvent(){}
-void IIHEModuleLHEWeight::endJob(){}
+void IIHEModuleLHEWeight::endJob(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+  edm::Handle<LHEEventProduct> lhe_handle;
+  iEvent.getByToken(lheEventLabel_, lhe_handle);
+  if (lhe_handle.isValid()){    for (unsigned i = 0; i < lhe_handle->weights().size(); ++i) {
+    string target(lhe_handle->weights().at(i).id.data());
+    store("LHE_id_sys",target );
+    }
+  }
+}
 
 DEFINE_FWK_MODULE(IIHEModuleLHEWeight);

@@ -26,6 +26,9 @@ void IIHEModuleParticleLevelObjects::beginJob(){
   addBranch("pl_lep_phi"   ) ;
   addBranch("pl_MET_pt"   ) ;
   addBranch("pl_MET_phi"   ) ;
+  setBranchType(kVectorInt) ;
+  addBranch("pl_jet_pdgid"   ) ;
+  addBranch("pl_lep_pdgid"   ) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -43,13 +46,14 @@ void IIHEModuleParticleLevelObjects::analyze(const edm::Event& iEvent, const edm
     store("pl_jet_pt"     , particleLevelJetsHandle_->at(j).pt()) ;
     store("pl_jet_eta"    , particleLevelJetsHandle_->at(j).eta()) ;
     store("pl_jet_phi"    , particleLevelJetsHandle_->at(j).phi()) ;
+    store("pl_jet_pdgid"    , particleLevelJetsHandle_->at(j).pdgId()) ;
   }
-
 
   for (size_t j = 0; j < particleLevelak1DressedLeptonHandle_->size();++j){
     store("pl_lep_pt"     , particleLevelak1DressedLeptonHandle_->at(j).pt()) ;
     store("pl_lep_eta"    , particleLevelak1DressedLeptonHandle_->at(j).eta()) ;
     store("pl_lep_phi"    , particleLevelak1DressedLeptonHandle_->at(j).phi()) ;
+    store("pl_lep_pdgid"    , particleLevelak1DressedLeptonHandle_->at(j).pdgId()) ;
   }
 
 

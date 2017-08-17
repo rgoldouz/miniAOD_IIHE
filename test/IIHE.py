@@ -81,7 +81,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 
 process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -218,21 +218,12 @@ process.IIHEAnalysis.patPFMetT1TxyCollection                   = cms.InputTag("p
 process.IIHEAnalysis.patPFMetFinalCollection                   = cms.InputTag("slimmedMETs"               , ""                ,"IIHEAnalysis"  )
 
 #particle level fiducial collections
-process.IIHEAnalysis.particleLevelJetsCollection               = cms.InputTag("pseudoTop"       , "jets"     ,"IIHEAnalysis"  )
-process.IIHEAnalysis.particleLevelak1DressedLeptonCollection   = cms.InputTag("pseudoTop"       , "leptons"  ,"IIHEAnalysis"  )
-process.IIHEAnalysis.particleLevelMETCollection                = cms.InputTag("pseudoTop"       , "mets","IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelJetsCollection               = cms.InputTag("particleLevel"       , "jets"     ,"IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelak1DressedLeptonCollection   = cms.InputTag("particleLevel"       , "leptons"  ,"IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelMETCollection                = cms.InputTag("particleLevel"       , "mets","IIHEAnalysis"  )
 
 
 
-process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
-process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)
-process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(True)
-process.IIHEAnalysis.includeVertexModule         = cms.untracked.bool(True)
-process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
-process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
-process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
-process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
-process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
 process.IIHEAnalysis.includeLHEWeightModule        = cms.untracked.bool(True)
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
@@ -248,41 +239,32 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #    fileName = cms.untracked.string("EDM.root")
 #    )
 
-fiducialStudy = False
+fiducialStudy = True
 
 if fiducialStudy:
-    process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
-    process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
-        inputPruned = cms.InputTag("prunedGenParticles"),
-        inputPacked = cms.InputTag("packedGenParticles"),
-    )
-    process.load('GeneratorInterface.RivetInterface.genParticles2HepMC_cfi')
+    process.load("GeneratorInterface.RivetInterface.mergedGenParticles_cfi")
+    process.load("GeneratorInterface.RivetInterface.genParticles2HepMC_cfi")
     process.genParticles2HepMC.genParticles = cms.InputTag("mergedGenParticles")
-    process.genParticles2HepMC.genEventInfo = cms.InputTag("generator")
-    process.load("TopQuarkAnalysis.TopEventProducers.producers.pseudoTop_cfi")
-    process.pseudoTop.maxEta = cms.double(5.2)
-    process.pseudoTop.minJetPt = cms.double(20)
-    process.pseudoTop.maxJetEta = cms.double(5.2)
-
-    process.options = cms.untracked.PSet(
-        allowUnscheduled = cms.untracked.bool(True),
-        wantSummary      = cms.untracked.bool(True)
-    )
+    process.load("GeneratorInterface.RivetInterface.particleLevel_cfi") 
 
     process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
     process.p1 = cms.Path(
-#        process.regressionApplication     *
-#        process.calibratedPatElectrons    *
-#        process.egmGsfElectronIDSequence  * 
-#        process.heepIDVarValueMaps        *
-#        process.BadPFMuonFilter           *
-#        process.BadChargedCandidateFilter *
-#        process.fullPatMetSequence        *
-#        process.FiducialSeq                *
-        process.pseudoTop *
+        process.mergedGenParticles *
+        process.genParticles2HepMC *
+        process.particleLevel *
         process.IIHEAnalysis 
         )
+
 else:
+    process.IIHEAnalysis.includeLeptonsAcceptModule  = cms.untracked.bool(True)
+    process.IIHEAnalysis.includeTriggerModule        = cms.untracked.bool(True)
+    process.IIHEAnalysis.includeEventModule          = cms.untracked.bool(True)
+    process.IIHEAnalysis.includeVertexModule         = cms.untracked.bool(True)
+    process.IIHEAnalysis.includeElectronModule       = cms.untracked.bool(True)
+    process.IIHEAnalysis.includeMuonModule           = cms.untracked.bool(True)
+    process.IIHEAnalysis.includeMETModule            = cms.untracked.bool(True)
+    process.IIHEAnalysis.includeJetModule            = cms.untracked.bool(True)
+    process.IIHEAnalysis.includeTauModule            = cms.untracked.bool(True)
     process.p1 = cms.Path(
         process.regressionApplication     *
         process.calibratedPatElectrons   *
