@@ -101,7 +101,8 @@ process.source = cms.Source("PoolSource",
 #process.source.fileNames.append( path )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
 #process.source.fileNames.append( "file:TW_80_miniAOD.root" )
-process.source.fileNames.append( "file:MC_MINIAOD.root" )
+#process.source.fileNames.append( "file:MC_MINIAOD.root" )
+process.source.fileNames.append( "file:GS_vtb.root" )
 ###
 filename_out = "outfile.root"
 if options.DataFormat == "mc" and not options.grid:
@@ -243,6 +244,7 @@ fiducialStudy = True
 
 if fiducialStudy:
     process.load("GeneratorInterface.RivetInterface.mergedGenParticles_cfi")
+    process.mergedGenParticles.inputPruned = cms.InputTag("genParticles")
     process.load("GeneratorInterface.RivetInterface.genParticles2HepMC_cfi")
     process.genParticles2HepMC.genParticles = cms.InputTag("mergedGenParticles")
     process.load("GeneratorInterface.RivetInterface.particleLevel_cfi") 
