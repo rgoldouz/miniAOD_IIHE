@@ -81,7 +81,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 
 process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -100,8 +100,7 @@ process.source = cms.Source("PoolSource",
 )
 #process.source.fileNames.append( path )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
-#process.source.fileNames.append( "file:TW_80_miniAOD.root" )
-#process.source.fileNames.append( "file:MC_MINIAOD.root" )
+#process.source.fileNames.append( "file:10F47028-2379-E711-810E-008CFAF554C0.root" )
 process.source.fileNames.append( "file:GS_vtb.root" )
 ###
 filename_out = "outfile.root"
@@ -234,23 +233,50 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 ##########################################################################################
 #                            Woohoo!  We"re ready to start!                              #
 ##########################################################################################
-#process.p1 = cms.Path(process.kt6PFJetsForIsolation+process.IIHEAnalysis)
-#process.out = cms.OutputModule(
-#    "PoolOutputModule",
-#    fileName = cms.untracked.string("EDM.root")
-#    )
+process.out = cms.OutputModule(
+    "PoolOutputModule",
+    fileName = cms.untracked.string("EDM.root")
+    )
 
 fiducialStudy = True
 
 if fiducialStudy:
     process.load("GeneratorInterface.RivetInterface.mergedGenParticles_cfi")
-    process.mergedGenParticles.inputPruned = cms.InputTag("genParticles")
     process.load("GeneratorInterface.RivetInterface.genParticles2HepMC_cfi")
-    process.genParticles2HepMC.genParticles = cms.InputTag("mergedGenParticles")
-    process.load("GeneratorInterface.RivetInterface.particleLevel_cfi") 
+#    from PhysicsTools.PatAlgos.slimming.packedGenParticles_cfi import *
+    process.load("GeneratorInterface.RivetInterface.particleLevel_cfi")
+    process.mergedGenParticles.inputPruned = cms.InputTag("prunedGenParticlesTwo")
+    process.mergedGenParticles.inputPacked = cms.InputTag("mypackedGenParticles")
+
+    from PhysicsTools.PatAlgos.slimming.prunedGenParticles_cfi import *
+    from PhysicsTools.PatAlgos.slimming.packedGenParticles_cfi import *
+
+    process.prunedGenParticlesOne = prunedGenParticles.clone()
+    process.prunedGenParticlesOne.select = cms.vstring( "keep    *")
+
+    process.prunedGenParticlesTwo = prunedGenParticles.clone()
+    process.prunedGenParticlesTwo.select = cms.vstring( "keep    *")
+
+    process.prunedGenParticlesTwo.src =  cms.InputTag("prunedGenParticlesOne")
+
+
+    process.mypackedGenParticles = packedGenParticles.clone()
+    process.mypackedGenParticles.inputCollection = cms.InputTag("prunedGenParticlesOne")
+    process.mypackedGenParticles.map = cms.InputTag("prunedGenParticlesTwo") # map with rekey association from prunedGenParticlesWithStatusOne to prunedGenParticles, used to relink our refs to prunedGen
+    process.mypackedGenParticles.inputOriginal = cms.InputTag("genParticles")
 
     process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
+    process.IIHEAnalysis.genJetsCollection = cms.InputTag("kt4GenJets")
+    process.IIHEAnalysis.genParticleSrc = cms.InputTag("prunedGenParticlesOne")
+#    process.options = cms.untracked.PSet(
+#        allowUnscheduled = cms.untracked.bool(True),
+#        wantSummary      = cms.untracked.bool(True)
+#    )
+
     process.p1 = cms.Path(
+        process.prunedGenParticlesOne * 
+        process.prunedGenParticlesTwo *
+        process.mypackedGenParticles * 
         process.mergedGenParticles *
         process.genParticles2HepMC *
         process.particleLevel *
@@ -278,5 +304,5 @@ else:
         process.IIHEAnalysis
         )
 
-#process.outpath = cms.EndPath(process.out)
+process.outpath = cms.EndPath(process.out)
 
