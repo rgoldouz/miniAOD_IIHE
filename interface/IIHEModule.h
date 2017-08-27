@@ -79,6 +79,7 @@ public:
   
   bool addValueToMetaTree(std::string, float) ;
   bool addFVValueToMetaTree(std::string, std::vector<float>); 
+  bool addCVValueToMetaTree(std::string, std::vector<std::string>);
  
   void   vetoEvent() ;
   void acceptEvent() ;

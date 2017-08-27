@@ -33,12 +33,15 @@ void IIHEModuleLHEWeight::analyze(const edm::Event& iEvent, const edm::EventSetu
   iEvent.getByToken(lheEventLabel_, lhe_handle);
   if (lhe_handle.isValid()){
     store("LHE_weight_nominal",(float) lhe_handle->weights().at(0).wgt);
-    for (unsigned i = 0; i < lhe_handle->weights().size(); ++i) {
-    if(sumofWeights_.size() != lhe_handle->weights().size()) sumofWeights_.push_back(0);
-    string target(lhe_handle->weights().at(i).id.data());
-    store("LHE_weight_sys",(float) lhe_handle->weights().at(i).wgt);
-    sumofWeights_[i] += (float) lhe_handle->weights().at(i).wgt;     
-    store("LHE_id_sys",target );
+      for (unsigned i = 0; i < lhe_handle->weights().size(); ++i) {
+      string target(lhe_handle->weights().at(i).id.data());
+      if(sumofWeights_.size() != lhe_handle->weights().size()) {
+        sumofWeights_.push_back(0);
+        weightsId_.push_back(target);
+      }
+      store("LHE_weight_sys",(float) lhe_handle->weights().at(i).wgt);
+      sumofWeights_[i] += (float) lhe_handle->weights().at(i).wgt;     
+      store("LHE_id_sys",target );
     }
   }
 }
@@ -48,6 +51,7 @@ void IIHEModuleLHEWeight::beginEvent(){}
 void IIHEModuleLHEWeight::endEvent(){}
 void IIHEModuleLHEWeight::endJob(){
   addFVValueToMetaTree("mc_sumofWeights", sumofWeights_) ;
+  addCVValueToMetaTree("mc_weightsId",weightsId_) ;
 }
 
 DEFINE_FWK_MODULE(IIHEModuleLHEWeight);

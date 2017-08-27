@@ -133,6 +133,15 @@ bool IIHEAnalysis::addFVValueToMetaTree(std::string parName, std::vector<float> 
   return true ;
 }
 
+bool IIHEAnalysis::addCVValueToMetaTree(std::string parName, std::vector<std::string> value){
+  BranchWrapperCV* bw = new BranchWrapperCV(parName) ;
+  for (unsigned int i=0 ; i<value.size() ; ++i){
+    bw->push(value[i]);
+  }
+  bw->config(metaTree_) ;
+  return true ;
+}
+
 bool IIHEAnalysis::branchExists(std::string name){
   for(unsigned int i=0 ; i<allVars_.size() ; ++i){
     if(allVars_.at(i)->name()==name) return true ;
