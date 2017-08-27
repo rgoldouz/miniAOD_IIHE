@@ -81,7 +81,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 
 process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -101,7 +101,7 @@ process.source = cms.Source("PoolSource",
 #process.source.fileNames.append( path )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
 #process.source.fileNames.append( "file:10F47028-2379-E711-810E-008CFAF554C0.root" )
-process.source.fileNames.append( "file:GS_vtb.root" )
+process.source.fileNames.append( "file:MC_MINIAOD.root" )
 ###
 filename_out = "outfile.root"
 if options.DataFormat == "mc" and not options.grid:
@@ -238,7 +238,7 @@ process.out = cms.OutputModule(
     fileName = cms.untracked.string("EDM.root")
     )
 
-fiducialStudy = True
+fiducialStudy = False
 
 if fiducialStudy:
     process.load("GeneratorInterface.RivetInterface.mergedGenParticles_cfi")

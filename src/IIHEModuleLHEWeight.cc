@@ -23,6 +23,7 @@ void IIHEModuleLHEWeight::beginJob(){
   addBranch("LHE_weight_sys");
   setBranchType(kVectorChar) ;
   addBranch("LHE_id_sys");
+
 }
 
 // ------------ method called to for each event  ------------
@@ -33,8 +34,10 @@ void IIHEModuleLHEWeight::analyze(const edm::Event& iEvent, const edm::EventSetu
   if (lhe_handle.isValid()){
     store("LHE_weight_nominal",(float) lhe_handle->weights().at(0).wgt);
     for (unsigned i = 0; i < lhe_handle->weights().size(); ++i) {
+    if(sumofWeights_.size() != lhe_handle->weights().size()) sumofWeights_.push_back(0);
     string target(lhe_handle->weights().at(i).id.data());
     store("LHE_weight_sys",(float) lhe_handle->weights().at(i).wgt);
+    sumofWeights_[i] += (float) lhe_handle->weights().at(i).wgt;     
     store("LHE_id_sys",target );
     }
   }
@@ -43,7 +46,8 @@ void IIHEModuleLHEWeight::analyze(const edm::Event& iEvent, const edm::EventSetu
 void IIHEModuleLHEWeight::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
 void IIHEModuleLHEWeight::beginEvent(){}
 void IIHEModuleLHEWeight::endEvent(){}
-void IIHEModuleLHEWeight::endJob(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+void IIHEModuleLHEWeight::endJob(){
+  addFVValueToMetaTree("mc_sumofWeights", sumofWeights_) ;
 }
 
 DEFINE_FWK_MODULE(IIHEModuleLHEWeight);

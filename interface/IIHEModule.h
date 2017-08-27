@@ -78,7 +78,8 @@ public:
   void setBranchType(int);
   
   bool addValueToMetaTree(std::string, float) ;
-  
+  bool addFVValueToMetaTree(std::string, std::vector<float>); 
+ 
   void   vetoEvent() ;
   void acceptEvent() ;
   void rejectEvent() ;
