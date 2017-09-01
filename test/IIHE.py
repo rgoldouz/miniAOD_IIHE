@@ -238,49 +238,56 @@ process.out = cms.OutputModule(
     fileName = cms.untracked.string("EDM.root")
     )
 
-fiducialStudy = False
+fiducialStudy = True
+genSim = False
+
 
 if fiducialStudy:
     process.load("GeneratorInterface.RivetInterface.mergedGenParticles_cfi")
     process.load("GeneratorInterface.RivetInterface.genParticles2HepMC_cfi")
-#    from PhysicsTools.PatAlgos.slimming.packedGenParticles_cfi import *
     process.load("GeneratorInterface.RivetInterface.particleLevel_cfi")
-    process.mergedGenParticles.inputPruned = cms.InputTag("prunedGenParticlesTwo")
-    process.mergedGenParticles.inputPacked = cms.InputTag("mypackedGenParticles")
+    process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
 
     from PhysicsTools.PatAlgos.slimming.prunedGenParticles_cfi import *
     from PhysicsTools.PatAlgos.slimming.packedGenParticles_cfi import *
 
-    process.prunedGenParticlesOne = prunedGenParticles.clone()
-    process.prunedGenParticlesOne.select = cms.vstring( "keep    *")
+    if genSim:
+        process.prunedGenParticlesOne = prunedGenParticles.clone()
+        process.prunedGenParticlesOne.select = cms.vstring( "keep    *")
+        process.prunedGenParticlesTwo = prunedGenParticles.clone()
+        process.prunedGenParticlesTwo.select = cms.vstring( "keep    *")
+        process.prunedGenParticlesTwo.src =  cms.InputTag("prunedGenParticlesOne")
+        process.mergedGenParticles.inputPruned = cms.InputTag("prunedGenParticlesTwo")
+        process.mergedGenParticles.inputPacked = cms.InputTag("mypackedGenParticles")
 
-    process.prunedGenParticlesTwo = prunedGenParticles.clone()
-    process.prunedGenParticlesTwo.select = cms.vstring( "keep    *")
+        process.mypackedGenParticles = packedGenParticles.clone()
+        process.mypackedGenParticles.inputCollection = cms.InputTag("prunedGenParticlesOne")
+        process.mypackedGenParticles.map = cms.InputTag("prunedGenParticlesTwo") 
+        process.mypackedGenParticles.inputOriginal = cms.InputTag("genParticles")
 
-    process.prunedGenParticlesTwo.src =  cms.InputTag("prunedGenParticlesOne")
-
-
-    process.mypackedGenParticles = packedGenParticles.clone()
-    process.mypackedGenParticles.inputCollection = cms.InputTag("prunedGenParticlesOne")
-    process.mypackedGenParticles.map = cms.InputTag("prunedGenParticlesTwo") # map with rekey association from prunedGenParticlesWithStatusOne to prunedGenParticles, used to relink our refs to prunedGen
-    process.mypackedGenParticles.inputOriginal = cms.InputTag("genParticles")
-
-    process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
-    process.IIHEAnalysis.genJetsCollection = cms.InputTag("kt4GenJets")
-    process.IIHEAnalysis.genParticleSrc = cms.InputTag("prunedGenParticlesOne")
+        process.IIHEAnalysis.genJetsCollection = cms.InputTag("kt4GenJets")
+        process.IIHEAnalysis.genParticleSrc = cms.InputTag("prunedGenParticlesOne")
 #    process.options = cms.untracked.PSet(
 #        allowUnscheduled = cms.untracked.bool(True),
 #        wantSummary      = cms.untracked.bool(True)
 #    )
 
-    process.p1 = cms.Path(
-        process.prunedGenParticlesOne * 
-        process.prunedGenParticlesTwo *
-        process.mypackedGenParticles * 
-        process.mergedGenParticles *
-        process.genParticles2HepMC *
-        process.particleLevel *
-        process.IIHEAnalysis 
+        process.p1 = cms.Path(
+            process.prunedGenParticlesOne * 
+            process.prunedGenParticlesTwo *
+            process.mypackedGenParticles * 
+            process.mergedGenParticles *
+            process.genParticles2HepMC *
+            process.particleLevel *
+            process.IIHEAnalysis 
+            )
+    else:
+        process.genParticles2HepMC.genParticles = cms.InputTag("mergedGenParticles")
+        process.p1 = cms.Path(
+            process.mergedGenParticles *
+            process.genParticles2HepMC *
+            process.particleLevel *
+            process.IIHEAnalysis 
         )
 
 else:
