@@ -238,7 +238,7 @@ process.out = cms.OutputModule(
     fileName = cms.untracked.string("EDM.root")
     )
 
-fiducialStudy = True
+fiducialStudy = False
 genSim = False
 
 

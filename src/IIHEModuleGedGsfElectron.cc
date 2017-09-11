@@ -219,6 +219,12 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_sc_seed_ieta", kVectorInt) ;
   addBranch("gsf_sc_seed_iphi", kVectorInt) ;
 
+  setBranchType(kVectorFloat) ;
+  addBranch("gsf_track_eta") ;
+  addBranch("gsf_track_phi") ;
+  addBranch("gsf_track_pt") ;
+
+
   setBranchType(kVectorBool) ;
   addBranch("gsf_sc_seed_kHasSwitchToGain6") ;
   addBranch("gsf_sc_seed_kHasSwitchToGain1") ;
@@ -489,6 +495,9 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_sc_seed_kHasSwitchToGain6" , seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6) ) ;
     store("gsf_sc_seed_kHasSwitchToGain1" , seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)  ) ;
 
+    store("gsf_track_eta"                            , gsfiter->gsfTrack()->eta()                ) ;
+    store("gsf_track_phi"                            , gsfiter->gsfTrack()->phi()                ) ;
+    store("gsf_track_pt"                            , gsfiter->gsfTrack()->pt()                ) ;
 
     const std::vector<std::pair<DetId,float> > & hits= gsfiter->superCluster()->hitsAndFractions();
     if (gsfiter->isEB()){
