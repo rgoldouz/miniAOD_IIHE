@@ -101,7 +101,8 @@ process.source = cms.Source("PoolSource",
 #process.source.fileNames.append( path )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
 #process.source.fileNames.append( "file:10F47028-2379-E711-810E-008CFAF554C0.root" )
-process.source.fileNames.append( "file:MC_MINIAOD.root" )
+#process.source.fileNames.append( "file:MC_MINIAOD.root" )
+process.source.fileNames.append( "file:GS_test.root" )
 ###
 filename_out = "outfile.root"
 if options.DataFormat == "mc" and not options.grid:
@@ -221,6 +222,7 @@ process.IIHEAnalysis.patPFMetFinalCollection                   = cms.InputTag("s
 process.IIHEAnalysis.particleLevelJetsCollection               = cms.InputTag("particleLevel"       , "jets"     ,"IIHEAnalysis"  )
 process.IIHEAnalysis.particleLevelak1DressedLeptonCollection   = cms.InputTag("particleLevel"       , "leptons"  ,"IIHEAnalysis"  )
 process.IIHEAnalysis.particleLevelMETCollection                = cms.InputTag("particleLevel"       , "mets","IIHEAnalysis"  )
+process.IIHEAnalysis.particleLevelNeutrinoCollection                = cms.InputTag("particleLevel"       , "neutrinos","IIHEAnalysis"  )
 
 
 
@@ -238,8 +240,8 @@ process.out = cms.OutputModule(
     fileName = cms.untracked.string("EDM.root")
     )
 
-fiducialStudy = False
-genSim = False
+fiducialStudy = True
+genSim = True
 
 
 if fiducialStudy:

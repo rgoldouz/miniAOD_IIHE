@@ -12,6 +12,7 @@ IIHEModuleParticleLevelObjects::IIHEModuleParticleLevelObjects(const edm::Parame
   particleLevelJetsToken_ = iC.consumes<std::vector<reco::GenJet>>(iConfig.getParameter<edm::InputTag>("particleLevelJetsCollection"));
   particleLevelak1DressedLeptonToken_ = iC.consumes<std::vector<reco::GenJet>>(iConfig.getParameter<edm::InputTag>("particleLevelak1DressedLeptonCollection"));
   particleLevelMETToken_ = iC.consumes<std::vector<reco::MET>>(iConfig.getParameter<edm::InputTag>("particleLevelMETCollection"));
+  particleLevelNeutrinoToken_ = iC.consumes<std::vector<reco::GenParticle>>(iConfig.getParameter<edm::InputTag>("particleLevelNeutrinoCollection"));
 }
 IIHEModuleParticleLevelObjects::~IIHEModuleParticleLevelObjects(){}
 
@@ -26,9 +27,14 @@ void IIHEModuleParticleLevelObjects::beginJob(){
   addBranch("pl_lep_phi"   ) ;
   addBranch("pl_MET_pt"   ) ;
   addBranch("pl_MET_phi"   ) ;
+  addBranch("pl_nu_pt"   ) ;
+  addBranch("pl_nu_eta"   ) ;
+  addBranch("pl_nu_phi"   ) ;
+
   setBranchType(kVectorInt) ;
   addBranch("pl_jet_pdgid"   ) ;
   addBranch("pl_lep_pdgid"   ) ;
+  addBranch("pl_nu_pdgid"   ) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -41,6 +47,10 @@ void IIHEModuleParticleLevelObjects::analyze(const edm::Event& iEvent, const edm
 
   edm::Handle<std::vector<reco::MET>> particleLevelMETHandle_;
   iEvent.getByToken(particleLevelMETToken_, particleLevelMETHandle_);
+
+  edm::Handle<std::vector<reco::GenParticle>> particleLevelNeutrinoHandle_;
+  iEvent.getByToken(particleLevelNeutrinoToken_, particleLevelNeutrinoHandle_);
+
 
   for (size_t j = 0; j < particleLevelJetsHandle_->size();++j){
     store("pl_jet_pt"     , particleLevelJetsHandle_->at(j).pt()) ;
@@ -59,6 +69,14 @@ void IIHEModuleParticleLevelObjects::analyze(const edm::Event& iEvent, const edm
 
     store("pl_MET_pt"     , particleLevelMETHandle_->at(0).pt()) ;
     store("pl_MET_phi"    , particleLevelMETHandle_->at(0).phi()) ;
+
+  for (size_t j = 0; j < particleLevelNeutrinoHandle_->size();++j){
+    store("pl_nu_pt"     , particleLevelNeutrinoHandle_->at(j).pt()) ;
+    store("pl_nu_eta"    , particleLevelNeutrinoHandle_->at(j).eta()) ;
+    store("pl_nu_phi"    , particleLevelNeutrinoHandle_->at(j).phi()) ;
+    store("pl_nu_pdgid"    , particleLevelNeutrinoHandle_->at(j).pdgId()) ;
+  }
+
 
 }
 void IIHEModuleParticleLevelObjects::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

@@ -28,6 +28,6 @@ class IIHEModuleParticleLevelObjects : public IIHEModule {
     edm::EDGetTokenT<std::vector<reco::GenJet> > particleLevelJetsToken_;
     edm::EDGetTokenT<std::vector<reco::GenJet> > particleLevelak1DressedLeptonToken_;
     edm::EDGetTokenT<std::vector<reco::MET> > particleLevelMETToken_;
-
+    edm::EDGetTokenT<std::vector<reco::GenParticle> > particleLevelNeutrinoToken_;
 };
 #endif
