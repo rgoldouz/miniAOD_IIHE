@@ -48,6 +48,11 @@ options.register('grid',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'If you run on grid or localy on eos')
+options.register("outfile",
+                 "out_file.root",
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.string,
+                 "output file name")
 options.parseArguments()
 
 ###########################################################################################
@@ -81,7 +86,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 
 process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -102,9 +107,9 @@ process.source = cms.Source("PoolSource",
 #process.source.fileNames.append( "file:03Feb2017data.root" )
 #process.source.fileNames.append( "file:10F47028-2379-E711-810E-008CFAF554C0.root" )
 #process.source.fileNames.append( "file:MC_MINIAOD.root" )
-process.source.fileNames.append( "file:GS_test.root" )
+process.source.fileNames.append( options.file )
 ###
-filename_out = "outfile.root"
+filename_out = options.outfile
 if options.DataFormat == "mc" and not options.grid:
 #  filename_out = "file:/tmp/output_%s" % (options.sample + "_" + options.file)
   filename_out = "outfile_MC_"+options.file+".root"
