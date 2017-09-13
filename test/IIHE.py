@@ -235,10 +235,10 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 ##########################################################################################
 #                            Woohoo!  We"re ready to start!                              #
 ##########################################################################################
-process.out = cms.OutputModule(
-    "PoolOutputModule",
-    fileName = cms.untracked.string("EDM.root")
-    )
+#process.out = cms.OutputModule(
+#    "PoolOutputModule",
+#    fileName = cms.untracked.string("EDM.root")
+#    )
 
 fiducialStudy = True
 genSim = True
@@ -313,5 +313,5 @@ else:
         process.IIHEAnalysis
         )
 
-process.outpath = cms.EndPath(process.out)
+#process.outpath = cms.EndPath(process.out)
 
