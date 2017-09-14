@@ -232,7 +232,7 @@ process.IIHEAnalysis.particleLevelNeutrinoCollection                = cms.InputT
 
 
 process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool("mc" in options.DataProcessing)
-process.IIHEAnalysis.includeLHEWeightModule        = cms.untracked.bool(True)
+process.IIHEAnalysis.includeLHEWeightModule        = cms.untracked.bool("mc" in options.DataProcessing)
 process.IIHEAnalysis.includeDataModule            = cms.untracked.bool("data" in options.DataProcessing)
 
 
@@ -253,6 +253,7 @@ if fiducialStudy:
     process.load("GeneratorInterface.RivetInterface.mergedGenParticles_cfi")
     process.load("GeneratorInterface.RivetInterface.genParticles2HepMC_cfi")
     process.load("GeneratorInterface.RivetInterface.particleLevel_cfi")
+    process.IIHEAnalysis.includeMCTruthModule        = cms.untracked.bool(False)
     process.IIHEAnalysis.includeParticleLevelObjectsModule= cms.untracked.bool(True)
 
     from PhysicsTools.PatAlgos.slimming.prunedGenParticles_cfi import *
@@ -274,6 +275,7 @@ if fiducialStudy:
 
         process.IIHEAnalysis.genJetsCollection = cms.InputTag("kt4GenJets")
         process.IIHEAnalysis.genParticleSrc = cms.InputTag("prunedGenParticlesOne")
+        process.IIHEAnalysis.LHELabel = cms.InputTag("source")
 #    process.options = cms.untracked.PSet(
 #        allowUnscheduled = cms.untracked.bool(True),
 #        wantSummary      = cms.untracked.bool(True)
