@@ -94,10 +94,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 #                                         Files                                          #
 ##########################################################################################
 if options.DataFormat == "mc":
-  path = "root://eoscms//eos/cms/store/"+ options.DataFormat + "/" + options.dataset  + "/" + options.sample + "/" + options.address + "/" + options.file
+  path = "file:root://eoscms.cern.ch//eos/cms/store/"+ options.DataFormat + "/" + options.dataset  + "/" + options.sample + "/" + options.address + "/" + options.file
 
 if options.DataFormat == "data":
-  path = "root://eoscms//eos/cms/store/"+ options.DataFormat + "/" + options.dataset  + "/" + options.sample + "/" + options.address + "/" + options.file
+  path = "file:root://eoscms.cern.ch//eos/cms/store/"+ options.DataFormat + "/" + options.dataset  + "/" + options.sample + "/" + options.address + "/" + options.file
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(),
@@ -105,8 +105,9 @@ process.source = cms.Source("PoolSource",
 )
 #process.source.fileNames.append( path )
 #process.source.fileNames.append( "file:03Feb2017data.root" )
-#process.source.fileNames.append( "file:10F47028-2379-E711-810E-008CFAF554C0.root" )
+#process.source.fileNames.append( "file:0E4CD60A-0FC3-E611-BCB5-0CC47A7C3420.root" )
 #process.source.fileNames.append( "file:MC_MINIAOD.root" )
+#process.source.fileNames.append( path )
 process.source.fileNames.append( options.file )
 ###
 filename_out = options.outfile
