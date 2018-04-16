@@ -3,6 +3,11 @@
 #include "UserCode/IIHETree/interface/btag_weighter.h"
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
+
 
 // class decleration
 
@@ -37,7 +42,9 @@ private:
   edm::EDGetTokenT<edm::View<pat::Jet> > pfJetTokenSmearedJetResUp_;
   edm::InputTag pfJetLabelSmearedJetResDown_;
   edm::EDGetTokenT<edm::View<pat::Jet> > pfJetTokenSmearedJetResDown_;
+  edm::EDGetTokenT<double> rhoTokenAll_;
 
+  float event_rho;
   float ETThreshold_ ;
   bool isMC_;
   BTagWeighter *btw;

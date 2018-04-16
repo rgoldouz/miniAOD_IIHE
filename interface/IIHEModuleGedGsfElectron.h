@@ -21,6 +21,21 @@ private:
   edm::EDGetTokenT<edm::ValueMap<bool> > VIDmvaEleIDwp90_;
   edm::EDGetTokenT<edm::ValueMap<bool> > VIDmvaEleIDwp80_;
   edm::EDGetTokenT<edm::ValueMap<bool> > VIDHEEP7_;
+  edm::EDGetTokenT<edm::ValueMap<bool> > eleMVATrigwp80IdMap;
+  edm::EDGetTokenT<edm::ValueMap<bool> > eleMVAnonTrigwp80IdMap;
+  edm::EDGetTokenT<edm::ValueMap<bool> > eleMVATrigwp90IdMap;
+  edm::EDGetTokenT<edm::ValueMap<bool> > eleMVAnonTrigwp90IdMap;
+  edm::EDGetTokenT<edm::ValueMap<bool> > eleMVAHZZwpLooseIdMap; 
+
+  edm::EDGetTokenT<edm::ValueMap<float> > elemvaValuesMap_nonTrig;
+  edm::EDGetTokenT<edm::ValueMap<int> > elemvaCategoriesMap_nonTrig;
+  edm::EDGetTokenT<edm::ValueMap<float> > elemvaValuesMap_Trig;
+  edm::EDGetTokenT<edm::ValueMap<int> > elemvaCategoriesMap_Trig;
+  edm::EDGetTokenT<edm::ValueMap<float> > elemvaValuesMap_GP;
+  edm::EDGetTokenT<edm::ValueMap<int> > elemvaCategoriesMap_GP;
+  edm::EDGetTokenT<edm::ValueMap<float> > elemvaValuesMap_HZZ;
+  edm::EDGetTokenT<edm::ValueMap<int> > elemvaCategoriesMap_HZZ;
+
 
   edm::EDGetTokenT<edm::View<pat::Electron>> electronCollectionToken_;
   edm::EDGetTokenT<edm::View<pat::Electron>> electronCollectionToken80_;
