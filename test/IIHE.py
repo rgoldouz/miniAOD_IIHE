@@ -107,8 +107,8 @@ process.source = cms.Source("PoolSource",
 #process.source.fileNames.append( "file:03Feb2017data.root" )
 #process.source.fileNames.append( "file:0E4CD60A-0FC3-E611-BCB5-0CC47A7C3420.root" )
 #process.source.fileNames.append( "file:MC_MINIAOD.root" )
-#process.source.fileNames.append( path )
-process.source.fileNames.append( options.file )
+process.source.fileNames.append( "file:GS_test.root" )
+#process.source.fileNames.append( options.file )
 ###
 filename_out = options.outfile
 if options.DataFormat == "mc" and not options.grid:
@@ -246,7 +246,7 @@ process.IIHEAnalysis.includeAutoAcceptEventModule                = cms.untracked
 #    fileName = cms.untracked.string("EDM.root")
 #    )
 
-fiducialStudy = False
+fiducialStudy = True
 genSim = True
 
 
