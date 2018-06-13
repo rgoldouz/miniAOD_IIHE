@@ -104,7 +104,7 @@ process.source = cms.Source("PoolSource",
 #    eventsToProcess = cms.untracked.VEventRange('1:19792:3958249')
 )
 #process.source.fileNames.append( path )
-#process.source.fileNames.append( "file:03Feb2017data.root" )
+process.source.fileNames.append( "file:MC_MINIAOD.root" )
 #process.source.fileNames.append( "file:10F47028-2379-E711-810E-008CFAF554C0.root" )
 #process.source.fileNames.append( "file:/pnfs/iihe/cms/store/user/amkalsi/ZPrime_ETau_5TeV/out_miniaod_5.root" )
 #process.source.fileNames.append( options.file )

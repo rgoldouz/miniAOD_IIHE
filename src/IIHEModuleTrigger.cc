@@ -202,7 +202,8 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
         if(hlt->isOnlySingleElectronSingleMuon() && includeSingleElectronSingleMuonTriggers_) addThisTrigger = true ;
         if(hlt->isOnlySingleElectronDoubleMuon() && includeSingleElectronDoubleMuonTriggers_) addThisTrigger = true ;
         if(hlt->isOnlyDoubleElectronSingleMuon() && includeDoubleElectronSingleMuonTriggers_) addThisTrigger = true ;
-        if(hlt->isSinglePhoton() && includeSinglePhotonTriggers_ ) addThisTrigger = true ;        
+        if(hlt->isSinglePhoton() && includeSinglePhotonTriggers_ ) addThisTrigger = true ;       
+        if(hlt->isSingleTau() && includeSingleTauTriggers_ ) addThisTrigger = true ; 
         if(hlt->isMET() && includeMETTriggers_) addThisTrigger = true ;
         // Only loop over trigger names if we have to
         if(addThisTrigger==false){
